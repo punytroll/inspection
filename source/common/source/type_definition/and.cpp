@@ -22,8 +22,9 @@
 
 #include <assertion.h>
 
-#include "../type_definition.h"
+#include "../internal_output_operators.h"
 #include "and.h"
+#include "data_type.h"
 
 auto Inspection::TypeDefinition::And::GetAny(Inspection::ExecutionContext & ExecutionContext) const -> std::any
 {
@@ -38,7 +39,7 @@ auto Inspection::TypeDefinition::And::GetAny(Inspection::ExecutionContext & Exec
         auto OperandAny = Operand->GetAny(ExecutionContext);
         
         ASSERTION(OperandAny.has_value() == true);
-        INVALID_INPUT_IF(OperandAny.type() != typeid(bool), "All operands in an \"and\" have to evaluate to a boolean value.");
+        INVALID_INPUT_IF(OperandAny.type() != typeid(bool), "All operands in an \"and\" have to evaluate to a boolean value (not \"" + Inspection::to_string(OperandAny.type()) + "\").");
         Result = Result && std::any_cast<bool>(OperandAny);
         if(Result == false)
         {

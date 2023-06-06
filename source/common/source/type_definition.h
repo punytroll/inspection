@@ -48,22 +48,6 @@ namespace Inspection
     {
         class Type;
         
-        enum class DataType
-        {
-            Boolean,
-            GUID,
-            Nothing,
-            Length,
-            Parameters,
-            SinglePrecisionReal,
-            String,
-            Type,
-            UnsignedInteger8Bit,
-            UnsignedInteger16Bit,
-            UnsignedInteger32Bit,
-            UnsignedInteger64Bit
-        };
-        
         enum class PartType
         {
             Alternative,

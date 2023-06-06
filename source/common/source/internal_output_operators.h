@@ -7,6 +7,11 @@
 
 namespace Inspection
 {
+    namespace TypeDefinition
+    {
+        enum class DataType;
+    }
+    
     auto operator<<(std::ostream & OStream, Inspection::TypeDefinition::DataReference const & DataReference) -> std::ostream &;
     auto operator<<(std::ostream & OStream, enum Inspection::TypeDefinition::DataReference::Root const & Root) -> std::ostream &;
     auto operator<<(std::ostream & OStream, Inspection::TypeDefinition::DataReference::Part const & Part) -> std::ostream &;

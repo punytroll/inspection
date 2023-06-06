@@ -29,10 +29,19 @@ namespace std
     class any;
 };
 
+namespace XML
+{
+    class Element;
+}
+
 namespace Inspection
 {
+    class ExecutionContext;
+    
     namespace TypeDefinition
     {
+        enum class DataType;
+        
         class And : public Inspection::TypeDefinition::Expression
         {
         public:

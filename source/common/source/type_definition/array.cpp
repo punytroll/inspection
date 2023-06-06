@@ -26,6 +26,7 @@
 #include "../type_definition.h"
 #include "../xml_helper.h"
 #include "array.h"
+#include "data_type.h"
 #include "helper.h"
 
 using namespace std::string_literals;

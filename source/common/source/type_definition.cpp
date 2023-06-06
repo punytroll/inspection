@@ -30,6 +30,7 @@
 #include "type.h"
 #include "type_definition/alternative.h"
 #include "type_definition/array.h"
+#include "type_definition/data_type.h"
 #include "type_definition/expression.h"
 #include "type_definition/function_call.h"
 #include "type_definition/helper.h"
