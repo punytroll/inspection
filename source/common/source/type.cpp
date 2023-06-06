@@ -111,12 +111,6 @@ auto Inspection::TypeDefinition::Type::Get(Inspection::ExecutionContext & Execut
                     
                     break;
                 }
-            case Inspection::TypeDefinition::PartType::Fields:
-                {
-                    Result->GetValue()->Extend(PartResult->ExtractValue());
-                    
-                    break;
-                }
             case Inspection::TypeDefinition::PartType::Forward:
                 {
                     Result->GetValue()->Extend(PartResult->ExtractValue());

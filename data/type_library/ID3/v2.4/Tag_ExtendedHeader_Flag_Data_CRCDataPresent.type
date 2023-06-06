@@ -1,6 +1,6 @@
 <type>
 	<sequence>
-		<fields>
+		<forward>
 			<type-reference>
 				<part>ID3</part>
 				<part>v2.4</part>
@@ -14,7 +14,7 @@
 					<unsigned-integer-8bit>5</unsigned-integer-8bit>
 				</equals>
 			</verification>
-		</fields>
+		</forward>
 		<field name="TotalFrameCRC">
 			<type-reference>
 				<part>ID3</part>

@@ -440,10 +440,6 @@ auto Inspection::operator<<(std::ostream & OStream, enum Inspection::TypeDefinit
         {
             return OStream << "Field";
         }
-    case Inspection::TypeDefinition::PartType::Fields:
-        {
-            return OStream << "Fields";
-        }
     case Inspection::TypeDefinition::PartType::Forward:
         {
             return OStream << "Forward";

@@ -53,7 +53,6 @@ namespace Inspection
             Alternative,
             Array,
             Field,
-            Fields,
             Forward,
             Select,
             Sequence,
@@ -531,21 +530,6 @@ namespace Inspection
             Field(Inspection::TypeDefinition::Field && Field) = delete;
             auto operator=(Inspection::TypeDefinition::Field const & Field) -> Inspection::TypeDefinition::Field & = delete;
             auto operator=(Inspection::TypeDefinition::Field && Field) -> Inspection::TypeDefinition::Field & = delete;
-        };
-        
-        class Fields : public Inspection::TypeDefinition::Part
-        {
-        public:
-            static auto Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::Fields>;
-        public:
-            ~Fields(void) override = default;
-            auto Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result> override;
-        private:
-            Fields(void);
-            Fields(Inspection::TypeDefinition::Fields const & Fields) = delete;
-            Fields(Inspection::TypeDefinition::Fields && Fields) = delete;
-            auto operator=(Inspection::TypeDefinition::Fields const & Fields) -> Inspection::TypeDefinition::Fields & = delete;
-            auto operator=(Inspection::TypeDefinition::Fields && Fields) -> Inspection::TypeDefinition::Fields & = delete;
         };
         
         class Forward : public Inspection::TypeDefinition::Part

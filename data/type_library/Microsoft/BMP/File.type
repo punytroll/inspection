@@ -53,12 +53,12 @@
 				</field>
 			</sequence>
 		</field>
-		<fields>
+		<forward>
 			<type-reference>
 				<part>Microsoft</part>
 				<part>BMP</part>
 				<part>BitmapFileRest</part>
 			</type-reference>
-		</fields>
+		</forward>
 	</sequence>
 </type>

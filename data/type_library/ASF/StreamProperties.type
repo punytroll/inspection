@@ -1,6 +1,6 @@
 <type>
 	<sequence>
-		<fields>
+		<forward>
 			<type-reference>
 				<part>ASF</part>
 				<part>ObjectHeader</part>
@@ -13,13 +13,13 @@
 					<guid name="ASF_Stream_Properties_Object">b7dc0791-a9b7-11cf-8ee6-00c00c205365</guid>
 				</equals>
 			</verification>
-		</fields>
-		<fields>
+		</forward>
+		<forward>
 			<type-reference>
 				<part>ASF</part>
 				<part>ObjectData</part>
 				<part>StreamProperties</part>
 			</type-reference>
-		</fields>
+		</forward>
 	</sequence>
 </type>

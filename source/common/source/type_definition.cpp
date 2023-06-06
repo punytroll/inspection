@@ -796,49 +796,6 @@ std::unique_ptr<Inspection::TypeDefinition::FieldReference> Inspection::TypeDefi
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// Fields                                                                                        //
-///////////////////////////////////////////////////////////////////////////////////////////////////
-
-Inspection::TypeDefinition::Fields::Fields(void) :
-    Inspection::TypeDefinition::Part{Inspection::TypeDefinition::PartType::Fields}
-{
-}
-
-auto Inspection::TypeDefinition::Fields::Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result>
-{
-    auto Result = std::make_unique<Inspection::Result>();
-    auto Continue = true;
-    
-    ExecutionContext.Push(*this, *Result, Reader, Parameters);
-    ASSERTION(TypeReference != nullptr);
-    
-    auto FieldsType = TypeReference->GetType(ExecutionContext);
-    
-    ASSERTION(FieldsType != nullptr);
-    
-    auto FieldsResult = FieldsType->Get(ExecutionContext, Reader, ExecutionContext.GetAllParameters());
-    
-    Continue = FieldsResult->GetSuccess();
-    Result->GetValue()->Extend(FieldsResult->ExtractValue());
-    // interpretation
-    if(Continue == true)
-    {
-        Continue = ApplyInterpretations(ExecutionContext, Result->GetValue());
-    }
-    ExecutionContext.Pop();
-    // finalization
-    Result->SetSuccess(Continue);
-    
-    return Result;
-}
-
-auto Inspection::TypeDefinition::Fields::Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::Fields>
-{
-    return std::unique_ptr<Inspection::TypeDefinition::Fields>{new Inspection::TypeDefinition::Fields{}};
-}
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
 // Forward                                                                                       //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -871,7 +828,7 @@ auto Inspection::TypeDefinition::Forward::Get(Inspection::ExecutionContext & Exe
     }
     else
     {
-        // if there is no type reference, we expect one array in the parts
+        // if there is no type reference, we expect exactly one array in the parts
         ASSERTION(Parts.size() == 1);
         ASSERTION(Parts[0]->GetPartType() == Inspection::TypeDefinition::PartType::Array);
         
@@ -1333,10 +1290,6 @@ auto Inspection::TypeDefinition::Part::Load(const XML::Element * Element) -> std
     {
         Result = Inspection::TypeDefinition::Field::Load(Element);
     }
-    else if(Element->GetName() == "fields")
-    {
-        Result = Inspection::TypeDefinition::Fields::Load(Element);
-    }
     else if(Element->GetName() == "forward")
     {
         Result = Inspection::TypeDefinition::Forward::Load(Element);
@@ -1363,7 +1316,6 @@ auto Inspection::TypeDefinition::Part::m_AddPartResult(Inspection::Result * Resu
     switch(Part.GetPartType())
     {
     case Inspection::TypeDefinition::PartType::Alternative:
-    case Inspection::TypeDefinition::PartType::Fields:
     case Inspection::TypeDefinition::PartType::Forward:
     case Inspection::TypeDefinition::PartType::Select:
     case Inspection::TypeDefinition::PartType::Sequence:
@@ -1401,7 +1353,7 @@ auto Inspection::TypeDefinition::Part::_LoadProperty(const XML::Element * Elemen
     ASSERTION(Element != nullptr);
     if(Element->GetName() == "type-reference")
     {
-        ASSERTION((m_PartType == Inspection::TypeDefinition::PartType::Field) || (m_PartType == Inspection::TypeDefinition::PartType::Fields) || (m_PartType == Inspection::TypeDefinition::PartType::Forward));
+        ASSERTION((m_PartType == Inspection::TypeDefinition::PartType::Field) || (m_PartType == Inspection::TypeDefinition::PartType::Forward));
         TypeReference = Inspection::TypeDefinition::TypeReference::Load(Element);
     }
     else if(Element->GetName() == "interpretation")
@@ -1414,7 +1366,7 @@ auto Inspection::TypeDefinition::Part::_LoadProperty(const XML::Element * Elemen
     }
     else if(Element->GetName() == "parameters")
     {
-        ASSERTION((m_PartType == Inspection::TypeDefinition::PartType::Field) || (m_PartType == Inspection::TypeDefinition::PartType::Fields) || (m_PartType == Inspection::TypeDefinition::PartType::Forward));
+        ASSERTION((m_PartType == Inspection::TypeDefinition::PartType::Field) || (m_PartType == Inspection::TypeDefinition::PartType::Forward));
         Parameters = Inspection::TypeDefinition::Parameters::Load(Element);
     }
     else if(Element->GetName() == "verification")
@@ -1435,7 +1387,7 @@ auto Inspection::TypeDefinition::Part::_LoadProperty(const XML::Element * Elemen
         ASSERTION((m_PartType == Inspection::TypeDefinition::PartType::Sequence) || (m_PartType == Inspection::TypeDefinition::PartType::Field) || (m_PartType == Inspection::TypeDefinition::PartType::Alternative) || (m_PartType == Inspection::TypeDefinition::PartType::Forward));
         Parts.emplace_back(Inspection::TypeDefinition::Part::Load(Element));
     }
-    else if((Element->GetName() == "alternative") || (Element->GetName() == "field") || (Element->GetName() == "fields") || (Element->GetName() == "forward") || (Element->GetName() == "select") || (Element->GetName() == "sequence"))
+    else if((Element->GetName() == "alternative") || (Element->GetName() == "field") || (Element->GetName() == "forward") || (Element->GetName() == "select") || (Element->GetName() == "sequence"))
     {
         ASSERTION((m_PartType == Inspection::TypeDefinition::PartType::Sequence) || (m_PartType == Inspection::TypeDefinition::PartType::Field) || (m_PartType == Inspection::TypeDefinition::PartType::Alternative));
         Parts.emplace_back(Inspection::TypeDefinition::Part::Load(Element));

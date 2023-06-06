@@ -1,6 +1,6 @@
 <type>
 	<sequence>
-		<fields>
+		<forward>
 			<type-reference>
 				<part>ASF</part>
 				<part>ObjectHeader</part>
@@ -13,7 +13,7 @@
 					<guid name="ASF_Data_Object">75b22636-668e-11cf-a6d9-00aa0062ce6c</guid>
 				</equals>
 			</verification>
-		</fields>
+		</forward>
 		<field name="Data">
 			<type-reference>
 				<part>Data</part>

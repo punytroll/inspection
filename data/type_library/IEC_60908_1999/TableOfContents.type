@@ -1,12 +1,12 @@
 <type>
 	<sequence>
-		<fields>
+		<forward>
 			<type-reference>
 				<part>IEC_60908_1999</part>
 				<part>TableOfContents_Header</part>
 			</type-reference>
-		</fields>
-		<fields>
+		</forward>
+		<forward>
 			<type-reference>
 				<part>IEC_60908_1999</part>
 				<part>TableOfContents_Tracks</part>
@@ -23,6 +23,6 @@
 					</data-reference>
 				</parameter>
 			</parameters>
-		</fields>
+		</forward>
 	</sequence>
 </type>

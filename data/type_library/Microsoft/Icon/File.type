@@ -193,13 +193,13 @@
 			<element-type>
 				<type>
 					<alternative>
-						<fields>
+						<forward>
 							<type-reference>
 								<part>Microsoft</part>
 								<part>BMP</part>
 								<part>BitmapFileRest</part>
 							</type-reference>
-						</fields>
+						</forward>
 						<field name="Data">
 							<type-reference>
 								<part>Buffer</part>
