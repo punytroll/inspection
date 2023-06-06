@@ -1456,9 +1456,10 @@ auto Inspection::TypeDefinition::Select::Get(Inspection::ExecutionContext & Exec
             break;
         }
     }
-    INVALID_INPUT_IF(FoundCase == false && m_Else == nullptr, "At least one \"case\" must evaluate to true or an \"else\" must be given.");
-    if((FoundCase == false) && (m_Else != nullptr))
+    if(FoundCase == false)
     {
+        ASSERTION(Continue == true);
+        INVALID_INPUT_IF(m_Else == nullptr, "At least one \"case\" must evaluate to true or an \"else\" must be given.");
         if(m_Else->HasPart() == true)
         {
             auto const & Part = m_Else->GetPart();
