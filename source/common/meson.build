@@ -27,6 +27,7 @@ common_library = static_library(
     'source/type_definition/and.cpp',
     'source/type_definition/array.cpp',
     'source/type_definition/cast.cpp',
+    'source/type_definition/divide.cpp',
     'source/type_definition/expression.cpp',
     'source/type_definition/function_call.cpp',
     'source/type_definition/helper.cpp',

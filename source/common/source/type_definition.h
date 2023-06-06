@@ -106,25 +106,6 @@ namespace Inspection
             Inspection::TypeDefinition::DataReference::Root m_Root;
         };
         
-        class Divide : public Inspection::TypeDefinition::Expression
-        {
-        public:
-            static std::unique_ptr<Inspection::TypeDefinition::Divide> Load(const XML::Element * Element);
-        public:
-            virtual ~Divide(void) = default;
-            std::any GetAny(Inspection::ExecutionContext & ExecutionContext) const override;
-            Inspection::TypeDefinition::DataType GetDataType(void) const override;
-        private:
-            Divide(void) = default;
-            Divide(const Inspection::TypeDefinition::Divide & Divide) = delete;
-            Divide(Inspection::TypeDefinition::Divide && Divide) = delete;
-            Inspection::TypeDefinition::Divide & operator=(const Inspection::TypeDefinition::Divide & Divide) = delete;
-            Inspection::TypeDefinition::Divide & operator=(Inspection::TypeDefinition::Divide && Divide) = delete;
-        private:
-            std::unique_ptr<Inspection::TypeDefinition::Expression> m_Dividend;
-            std::unique_ptr<Inspection::TypeDefinition::Expression> m_Divisor;
-        };
-        
         class Equals : public Inspection::TypeDefinition::Expression
         {
         public:
