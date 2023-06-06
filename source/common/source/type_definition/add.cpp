@@ -25,7 +25,7 @@
 #include "../internal_output_operators.h"
 #include "add.h"
 
-std::any Inspection::TypeDefinition::Add::GetAny(Inspection::ExecutionContext & ExecutionContext) const
+auto Inspection::TypeDefinition::Add::GetAny(Inspection::ExecutionContext & ExecutionContext) const -> std::any
 {
     ASSERTION(m_Summand1 != nullptr);
     ASSERTION(m_Summand2 != nullptr);
@@ -48,19 +48,19 @@ std::any Inspection::TypeDefinition::Add::GetAny(Inspection::ExecutionContext & 
     return nullptr;
 }
 
-Inspection::TypeDefinition::DataType Inspection::TypeDefinition::Add::GetDataType(void) const
+auto Inspection::TypeDefinition::Add::GetDataType() const -> Inspection::TypeDefinition::DataType
 {
     NOT_IMPLEMENTED("Called GetDataType() on an Add expression.");
 }
 
-std::unique_ptr<Inspection::TypeDefinition::Add> Inspection::TypeDefinition::Add::Load(const XML::Element * Element)
+auto Inspection::TypeDefinition::Add::Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::Add>
 {
     ASSERTION(Element != nullptr);
     
     auto Result = std::unique_ptr<Inspection::TypeDefinition::Add>{new Inspection::TypeDefinition::Add{}};
     auto First = true;
     
-    for(auto ChildElement : Element->GetChildElements())
+    for(auto const & ChildElement : Element->GetChildElements())
     {
         if(First == true)
         {

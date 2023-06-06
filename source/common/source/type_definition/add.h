@@ -35,16 +35,16 @@ namespace Inspection
         class Add : public Inspection::TypeDefinition::Expression
         {
         public:
-            static std::unique_ptr<Inspection::TypeDefinition::Add> Load(const XML::Element * Element);
+            static auto Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::Add>;
         public:
-            virtual ~Add(void) = default;
-            std::any GetAny(Inspection::ExecutionContext & ExecutionContext) const override;
-            Inspection::TypeDefinition::DataType GetDataType(void) const override;
+            virtual ~Add() = default;
+            auto GetAny(Inspection::ExecutionContext & ExecutionContext) const -> std::any override;
+            auto GetDataType() const -> Inspection::TypeDefinition::DataType override;
         private:
-            Add(void) = default;
-            Add(const Inspection::TypeDefinition::Add & Add) = delete;
+            Add() = default;
+            Add(Inspection::TypeDefinition::Add const & Add) = delete;
             Add(Inspection::TypeDefinition::Add && Add) = delete;
-            Inspection::TypeDefinition::Add & operator=(const Inspection::TypeDefinition::Add & Add) = delete;
+            Inspection::TypeDefinition::Add & operator=(Inspection::TypeDefinition::Add const & Add) = delete;
             Inspection::TypeDefinition::Add & operator=(Inspection::TypeDefinition::Add && Add) = delete;
         private:
             std::unique_ptr<Inspection::TypeDefinition::Expression> m_Summand1;
