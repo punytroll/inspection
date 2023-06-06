@@ -131,56 +131,6 @@ static auto GetParameters(Inspection::ExecutionContext & ExecutionContext, Inspe
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// And                                                                                           //
-///////////////////////////////////////////////////////////////////////////////////////////////////
-
-std::any Inspection::TypeDefinition::And::GetAny(Inspection::ExecutionContext & ExecutionContext) const
-{
-    ASSERTION(m_Operands.size() > 0);
-    
-    auto Result = true;
-    
-    for(auto const & Operand : m_Operands)
-    {
-        ASSERTION(Operand != nullptr);
-        
-        auto OperandAny = Operand->GetAny(ExecutionContext);
-        
-        ASSERTION(OperandAny.has_value() == true);
-        ASSERTION(OperandAny.type() == typeid(bool));
-        Result = Result && std::any_cast<bool>(OperandAny);
-        if(Result == false)
-        {
-            break;
-        }
-    }
-    
-    return Result;
-}
-
-Inspection::TypeDefinition::DataType Inspection::TypeDefinition::And::GetDataType(void) const
-{
-    return Inspection::TypeDefinition::DataType::Boolean;
-}
-
-std::unique_ptr<Inspection::TypeDefinition::And> Inspection::TypeDefinition::And::Load(const XML::Element * Element)
-{
-    ASSERTION(Element != nullptr);
-    
-    auto Result = std::unique_ptr<Inspection::TypeDefinition::And>{new Inspection::TypeDefinition::And{}};
-    
-    for(auto ChildElement : Element->GetChildElements())
-    {
-        ASSERTION(ChildElement != nullptr);
-        Result->m_Operands.push_back(Inspection::TypeDefinition::Expression::Load(ChildElement));
-    }
-    INVALID_INPUT_IF(Result->m_Operands.size() == 0, "Missing operands for And expression.");
-    
-    return Result;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
 // AddTag                                                                                        //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 

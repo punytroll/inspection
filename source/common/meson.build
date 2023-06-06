@@ -24,6 +24,7 @@ common_library = static_library(
     'source/reader.cpp',
     'source/type_definition/add.cpp',
     'source/type_definition/alternative.cpp',
+    'source/type_definition/and.cpp',
     'source/type_definition/array.cpp',
     'source/type_definition/expression.cpp',
     'source/type_definition/function_call.cpp',

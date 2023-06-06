@@ -22,6 +22,7 @@
 #include <type.h>
 
 #include "add.h"
+#include "and.h"
 #include "expression.h"
 #include "function_call.h"
 #include "../type_definition.h"
