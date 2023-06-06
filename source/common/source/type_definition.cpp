@@ -85,39 +85,6 @@ static auto ApplyEnumeration(Inspection::ExecutionContext & ExecutionContext, In
     return Result;
 }
 
-template<typename Type>
-static auto CastTo(std::any const & Any) -> Type
-{
-    if(Any.type() == typeid(float))
-    {
-        return static_cast<Type>(std::any_cast<float>(Any));
-    }
-    else if(Any.type() == typeid(std::int32_t))
-    {
-        return static_cast<Type>(std::any_cast<std::int32_t>(Any));
-    }
-    else if(Any.type() == typeid(std::uint8_t))
-    {
-        return static_cast<Type>(std::any_cast<std::uint8_t>(Any));
-    }
-    else if(Any.type() == typeid(std::uint16_t))
-    {
-        return static_cast<Type>(std::any_cast<std::uint16_t>(Any));
-    }
-    else if(Any.type() == typeid(std::uint32_t))
-    {
-        return static_cast<Type>(std::any_cast<std::uint32_t>(Any));
-    }
-    else if(Any.type() == typeid(std::uint64_t))
-    {
-        return static_cast<Type>(std::any_cast<std::uint64_t>(Any));
-    }
-    else
-    {
-        UNEXPECTED_CASE("Any.type() == " + Inspection::to_string(Any.type()));
-    }
-}
-
 static auto GetParameters(Inspection::ExecutionContext & ExecutionContext, Inspection::TypeDefinition::Parameters const * Parameters) -> std::unordered_map<std::string, std::any>
 {
     if(Parameters != nullptr)
@@ -459,69 +426,6 @@ auto Inspection::TypeDefinition::BitsInterpretation::Load(XML::Element const * E
             UNEXPECTED_CASE("ChildElement->GetName() == " + ChildElement->GetName());
         }
     }
-    
-    return Result;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// Cast                                                                                          //
-///////////////////////////////////////////////////////////////////////////////////////////////////
-
-Inspection::TypeDefinition::Cast::Cast(Inspection::TypeDefinition::DataType DataType) :
-    m_DataType{DataType}
-{
-}
-
-std::any Inspection::TypeDefinition::Cast::GetAny(Inspection::ExecutionContext & ExecutionContext) const
-{
-    ASSERTION(m_Expression != nullptr);
-    switch(m_DataType)
-    {
-    case Inspection::TypeDefinition::DataType::SinglePrecisionReal:
-        {
-            return ::CastTo<float>(m_Expression->GetAny(ExecutionContext));
-        }
-    case Inspection::TypeDefinition::DataType::UnsignedInteger8Bit:
-        {
-            return ::CastTo<std::uint8_t>(m_Expression->GetAny(ExecutionContext));
-        }
-    case Inspection::TypeDefinition::DataType::UnsignedInteger64Bit:
-        {
-            return ::CastTo<std::uint64_t>(m_Expression->GetAny(ExecutionContext));
-        }
-    default:
-        {
-            UNEXPECTED_CASE("_DataType == " + Inspection::to_string(m_DataType));
-        }
-    }
-}
-
-Inspection::TypeDefinition::DataType Inspection::TypeDefinition::Cast::GetDataType(void) const
-{
-    return m_DataType;
-}
-
-const Inspection::TypeDefinition::Expression & Inspection::TypeDefinition::Cast::GetExpression(void) const
-{
-    ASSERTION(m_Expression != nullptr);
-    
-    return *m_Expression;
-}
-
-std::unique_ptr<Inspection::TypeDefinition::Cast> Inspection::TypeDefinition::Cast::Load(const XML::Element * Element)
-{
-    ASSERTION(Element != nullptr);
-    
-    auto ChildElementsRange = Element->GetChildElements();
-    auto ChildElements = std::vector<XML::Element const *>{ChildElementsRange.begin(), ChildElementsRange.end()};
-    
-    INVALID_INPUT_IF(ChildElements.size() == 0, "Missing operand for Cast expression.");
-    INVALID_INPUT_IF(ChildElements.size() > 1, "Too many operands for Cast expression.");
-    
-    auto Result = std::unique_ptr<Inspection::TypeDefinition::Cast>{new Inspection::TypeDefinition::Cast{Inspection::TypeDefinition::GetDataTypeFromString(Element->GetName())}};
-    
-    Result->m_Expression = Inspection::TypeDefinition::Expression::Load(ChildElements.front());
     
     return Result;
 }

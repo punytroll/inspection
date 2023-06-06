@@ -60,26 +60,6 @@ namespace Inspection
             Type
         };
         
-        class Cast : public Inspection::TypeDefinition::Expression
-        {
-        public:
-            static std::unique_ptr<Inspection::TypeDefinition::Cast> Load(const XML::Element * Element);
-        public:
-            virtual ~Cast(void) = default;
-            std::any GetAny(Inspection::ExecutionContext & ExecutionContext) const override;
-            Inspection::TypeDefinition::DataType GetDataType(void) const override;
-            const Inspection::TypeDefinition::Expression & GetExpression(void) const;
-        private:
-            Cast(Inspection::TypeDefinition::DataType DataType);
-            Cast(const Inspection::TypeDefinition::Cast & Cast) = delete;
-            Cast(Inspection::TypeDefinition::Cast && Cast) = delete;
-            Inspection::TypeDefinition::Cast & operator=(const Inspection::TypeDefinition::Cast & Cast) = delete;
-            Inspection::TypeDefinition::Cast & operator=(Inspection::TypeDefinition::Cast && Cast) = delete;
-        private:
-            Inspection::TypeDefinition::DataType m_DataType;
-            std::unique_ptr<Inspection::TypeDefinition::Expression> m_Expression;
-        };
-        
         class DataReference : public Inspection::TypeDefinition::Expression
         {
         public:

@@ -23,6 +23,7 @@
 
 #include "add.h"
 #include "and.h"
+#include "cast.h"
 #include "expression.h"
 #include "function_call.h"
 #include "../type_definition.h"
