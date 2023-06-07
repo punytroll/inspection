@@ -27,6 +27,7 @@
 #include "divide.h"
 #include "expression.h"
 #include "function_call.h"
+#include "multiply.h"
 #include "../type_definition.h"
 #include "../xml_helper.h"
 

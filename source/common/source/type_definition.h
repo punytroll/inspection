@@ -209,25 +209,6 @@ namespace Inspection
             std::unique_ptr<Inspection::TypeDefinition::Expression> m_Divisor;
         };
         
-        class Multiply : public Inspection::TypeDefinition::Expression
-        {
-        public:
-            static std::unique_ptr<Inspection::TypeDefinition::Multiply> Load(const XML::Element * Element);
-        public:
-            virtual ~Multiply(void) = default;
-            std::any GetAny(Inspection::ExecutionContext & ExecutionContext) const override;
-            Inspection::TypeDefinition::DataType GetDataType(void) const override;
-        private:
-            Multiply(void) = default;
-            Multiply(const Inspection::TypeDefinition::Multiply & Multiply) = delete;
-            Multiply(Inspection::TypeDefinition::Multiply && Multiply) = delete;
-            Inspection::TypeDefinition::Multiply & operator=(const Inspection::TypeDefinition::Multiply & Multiply) = delete;
-            Inspection::TypeDefinition::Multiply & operator=(Inspection::TypeDefinition::Multiply && Multiply) = delete;
-        private:
-            std::unique_ptr<Inspection::TypeDefinition::Expression> m_Multiplier;
-            std::unique_ptr<Inspection::TypeDefinition::Expression> m_Multiplicand;
-        };
-        
         class ParameterReference : public Inspection::TypeDefinition::Expression
         {
         public:

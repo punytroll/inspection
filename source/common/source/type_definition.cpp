@@ -1082,66 +1082,6 @@ std::unique_ptr<Inspection::TypeDefinition::Modulus> Inspection::TypeDefinition:
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// Multiply                                                                                      //
-///////////////////////////////////////////////////////////////////////////////////////////////////
-
-std::any Inspection::TypeDefinition::Multiply::GetAny(Inspection::ExecutionContext & ExecutionContext) const
-{
-    ASSERTION(m_Multiplier != nullptr);
-    ASSERTION(m_Multiplicand != nullptr);
-    
-    auto MultiplierAny = m_Multiplier->GetAny(ExecutionContext);
-    auto MultiplicandAny = m_Multiplicand->GetAny(ExecutionContext);
-    
-    ASSERTION(MultiplierAny.has_value() == true);
-    ASSERTION(MultiplicandAny.has_value() == true);
-    INVALID_INPUT_IF(MultiplierAny.type() != MultiplicandAny.type(), "Multiplier and multiplicand have to have the same type: " + Inspection::to_string(MultiplierAny.type()) + " != " + Inspection::to_string(MultiplicandAny.type()));
-    if(MultiplierAny.type() == typeid(std::uint64_t))
-    {
-        return static_cast<std::uint64_t>(std::any_cast<std::uint64_t>(MultiplierAny) * std::any_cast<std::uint64_t>(MultiplicandAny));
-    }
-    else
-    {
-        UNEXPECTED_CASE("MultiplierAny.type() == " + Inspection::to_string(MultiplierAny.type()));
-    }
-    
-    return nullptr;
-}
-
-Inspection::TypeDefinition::DataType Inspection::TypeDefinition::Multiply::GetDataType(void) const
-{
-    NOT_IMPLEMENTED("Called GetDataType() on a Multiply expression.");
-}
-
-std::unique_ptr<Inspection::TypeDefinition::Multiply> Inspection::TypeDefinition::Multiply::Load(const XML::Element * Element)
-{
-    ASSERTION(Element != nullptr);
-    
-    auto Result = std::unique_ptr<Inspection::TypeDefinition::Multiply>{new Inspection::TypeDefinition::Multiply{}};
-    auto First = true;
-    
-    for(auto ChildElement : Element->GetChildElements())
-    {
-        ASSERTION(ChildElement != nullptr);
-        if(First == true)
-        {
-            Result->m_Multiplier = Inspection::TypeDefinition::Expression::Load(ChildElement);
-            First = false;
-        }
-        else
-        {
-            INVALID_INPUT_IF(Result->m_Multiplicand != nullptr, "More than two operands for Multiply expression.");
-            Result->m_Multiplicand = Inspection::TypeDefinition::Expression::Load(ChildElement);
-        }
-    }
-    INVALID_INPUT_IF(Result->m_Multiplier == nullptr, "Missing operands for Multiply expression.");
-    INVALID_INPUT_IF(Result->m_Multiplicand == nullptr, "Missing second operand for Multiply expression.");
-    
-    return Result;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
 // ParameterReference                                                                            //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
