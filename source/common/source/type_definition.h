@@ -105,25 +105,6 @@ namespace Inspection
             Inspection::TypeDefinition::DataReference::Root m_Root;
         };
         
-        class Equals : public Inspection::TypeDefinition::Expression
-        {
-        public:
-            static std::unique_ptr<Inspection::TypeDefinition::Equals> Load(const XML::Element * Element);
-        public:
-            virtual ~Equals(void) = default;
-            std::any GetAny(Inspection::ExecutionContext & ExecutionContext) const override;
-            Inspection::TypeDefinition::DataType GetDataType(void) const override;
-        private:
-            Equals(void) = default;
-            Equals(const Inspection::TypeDefinition::Equals & Equals) = delete;
-            Equals(Inspection::TypeDefinition::Equals && Equals) = delete;
-            Inspection::TypeDefinition::Equals & operator=(const Inspection::TypeDefinition::Equals & Equals) = delete;
-            Inspection::TypeDefinition::Equals & operator=(Inspection::TypeDefinition::Equals && Equals) = delete;
-        private:
-            std::unique_ptr<Inspection::TypeDefinition::Expression> m_Expression1;
-            std::unique_ptr<Inspection::TypeDefinition::Expression> m_Expression2;
-        };
-        
         class FieldReference : public Inspection::TypeDefinition::Expression
         {
         public:

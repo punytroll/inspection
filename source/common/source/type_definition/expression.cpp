@@ -25,6 +25,7 @@
 #include "and.h"
 #include "cast.h"
 #include "divide.h"
+#include "equals.h"
 #include "expression.h"
 #include "function_call.h"
 #include "multiply.h"
