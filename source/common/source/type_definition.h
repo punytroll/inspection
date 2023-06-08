@@ -106,25 +106,6 @@ namespace Inspection
             std::unique_ptr<Inspection::TypeDefinition::Expression> m_Bits;
         };
         
-        class Modulus : public Inspection::TypeDefinition::Expression
-        {
-        public:
-            static std::unique_ptr<Inspection::TypeDefinition::Modulus> Load(const XML::Element * Element);
-        public:
-            virtual ~Modulus(void) = default;
-            std::any GetAny(Inspection::ExecutionContext & ExecutionContext) const override;
-            Inspection::TypeDefinition::DataType GetDataType(void) const override;
-        private:
-            Modulus(void) = default;
-            Modulus(const Inspection::TypeDefinition::Modulus & Modulus) = delete;
-            Modulus(Inspection::TypeDefinition::Modulus && Modulus) = delete;
-            Inspection::TypeDefinition::Modulus & operator=(const Inspection::TypeDefinition::Modulus & Modulus) = delete;
-            Inspection::TypeDefinition::Modulus & operator=(Inspection::TypeDefinition::Modulus && Modulus) = delete;
-        private:
-            std::unique_ptr<Inspection::TypeDefinition::Expression> m_Dividend;
-            std::unique_ptr<Inspection::TypeDefinition::Expression> m_Divisor;
-        };
-        
         class ParameterReference : public Inspection::TypeDefinition::Expression
         {
         public:

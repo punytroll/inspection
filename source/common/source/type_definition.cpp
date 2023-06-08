@@ -782,66 +782,6 @@ std::unique_ptr<Inspection::TypeDefinition::Length> Inspection::TypeDefinition::
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// Modulus                                                                                        //
-///////////////////////////////////////////////////////////////////////////////////////////////////
-
-std::any Inspection::TypeDefinition::Modulus::GetAny(Inspection::ExecutionContext & ExecutionContext) const
-{
-    ASSERTION(m_Dividend != nullptr);
-    ASSERTION(m_Divisor != nullptr);
-    
-    auto DividendAny = m_Dividend->GetAny(ExecutionContext);
-    auto DivisorAny = m_Divisor->GetAny(ExecutionContext);
-    
-    ASSERTION(DividendAny.has_value() == true);
-    ASSERTION(DivisorAny.has_value() == true);
-    ASSERTION(DividendAny.type() == DivisorAny.type());
-    if(DividendAny.type() == typeid(std::uint16_t))
-    {
-        return static_cast<std::uint16_t>(std::any_cast<std::uint16_t>(DividendAny) % std::any_cast<std::uint16_t>(DivisorAny));
-    }
-    else
-    {
-        UNEXPECTED_CASE("DividendAny.type() == " + Inspection::to_string(DividendAny.type()));
-    }
-    
-    return nullptr;
-}
-
-Inspection::TypeDefinition::DataType Inspection::TypeDefinition::Modulus::GetDataType(void) const
-{
-    NOT_IMPLEMENTED("Called GetDataType() on a Modulus expression.");
-}
-
-std::unique_ptr<Inspection::TypeDefinition::Modulus> Inspection::TypeDefinition::Modulus::Load(const XML::Element * Element)
-{
-    ASSERTION(Element != nullptr);
-    
-    auto Result = std::unique_ptr<Inspection::TypeDefinition::Modulus>{new Inspection::TypeDefinition::Modulus{}};
-    auto First = true;
-    
-    for(auto ChildElement : Element->GetChildElements())
-    {
-        ASSERTION(ChildElement != nullptr);
-        if(First == true)
-        {
-            Result->m_Dividend = Inspection::TypeDefinition::Expression::Load(ChildElement);
-            First = false;
-        }
-        else
-        {
-            INVALID_INPUT_IF(Result->m_Divisor != nullptr, "More than two operands for Modulus expression.");
-            Result->m_Divisor = Inspection::TypeDefinition::Expression::Load(ChildElement);
-        }
-    }
-    INVALID_INPUT_IF(Result->m_Dividend == nullptr, "Missing operands for Modulus expression.");
-    INVALID_INPUT_IF(Result->m_Divisor == nullptr, "Missing second operand for Modulus expression.");
-    
-    return Result;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
 // ParameterReference                                                                            //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
