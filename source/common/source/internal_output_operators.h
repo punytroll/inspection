@@ -4,6 +4,7 @@
 #include <ostream>
 
 #include "type_definition.h"
+#include "type_definition/data_reference.h"
 
 namespace Inspection
 {

@@ -349,7 +349,7 @@ std::ostream & Inspection::operator<<(std::ostream & OStream, const enum Inspect
 
 std::ostream & Inspection::operator<<(std::ostream & OStream, const Inspection::TypeDefinition::DataReference::Part & Part)
 {
-    return OStream << "Part[" << Part.GetType() << ", \"" << Part.DetailName << "\"]";
+    return OStream << "Part[" << Part.GetType() << ", \"" << Part.GetName() << "\"]";
 }
 
 std::ostream & Inspection::operator<<(std::ostream & OStream, const enum Inspection::TypeDefinition::DataReference::Part::Type & Type)

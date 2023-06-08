@@ -88,20 +88,20 @@ Inspection::Value * Inspection::ExecutionContext::GetValueFromDataReference(Insp
                     {
                         // we are looking for a field
                         // maybe, the field is already in the result
-                        if(Result->HasField(PartIterator->DetailName) == true)
+                        if(Result->HasField(PartIterator->GetName()) == true)
                         {
-                            Result = Result->GetField(PartIterator->DetailName);
+                            Result = Result->GetField(PartIterator->GetName());
                             ++PartIterator;
                         }
                         // if not, the field might be in the current stack
                         else
                         {
                             ++ExecutionStackIterator;
-                            ASSERTION_MESSAGE(ExecutionStackIterator != std::end(m_ExecutionStack), "Could not find the field \"" + PartIterator->DetailName + "\" on the execution stack.");
+                            ASSERTION_MESSAGE(ExecutionStackIterator != std::end(m_ExecutionStack), "Could not find the field \"" + PartIterator->GetName() + "\" on the execution stack.");
                             Result = ExecutionStackIterator->m_Result.GetValue();
-                            if(Result->HasField(PartIterator->DetailName) == true)
+                            if(Result->HasField(PartIterator->GetName()) == true)
                             {
-                                Result = Result->GetField(PartIterator->DetailName);
+                                Result = Result->GetField(PartIterator->GetName());
                                 ++PartIterator;
                             }
                         }
@@ -111,7 +111,7 @@ Inspection::Value * Inspection::ExecutionContext::GetValueFromDataReference(Insp
                 case Inspection::TypeDefinition::DataReference::Part::Type::Tag:
                     {
                         // we are looking for a tag
-                        Result = Result->GetTag(PartIterator->DetailName);
+                        Result = Result->GetTag(PartIterator->GetName());
                         ++PartIterator;
                         
                         break;
@@ -225,14 +225,14 @@ Inspection::Value * Inspection::ExecutionContext::m_GetValueFromDataReferenceFro
         case Inspection::TypeDefinition::DataReference::Part::Type::Field:
             {
                 // we are looking for a field
-                Result = Result->GetField(PartIterator->DetailName);
+                Result = Result->GetField(PartIterator->GetName());
                 
                 break;
             }
         case Inspection::TypeDefinition::DataReference::Part::Type::Tag:
             {
                 // we are looking for a tag
-                Result = Result->GetTag(PartIterator->DetailName);
+                Result = Result->GetTag(PartIterator->GetName());
                 
                 break;
             }

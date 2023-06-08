@@ -59,52 +59,6 @@ namespace Inspection
             Type
         };
         
-        class DataReference : public Inspection::TypeDefinition::Expression
-        {
-        public:
-            static std::unique_ptr<Inspection::TypeDefinition::DataReference> Load(const XML::Element * Element);
-        public:
-            class Part
-            {
-            public:
-                enum class Type
-                {
-                    Field,
-                    Tag
-                };
-            public:
-                Part(Inspection::TypeDefinition::DataReference::Part::Type Type);
-            public:
-                Inspection::TypeDefinition::DataReference::Part::Type GetType(void) const;
-            public:
-                std::string DetailName;
-            private:
-                Inspection::TypeDefinition::DataReference::Part::Type m_Type;
-            };
-            
-            enum class Root
-            {
-                Current,
-                Type
-            };
-        public:
-            virtual ~DataReference(void) = default;
-            std::any GetAny(Inspection::ExecutionContext & ExecutionContext) const override;
-            Inspection::TypeDefinition::DataType GetDataType(void) const override;
-            const std::vector<Inspection::TypeDefinition::DataReference::Part> & GetParts(void) const;
-        public:
-            Inspection::TypeDefinition::DataReference::Root GetRoot(void) const;
-        private:
-            DataReference(void) = default;
-            DataReference(const Inspection::TypeDefinition::DataReference & DataReference) = delete;
-            DataReference(Inspection::TypeDefinition::DataReference && DataReference) = delete;
-            Inspection::TypeDefinition::DataReference & operator=(const Inspection::TypeDefinition::DataReference & DataReference) = delete;
-            Inspection::TypeDefinition::DataReference & operator=(Inspection::TypeDefinition::DataReference && DataReference) = delete;
-        private:
-            std::vector<Inspection::TypeDefinition::DataReference::Part> m_Parts;
-            Inspection::TypeDefinition::DataReference::Root m_Root;
-        };
-        
         class FieldReference : public Inspection::TypeDefinition::Expression
         {
         public:

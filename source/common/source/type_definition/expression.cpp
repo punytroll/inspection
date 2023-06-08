@@ -24,6 +24,7 @@
 #include "add.h"
 #include "and.h"
 #include "cast.h"
+#include "data_reference.h"
 #include "divide.h"
 #include "equals.h"
 #include "expression.h"
