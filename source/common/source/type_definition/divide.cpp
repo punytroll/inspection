@@ -47,7 +47,7 @@ auto Inspection::TypeDefinition::Divide::GetAny(Inspection::ExecutionContext & E
     }
     else
     {
-        UNEXPECTED_CASE("dividend and divisor types == " + Inspection::to_string(DividendAny.type()));
+        UNEXPECTED_CASE("Dividend and divisor types: " + Inspection::to_string(DividendAny.type()));
     }
     
     return nullptr;
@@ -63,15 +63,13 @@ auto Inspection::TypeDefinition::Divide::Load(XML::Element const * Element) -> s
     ASSERTION(Element != nullptr);
     
     auto Result = std::unique_ptr<Inspection::TypeDefinition::Divide>{new Inspection::TypeDefinition::Divide{}};
-    auto First = true;
     
     for(auto const & ChildElement : Element->GetChildElements())
     {
         ASSERTION(ChildElement != nullptr);
-        if(First == true)
+        if(Result->m_Dividend == nullptr)
         {
             Result->m_Dividend = Inspection::TypeDefinition::Expression::Load(ChildElement);
-            First = false;
         }
         else
         {

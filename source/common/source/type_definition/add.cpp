@@ -42,7 +42,7 @@ auto Inspection::TypeDefinition::Add::GetAny(Inspection::ExecutionContext & Exec
     }
     else
     {
-        UNEXPECTED_CASE("summand types: " + Inspection::to_string(Summand1Any.type()));
+        UNEXPECTED_CASE("Summand types: " + Inspection::to_string(Summand1Any.type()));
     }
     
     return nullptr;
@@ -58,14 +58,12 @@ auto Inspection::TypeDefinition::Add::Load(XML::Element const * Element) -> std:
     ASSERTION(Element != nullptr);
     
     auto Result = std::unique_ptr<Inspection::TypeDefinition::Add>{new Inspection::TypeDefinition::Add{}};
-    auto First = true;
     
     for(auto const & ChildElement : Element->GetChildElements())
     {
-        if(First == true)
+        if(Result->m_Summand1 == nullptr)
         {
             Result->m_Summand1 = Inspection::TypeDefinition::Expression::Load(ChildElement);
-            First = false;
         }
         else
         {
