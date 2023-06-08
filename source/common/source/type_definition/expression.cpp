@@ -30,6 +30,7 @@
 #include "function_call.h"
 #include "less_than.h"
 #include "multiply.h"
+#include "subtract.h"
 #include "../type_definition.h"
 #include "../xml_helper.h"
 

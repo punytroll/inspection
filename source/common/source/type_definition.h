@@ -226,25 +226,6 @@ namespace Inspection
             std::vector<std::unique_ptr<Inspection::TypeDefinition::Parameters::Parameter>> m_Parameters;
         };
         
-        class Subtract : public Inspection::TypeDefinition::Expression
-        {
-        public:
-            static std::unique_ptr<Inspection::TypeDefinition::Subtract> Load(const XML::Element * Element);
-        public:
-            virtual ~Subtract(void) = default;
-            std::any GetAny(Inspection::ExecutionContext & ExecutionContext) const override;
-            Inspection::TypeDefinition::DataType GetDataType(void) const override;
-        private:
-            Subtract(void) = default;
-            Subtract(const Inspection::TypeDefinition::Subtract & Subtract) = delete;
-            Subtract(Inspection::TypeDefinition::Subtract && Subtract) = delete;
-            Inspection::TypeDefinition::Subtract & operator=(const Inspection::TypeDefinition::Subtract & Subtract) = delete;
-            Inspection::TypeDefinition::Subtract & operator=(Inspection::TypeDefinition::Subtract && Subtract) = delete;
-        private:
-            std::unique_ptr<Inspection::TypeDefinition::Expression> m_Minuend;
-            std::unique_ptr<Inspection::TypeDefinition::Expression> m_Subtrahend;
-        };
-        
         class TypeReference : public Inspection::TypeDefinition::Expression
         {
         public:
