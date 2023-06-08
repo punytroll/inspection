@@ -20,6 +20,12 @@
  * Use this assertion macro to indicate erroneous input data.
  * Even though, in production code, these errors should be handled with error reporting, possibly using exceptions, during development a short assertion might just be enough.
  **/
+#define INVALID_INPUT(Message) { __Log("Invalid input", __FILE__, __LINE__, __func__, Message); abort(); }
+
+/**
+ * Use this assertion macro to indicate erroneous input data.
+ * Even though, in production code, these errors should be handled with error reporting, possibly using exceptions, during development a short assertion might just be enough.
+ **/
 #define INVALID_INPUT_IF(Expression, Message) { if((Expression) == true) { __ExpressionLog("Invalid input", #Expression, __FILE__, __LINE__, __func__, Message); abort(); } }
 
 /**
