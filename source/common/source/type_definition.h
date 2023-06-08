@@ -152,25 +152,6 @@ namespace Inspection
             std::unique_ptr<Inspection::TypeDefinition::Expression> m_Bits;
         };
         
-        class LessThan : public Inspection::TypeDefinition::Expression
-        {
-        public:
-            static std::unique_ptr<Inspection::TypeDefinition::LessThan> Load(const XML::Element * Element);
-        public:
-            virtual ~LessThan(void) = default;
-            std::any GetAny(Inspection::ExecutionContext & ExecutionContext) const override;
-            Inspection::TypeDefinition::DataType GetDataType(void) const override;
-        private:
-            LessThan(void) = default;
-            LessThan(const Inspection::TypeDefinition::LessThan & LessThan) = delete;
-            LessThan(Inspection::TypeDefinition::LessThan && LessThan) = delete;
-            Inspection::TypeDefinition::LessThan & operator=(const Inspection::TypeDefinition::LessThan & LessThan) = delete;
-            Inspection::TypeDefinition::LessThan & operator=(Inspection::TypeDefinition::LessThan && LessThan) = delete;
-        private:
-            std::unique_ptr<Inspection::TypeDefinition::Expression> m_Expression1;
-            std::unique_ptr<Inspection::TypeDefinition::Expression> m_Expression2;
-        };
-        
         class Modulus : public Inspection::TypeDefinition::Expression
         {
         public:
