@@ -1220,47 +1220,6 @@ auto Inspection::TypeDefinition::TypePart::Get(Inspection::ExecutionContext & Ex
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// TypeReference                                                                                 //
-///////////////////////////////////////////////////////////////////////////////////////////////////
-
-std::any Inspection::TypeDefinition::TypeReference::GetAny(Inspection::ExecutionContext & ExecutionContext) const
-{
-    return ExecutionContext.GetTypeRepository().GetType(m_Parts);
-}
-
-Inspection::TypeDefinition::DataType Inspection::TypeDefinition::TypeReference::GetDataType(void) const
-{
-    return Inspection::TypeDefinition::DataType::Type;
-}
-
-const Inspection::TypeDefinition::Type * Inspection::TypeDefinition::TypeReference::GetType(Inspection::ExecutionContext & ExecutionContext) const
-{
-    return ExecutionContext.GetTypeRepository().GetType(m_Parts);
-}
-
-std::unique_ptr<Inspection::TypeDefinition::TypeReference> Inspection::TypeDefinition::TypeReference::Load(const XML::Element * Element)
-{
-    ASSERTION(Element != nullptr);
-    
-    auto Result = std::unique_ptr<Inspection::TypeDefinition::TypeReference>{new Inspection::TypeDefinition::TypeReference{}};
-    
-    for(auto ChildElement : Element->GetChildElements())
-    {
-        ASSERTION(ChildElement != nullptr);
-        ASSERTION_MESSAGE(ChildElement->GetName() == "part", "\"part\" was expected but \"" + ChildElement->GetName() + "\" was found.");
-        ASSERTION(ChildElement->GetChildNodes().size() == 1);
-        
-        auto PartText = dynamic_cast<XML::Text const *>(ChildElement->GetChildNode(0));
-        
-        ASSERTION(PartText != nullptr);
-        Result->m_Parts.push_back(PartText->GetText());
-    }
-    
-    return Result;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
 // TypeValue                                                                                     //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 

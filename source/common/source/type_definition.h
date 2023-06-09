@@ -30,6 +30,7 @@
 
 #include "guid.h"
 #include "type_definition/expression.h"
+#include "type_definition/type_reference.h"
 
 namespace XML
 {
@@ -140,25 +141,6 @@ namespace Inspection
             Inspection::TypeDefinition::Parameters & operator=(Inspection::TypeDefinition::Parameters && Parameters) = delete;
         private:
             std::vector<std::unique_ptr<Inspection::TypeDefinition::Parameters::Parameter>> m_Parameters;
-        };
-        
-        class TypeReference : public Inspection::TypeDefinition::Expression
-        {
-        public:
-            static std::unique_ptr<Inspection::TypeDefinition::TypeReference> Load(const XML::Element * Element);
-        public:
-            virtual ~TypeReference(void) = default;
-            std::any GetAny(Inspection::ExecutionContext & ExecutionContext) const override;
-            Inspection::TypeDefinition::DataType GetDataType(void) const override;
-            const Inspection::TypeDefinition::Type * GetType(Inspection::ExecutionContext & ExecutionContext) const;
-        private:
-            TypeReference(void) = default;
-            TypeReference(const Inspection::TypeDefinition::TypeReference & TypeReference) = delete;
-            TypeReference(Inspection::TypeDefinition::TypeReference && TypeReference) = delete;
-            Inspection::TypeDefinition::TypeReference & operator=(const Inspection::TypeDefinition::TypeReference & TypeReference) = delete;
-            Inspection::TypeDefinition::TypeReference & operator=(Inspection::TypeDefinition::TypeReference && TypeReference) = delete;
-        private:
-            std::vector<std::string> m_Parts;
         };
         
         class TypeValue : public Inspection::TypeDefinition::Expression
