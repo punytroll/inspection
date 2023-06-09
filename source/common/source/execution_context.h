@@ -63,6 +63,7 @@ namespace Inspection
         const std::any & GetAnyReferenceFromParameterReference(Inspection::TypeDefinition::ParameterReference const & ParameterReference);
         std::unordered_map<std::string, std::any> GetAllParameters();
         std::uint32_t GetExecutionStackSize() const;
+        auto GetType(std::vector<std::string> const & PathParts) -> Inspection::TypeDefinition::Type const *;
         Inspection::TypeRepository & GetTypeRepository();
     private:
         Inspection::Value * m_GetValueFromDataReferenceFromCurrent(std::vector<Inspection::TypeDefinition::DataReference::Part> const & Parts, Inspection::Value * Current);

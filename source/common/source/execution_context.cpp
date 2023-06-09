@@ -21,6 +21,8 @@
 #include <list>
 #include <unordered_map>
 
+#include <type_repository.h>
+
 #include "assertion.h"
 #include "execution_context.h"
 #include "length.h"
@@ -211,6 +213,11 @@ std::unordered_map<std::string, std::any> Inspection::ExecutionContext::GetAllPa
 std::uint32_t Inspection::ExecutionContext::GetExecutionStackSize() const
 {
     return m_ExecutionStack.size();
+}
+
+auto Inspection::ExecutionContext::GetType(std::vector<std::string> const & PathParts) -> Inspection::TypeDefinition::Type const *
+{
+    return m_TypeRepository.GetType(PathParts);
 }
 
 Inspection::Value * Inspection::ExecutionContext::m_GetValueFromDataReferenceFromCurrent(std::vector<Inspection::TypeDefinition::DataReference::Part> const & Parts, Inspection::Value * Current)
