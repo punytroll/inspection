@@ -29,6 +29,7 @@
 #include "equals.h"
 #include "expression.h"
 #include "function_call.h"
+#include "length.h"
 #include "less_than.h"
 #include "modulus.h"
 #include "multiply.h"

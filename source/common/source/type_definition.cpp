@@ -726,62 +726,6 @@ std::unique_ptr<Inspection::TypeDefinition::Interpretation> Inspection::TypeDefi
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// Length                                                                                        //
-///////////////////////////////////////////////////////////////////////////////////////////////////
-
-std::any Inspection::TypeDefinition::Length::GetAny(Inspection::ExecutionContext & ExecutionContext) const
-{
-    ASSERTION(m_Bytes != nullptr);
-    ASSERTION(m_Bits != nullptr);
-    
-    auto BytesAny = m_Bytes->GetAny(ExecutionContext);
-    
-    ASSERTION(BytesAny.has_value() == true);
-    ASSERTION(BytesAny.type() == typeid(std::uint64_t));
-    
-    auto BitsAny = m_Bits->GetAny(ExecutionContext);
-    
-    ASSERTION(BitsAny.has_value() == true);
-    ASSERTION(BitsAny.type() == typeid(std::uint64_t));
-    
-    return Inspection::Length{std::any_cast<std::uint64_t>(BytesAny), std::any_cast<std::uint64_t>(BitsAny)};
-}
-
-Inspection::TypeDefinition::DataType Inspection::TypeDefinition::Length::GetDataType(void) const
-{
-    return Inspection::TypeDefinition::DataType::Length;
-}
-
-std::unique_ptr<Inspection::TypeDefinition::Length> Inspection::TypeDefinition::Length::Load(const XML::Element * Element)
-{
-    ASSERTION(Element != nullptr);
-    
-    auto Result = std::unique_ptr<Inspection::TypeDefinition::Length>{new Inspection::TypeDefinition::Length{}};
-    
-    for(auto ChildElement : Element->GetChildElements())
-    {
-        ASSERTION(ChildElement != nullptr);
-        if(ChildElement->GetName() == "bytes")
-        {
-            INVALID_INPUT_IF(Result->m_Bytes != nullptr, "More than one bytes expression.");
-            Result->m_Bytes = Inspection::TypeDefinition::Expression::LoadFromWithin(ChildElement);
-        }
-        else if(ChildElement->GetName() == "bits")
-        {
-            INVALID_INPUT_IF(Result->m_Bits != nullptr, "More than one bits expression.");
-            Result->m_Bits = Inspection::TypeDefinition::Expression::LoadFromWithin(ChildElement);
-        }
-        else
-        {
-            UNEXPECTED_CASE("ChildElement->GetName() == " + ChildElement->GetName());
-        }
-    }
-    
-    return Result;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
 // ParameterReference                                                                            //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
