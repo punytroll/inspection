@@ -726,35 +726,6 @@ std::unique_ptr<Inspection::TypeDefinition::Interpretation> Inspection::TypeDefi
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// ParameterReference                                                                            //
-///////////////////////////////////////////////////////////////////////////////////////////////////
-
-std::any Inspection::TypeDefinition::ParameterReference::GetAny(Inspection::ExecutionContext & ExecutionContext) const
-{
-    return ExecutionContext.GetAnyReferenceFromParameterReference(*this);
-}
-
-Inspection::TypeDefinition::DataType Inspection::TypeDefinition::ParameterReference::GetDataType(void) const
-{
-    NOT_IMPLEMENTED("Called GetDataType() on a ParameterReference expression.");
-}
-
-std::unique_ptr<Inspection::TypeDefinition::ParameterReference> Inspection::TypeDefinition::ParameterReference::Load(const XML::Element * Element)
-{
-    auto Result = std::unique_ptr<Inspection::TypeDefinition::ParameterReference>{new Inspection::TypeDefinition::ParameterReference{}};
-    
-    ASSERTION(Element->GetChildNodes().size() == 1);
-    
-    auto TextNode = dynamic_cast<XML::Text const *>(Element->GetChildNode(0));
-    
-    ASSERTION(TextNode != nullptr);
-    Result->Name = TextNode->GetText();
-    
-    return Result;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
 // Parameters                                                                                    //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 

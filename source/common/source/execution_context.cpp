@@ -28,6 +28,7 @@
 #include "length.h"
 #include "result.h"
 #include "type.h"
+#include "type_definition/parameter_reference.h"
 #include "value.h"
 
 Inspection::ExecutionContext::Element::Element(Inspection::TypeDefinition::Part const & Part, Inspection::Result & Result, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) :
@@ -184,7 +185,7 @@ const std::any & Inspection::ExecutionContext::GetAnyReferenceFromParameterRefer
     
     while(ExecutionStackIterator != std::rend(m_ExecutionStack))
     {
-        auto ParameterIterator = ExecutionStackIterator->m_Parameters.find(ParameterReference.Name);
+        auto ParameterIterator = ExecutionStackIterator->m_Parameters.find(ParameterReference.GetName());
         
         if(ParameterIterator != ExecutionStackIterator->m_Parameters.end())
         {
@@ -195,7 +196,7 @@ const std::any & Inspection::ExecutionContext::GetAnyReferenceFromParameterRefer
             ++ExecutionStackIterator;
         }
     }
-    throw std::runtime_error{"Could not find named parameter \"" + ParameterReference.Name + "\"."};
+    throw std::runtime_error{"Could not find named parameter \"" + ParameterReference.GetName() + "\"."};
 }
 
 std::unordered_map<std::string, std::any> Inspection::ExecutionContext::GetAllParameters()

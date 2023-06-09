@@ -33,6 +33,7 @@
 #include "less_than.h"
 #include "modulus.h"
 #include "multiply.h"
+#include "parameter_reference.h"
 #include "subtract.h"
 #include "../type_definition.h"
 #include "../xml_helper.h"

@@ -88,24 +88,6 @@ namespace Inspection
             Inspection::TypeDefinition::FieldReference::Root m_Root;
         };
         
-        class ParameterReference : public Inspection::TypeDefinition::Expression
-        {
-        public:
-            static std::unique_ptr<Inspection::TypeDefinition::ParameterReference> Load(const XML::Element * Element);
-        public:
-            virtual ~ParameterReference(void) = default;
-            std::any GetAny(Inspection::ExecutionContext & ExecutionContext) const override;
-            Inspection::TypeDefinition::DataType GetDataType(void) const override;
-        public:
-            std::string Name;
-        private:
-            ParameterReference(void) = default;
-            ParameterReference(const Inspection::TypeDefinition::ParameterReference & ParameterReference) = delete;
-            ParameterReference(Inspection::TypeDefinition::ParameterReference && ParameterReference) = delete;
-            Inspection::TypeDefinition::ParameterReference & operator=(const Inspection::TypeDefinition::ParameterReference & ParameterReference) = delete;
-            Inspection::TypeDefinition::ParameterReference & operator=(Inspection::TypeDefinition::ParameterReference && ParameterReference) = delete;
-        };
-        
         class Parameters : public Inspection::TypeDefinition::Expression
         {
         public:
