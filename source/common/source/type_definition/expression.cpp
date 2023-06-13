@@ -35,6 +35,7 @@
 #include "multiply.h"
 #include "parameter_reference.h"
 #include "subtract.h"
+#include "value.h"
 #include "../type_definition.h"
 #include "../xml_helper.h"
 

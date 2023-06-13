@@ -25,10 +25,8 @@
 #include <optional>
 #include <string>
 #include <unordered_map>
-#include <variant>
 #include <vector>
 
-#include "guid.h"
 #include "type_definition/expression.h"
 #include "type_definition/type_reference.h"
 
@@ -141,26 +139,6 @@ namespace Inspection
             auto operator=(Inspection::TypeDefinition::TypeValue && TypeValue) -> Inspection::TypeDefinition::TypeValue & = delete;
         private:
             std::unique_ptr<Inspection::TypeDefinition::Type> m_Type;
-        };
-        
-        class Value : public Inspection::TypeDefinition::Expression
-        {
-        public:
-            static std::unique_ptr<Inspection::TypeDefinition::Value> Load(const XML::Element * Element);
-        public:
-            virtual ~Value(void) = default;
-            std::any GetAny(Inspection::ExecutionContext & ExecutionContext) const override;
-            Inspection::TypeDefinition::DataType GetDataType(void) const override;
-        protected:
-            Value(Inspection::TypeDefinition::DataType DataType);
-        private:
-            Value(const Inspection::TypeDefinition::Value & Value) = delete;
-            Value(Inspection::TypeDefinition::Value && Value) = delete;
-            Inspection::TypeDefinition::Value & operator=(const Inspection::TypeDefinition::Value & Value) = delete;
-            Inspection::TypeDefinition::Value & operator=(Inspection::TypeDefinition::Value && Value) = delete;
-        private:
-            std::variant<bool, Inspection::GUID, float, std::string, std::uint8_t, std::uint16_t, std::uint32_t, std::uint64_t> m_Data;
-            Inspection::TypeDefinition::DataType m_DataType;
         };
         
         class Tag;

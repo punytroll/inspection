@@ -41,6 +41,7 @@ common_library = static_library(
     'source/type_definition/subtract.cpp',
     'source/type_definition/tag.cpp',
     'source/type_definition/type_reference.cpp',
+    'source/type_definition/value.cpp',
     'source/type_definition.cpp',
     'source/type_repository.cpp',
     'source/type.cpp',
