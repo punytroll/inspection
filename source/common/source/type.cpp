@@ -26,6 +26,8 @@
 #include "internal_output_operators.h"
 #include "result.h"
 #include "type.h"
+#include "type_definition/parameters.h"
+#include "type_definition/type_reference.h"
 #include "type_definition.h"
 #include "type_repository.h"
 #include "xml_helper.h"

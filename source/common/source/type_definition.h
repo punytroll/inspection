@@ -27,10 +27,6 @@
 #include <unordered_map>
 #include <vector>
 
-#include "type_definition/expression.h"
-#include "type_definition/parameters.h"
-#include "type_definition/type_reference.h"
-
 namespace XML
 {
     class Element;
@@ -46,8 +42,6 @@ namespace Inspection
     
     namespace TypeDefinition
     {
-        class Type;
-        
         enum class PartType
         {
             Alternative,
@@ -59,7 +53,10 @@ namespace Inspection
             Type
         };
         
+        enum class DataType;
+        class Expression;
         class Tag;
+        class Type;
         
         class Enumeration
         {
@@ -185,6 +182,9 @@ namespace Inspection
         private:
             std::unique_ptr<Inspection::TypeDefinition::Expression> m_Expression;
         };
+        
+        class Parameters;
+        class TypeReference;
         
         class Part
         {

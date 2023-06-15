@@ -23,12 +23,13 @@
 #include <value.h>
 
 #include "../execution_context.h"
-#include "../type_definition.h"
 #include "../xml_helper.h"
 #include "array.h"
 #include "data_type.h"
 #include "field_reference.h"
 #include "helper.h"
+#include "parameters.h"
+#include "type_reference.h"
 
 using namespace std::string_literals;
 

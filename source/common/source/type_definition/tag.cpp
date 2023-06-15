@@ -20,7 +20,7 @@
 
 #include <value.h>
 
-#include "../type_definition.h"
+#include "expression.h"
 #include "tag.h"
 
 auto Inspection::TypeDefinition::Tag::Get(Inspection::ExecutionContext & ExecutionContext) const -> std::unique_ptr<Inspection::Value>
