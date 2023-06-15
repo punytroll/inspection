@@ -28,10 +28,14 @@ namespace Inspection
     
     namespace TypeDefinition
     {
+        enum class DataType;
+        
         auto AppendLengthTag(Inspection::Value * Value, Inspection::Length const & Length, std::string const & LengthName = "length") -> Inspection::Value *;
         auto AppendBitLengthTag(Inspection::Value * Value, Inspection::Length const & Length, std::string const & LengthName = "length") -> Inspection::Value *;
         auto AppendLengthField(Inspection::Value * Value, std::string const & FieldName, Inspection::Length const & Length) -> Inspection::Value *;
         auto AppendOtherData(Inspection::Value * Value, Inspection::Length const & Length) -> Inspection::Value *;
+        auto GetBooleanFromString(std::string_view String) -> bool;
+        auto GetDataTypeFromString(std::string_view String) -> Inspection::TypeDefinition::DataType;
     }
 }
 

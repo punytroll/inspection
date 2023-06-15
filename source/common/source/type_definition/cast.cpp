@@ -25,6 +25,7 @@
 #include "../internal_output_operators.h"
 #include "cast.h"
 #include "data_type.h"
+#include "helper.h"
 
 template<typename Type>
 static auto CastTo(std::any const & Any) -> Type

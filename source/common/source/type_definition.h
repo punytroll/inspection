@@ -35,6 +35,7 @@ namespace XML
 namespace Inspection
 {
     class ExecutionContext;
+    class Parameters;
     class Reader;
     class Result;
     class Type;
@@ -53,35 +54,6 @@ namespace Inspection
             Type
         };
         
-        enum class DataType;
-        class Expression;
-        class Tag;
-        class Type;
-        
-        class Enumeration
-        {
-        public:
-            static std::unique_ptr<Inspection::TypeDefinition::Enumeration> Load(const XML::Element * Element);
-        public:
-            class Element
-            {
-            public:
-                std::string BaseValue;
-                std::vector<std::unique_ptr<Inspection::TypeDefinition::Tag>> Tags;
-                bool Valid;
-            };
-        public:
-            Inspection::TypeDefinition::DataType BaseDataType;
-            std::vector<Inspection::TypeDefinition::Enumeration::Element> Elements;
-            std::optional<Inspection::TypeDefinition::Enumeration::Element> FallbackElement;
-        private:
-            Enumeration(void) = default;
-            Enumeration(const Inspection::TypeDefinition::Enumeration & Enumeration) = delete;
-            Enumeration(Inspection::TypeDefinition::Enumeration && Enumeration) = delete;
-            Inspection::TypeDefinition::Enumeration & operator=(const Inspection::TypeDefinition::Enumeration & Enumeration) = delete;
-            Inspection::TypeDefinition::Enumeration & operator=(Inspection::TypeDefinition::Enumeration && Enumeration) = delete;
-        };
-        
         class Interpretation
         {
         public:
@@ -97,6 +69,8 @@ namespace Inspection
             Inspection::TypeDefinition::Interpretation & operator=(const Inspection::TypeDefinition::Interpretation & Interpretation) = delete;
             Inspection::TypeDefinition::Interpretation & operator=(Inspection::TypeDefinition::Interpretation && Interpretation) = delete;
         };
+        
+        class Tag;
         
         class AddTag : public Inspection::TypeDefinition::Interpretation
         {
@@ -115,6 +89,8 @@ namespace Inspection
             std::unique_ptr<Inspection::TypeDefinition::Tag> m_Tag;
         };
         
+        class Enumeration;
+        
         class ApplyEnumeration : public Inspection::TypeDefinition::Interpretation
         {
         public:
@@ -131,6 +107,8 @@ namespace Inspection
             Inspection::TypeDefinition::ApplyEnumeration & operator=(const Inspection::TypeDefinition::ApplyEnumeration & ApplyEnumeration) = delete;
             Inspection::TypeDefinition::ApplyEnumeration & operator=(Inspection::TypeDefinition::ApplyEnumeration && ApplyEnumeration) = delete;
         };
+        
+        enum class DataType;
         
         class BitsInterpretation : public Inspection::TypeDefinition::Interpretation
         {
@@ -165,6 +143,8 @@ namespace Inspection
             Inspection::TypeDefinition::BitsInterpretation::DataVerification m_DataVerification;
             std::string m_Name;
         };
+        
+        class Expression;
         
         class Verification : public Inspection::TypeDefinition::Interpretation
         {
@@ -316,7 +296,6 @@ namespace Inspection
             auto operator=(Inspection::TypeDefinition::TypePart && TypePart) -> Inspection::TypeDefinition::TypePart & = delete;
         };
         
-        auto GetDataTypeFromString(std::string const & String) -> Inspection::TypeDefinition::DataType;
         auto GetDataVerificationFromString(std::string_view String) -> Inspection::TypeDefinition::BitsInterpretation::DataVerification;
     }
 }

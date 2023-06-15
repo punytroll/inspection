@@ -31,6 +31,7 @@
 #include "type_definition/alternative.h"
 #include "type_definition/array.h"
 #include "type_definition/data_type.h"
+#include "type_definition/enumeration.h"
 #include "type_definition/expression.h"
 #include "type_definition/field_reference.h"
 #include "type_definition/function_call.h"
@@ -60,23 +61,23 @@ static auto ApplyEnumeration(Inspection::ExecutionContext & ExecutionContext, In
 {
     auto Result = false;
     auto BaseValueString = to_string_cast(std::any_cast<DataType const &>(Target->GetData()));
-    auto ElementIterator = std::find_if(Enumeration.Elements.begin(), Enumeration.Elements.end(), [&BaseValueString](auto & Element)
-                                                                                                  {
-                                                                                                      return Element.BaseValue == BaseValueString;
-                                                                                                  });
+    auto ElementIterator = std::find_if(Enumeration.GetElements().begin(), Enumeration.GetElements().end(), [&BaseValueString](auto & Element)
+                                                                                                            {
+                                                                                                                return Element.BaseValue == BaseValueString;
+                                                                                                            });
     
-    if(ElementIterator != Enumeration.Elements.end())
+    if(ElementIterator != Enumeration.GetElements().end())
     {
         ApplyTags(ExecutionContext, ElementIterator->Tags, Target);
         Result = ElementIterator->Valid;
     }
     else
     {
-        if(Enumeration.FallbackElement.has_value() == true)
+        if(Enumeration.GetFallbackElement().has_value() == true)
         {
-            ApplyTags(ExecutionContext, Enumeration.FallbackElement->Tags, Target);
+            ApplyTags(ExecutionContext, Enumeration.GetFallbackElement()->Tags, Target);
             Target->AddTag("error", "Could find no enumeration element for the base value \"" + BaseValueString + "\".");
-            Result = Enumeration.FallbackElement->Valid;
+            Result = Enumeration.GetFallbackElement()->Valid;
         }
         else
         {
@@ -137,29 +138,42 @@ bool Inspection::TypeDefinition::ApplyEnumeration::Apply(Inspection::ExecutionCo
     
     auto Result = true;
     
-    if(Enumeration->BaseDataType == Inspection::TypeDefinition::DataType::String)
+    switch(Enumeration->GetBaseDataType())
     {
-        ::ApplyEnumeration<std::string>(ExecutionContext, *Enumeration, Target);
-    }
-    else if(Enumeration->BaseDataType == Inspection::TypeDefinition::DataType::UnsignedInteger8Bit)
-    {
-        ::ApplyEnumeration<std::uint8_t>(ExecutionContext, *Enumeration, Target);
-    }
-    else if(Enumeration->BaseDataType == Inspection::TypeDefinition::DataType::UnsignedInteger16Bit)
-    {
-        ::ApplyEnumeration<std::uint16_t>(ExecutionContext, *Enumeration, Target);
-    }
-    else if(Enumeration->BaseDataType == Inspection::TypeDefinition::DataType::UnsignedInteger32Bit)
-    {
-        ::ApplyEnumeration<std::uint32_t>(ExecutionContext, *Enumeration, Target);
-    }
-    else if(Enumeration->BaseDataType == Inspection::TypeDefinition::DataType::Boolean)
-    {
-        ::ApplyEnumeration<bool>(ExecutionContext, *Enumeration, Target);
-    }
-    else
-    {
-        UNEXPECTED_CASE("Enumeration->BaseDataType == " + Inspection::to_string(Enumeration->BaseDataType));
+    case Inspection::TypeDefinition::DataType::String:
+        {
+            ::ApplyEnumeration<std::string>(ExecutionContext, *Enumeration, Target);
+            
+            break;
+        }
+    case Inspection::TypeDefinition::DataType::UnsignedInteger8Bit:
+        {
+            ::ApplyEnumeration<std::uint8_t>(ExecutionContext, *Enumeration, Target);
+            
+            break;
+        }
+    case Inspection::TypeDefinition::DataType::UnsignedInteger16Bit:
+        {
+            ::ApplyEnumeration<std::uint16_t>(ExecutionContext, *Enumeration, Target);
+            
+            break;
+        }
+    case Inspection::TypeDefinition::DataType::UnsignedInteger32Bit:
+        {
+            ::ApplyEnumeration<std::uint32_t>(ExecutionContext, *Enumeration, Target);
+            
+            break;
+        }
+    case Inspection::TypeDefinition::DataType::Boolean:
+        {
+            ::ApplyEnumeration<bool>(ExecutionContext, *Enumeration, Target);
+            
+            break;
+        }
+    default:
+        {
+            UNEXPECTED_CASE("Enumeration->BaseDataType == " + Inspection::to_string(Enumeration->GetBaseDataType()));
+        }
     }
     
     return Result;
@@ -427,70 +441,6 @@ auto Inspection::TypeDefinition::BitsInterpretation::Load(XML::Element const * E
         else
         {
             UNEXPECTED_CASE("ChildElement->GetName() == " + ChildElement->GetName());
-        }
-    }
-    
-    return Result;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// Enumeration                                                                                   //
-///////////////////////////////////////////////////////////////////////////////////////////////////
-
-std::unique_ptr<Inspection::TypeDefinition::Enumeration> Inspection::TypeDefinition::Enumeration::Load(const XML::Element * Element)
-{
-    auto Result = std::unique_ptr<Inspection::TypeDefinition::Enumeration>{new Inspection::TypeDefinition::Enumeration{}};
-    
-    ASSERTION(Element != nullptr);
-    ASSERTION(Element->GetName() == "enumeration");
-    INVALID_INPUT_IF(Element->HasAttribute("base-data-type") == false, "An enumeration needs to have a \"base-data-type\" attribute.");
-    Result->BaseDataType = Inspection::TypeDefinition::GetDataTypeFromString(Element->GetAttribute("base-data-type"));
-    for(auto EnumerationChildElement : Element->GetChildElements())
-    {
-        ASSERTION(EnumerationChildElement != nullptr);
-        if(EnumerationChildElement->GetName() == "element")
-        {
-            auto & Element = Result->Elements.emplace_back();
-            
-            ASSERTION(EnumerationChildElement->HasAttribute("base-value") == true);
-            Element.BaseValue = EnumerationChildElement->GetAttribute("base-value");
-            ASSERTION(EnumerationChildElement->HasAttribute("valid") == true);
-            Element.Valid = from_string_cast<bool>(EnumerationChildElement->GetAttribute("valid"));
-            for(auto EnumerationElementChildElement : EnumerationChildElement->GetChildElements())
-            {
-                ASSERTION(EnumerationElementChildElement != nullptr);
-                if(EnumerationElementChildElement->GetName() == "tag")
-                {
-                    Element.Tags.push_back(Inspection::TypeDefinition::Tag::Load(EnumerationElementChildElement));
-                }
-                else
-                {
-                    UNEXPECTED_CASE("EnumerationElementChildElement->GetName() == " + EnumerationElementChildElement->GetName());
-                }
-            }
-        }
-        else if(EnumerationChildElement->GetName() == "fallback-element")
-        {
-            ASSERTION(Result->FallbackElement.has_value() == false);
-            Result->FallbackElement.emplace();
-            Result->FallbackElement->Valid = from_string_cast<bool>(EnumerationChildElement->GetAttribute("valid"));
-            for(auto EnumerationFallbackElementChildElement : EnumerationChildElement->GetChildElements())
-            {
-                ASSERTION(EnumerationFallbackElementChildElement != nullptr);
-                if(EnumerationFallbackElementChildElement->GetName() == "tag")
-                {
-                    Result->FallbackElement->Tags.push_back(Inspection::TypeDefinition::Tag::Load(EnumerationFallbackElementChildElement));
-                }
-                else
-                {
-                    UNEXPECTED_CASE("EnumerationFallbackElementChildElement->GetName() == " + EnumerationFallbackElementChildElement->GetName());
-                }
-            }
-        }
-        else
-        {
-            UNEXPECTED_CASE("EnumerationChildElement->GetName() == " + EnumerationChildElement->GetName());
         }
     }
     
@@ -1104,58 +1054,6 @@ std::unique_ptr<Inspection::TypeDefinition::Verification> Inspection::TypeDefini
     Result->m_Expression = Inspection::TypeDefinition::Expression::Load(Element);
     
     return Result;
-}
-
-auto Inspection::TypeDefinition::GetDataTypeFromString(std::string const & String) -> Inspection::TypeDefinition::DataType
-{
-    if(String == "boolean")
-    {
-        return Inspection::TypeDefinition::DataType::Boolean;
-    }
-    else if(String == "length")
-    {
-        return Inspection::TypeDefinition::DataType::Length;
-    }
-    else if(String == "nothing")
-    {
-        return Inspection::TypeDefinition::DataType::Nothing;
-    }
-    else if(String == "parameters")
-    {
-        return Inspection::TypeDefinition::DataType::Parameters;
-    }
-    else if(String == "single-precision-real")
-    {
-        return Inspection::TypeDefinition::DataType::SinglePrecisionReal;
-    }
-    else if(String == "string")
-    {
-        return Inspection::TypeDefinition::DataType::String;
-    }
-    else if(String == "type")
-    {
-        return Inspection::TypeDefinition::DataType::Type;
-    }
-    else if((String == "unsigned integer 8bit") || (String == "unsigned-integer-8bit"))
-    {
-        return Inspection::TypeDefinition::DataType::UnsignedInteger8Bit;
-    }
-    else if((String == "unsigned integer 16bit") || (String == "unsigned-integer-16bit"))
-    {
-        return Inspection::TypeDefinition::DataType::UnsignedInteger16Bit;
-    }
-    else if((String == "unsigned integer 32bit") || (String == "unsigned-integer-32bit"))
-    {
-        return Inspection::TypeDefinition::DataType::UnsignedInteger32Bit;
-    }
-    else if((String == "unsigned integer 64bit") || (String == "unsigned-integer-64bit"))
-    {
-        return Inspection::TypeDefinition::DataType::UnsignedInteger64Bit;
-    }
-    else
-    {
-        UNEXPECTED_CASE("Data type string == \"" + String + '"');
-    }
 }
 
 auto Inspection::TypeDefinition::GetDataVerificationFromString(std::string_view String) -> Inspection::TypeDefinition::BitsInterpretation::DataVerification

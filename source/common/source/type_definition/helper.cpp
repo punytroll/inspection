@@ -19,6 +19,7 @@
 #include <length.h>
 #include <value.h>
 
+#include "data_type.h"
 #include "helper.h"
 
 using namespace std::string_literals;
@@ -53,4 +54,68 @@ auto Inspection::TypeDefinition::AppendLengthField(Inspection::Value * Value, st
 auto Inspection::TypeDefinition::AppendOtherData(Inspection::Value * Value, Inspection::Length const & Length) -> Inspection::Value *
 {
     return AppendLengthField(Value, "OtherData", Length);
+}
+
+auto Inspection::TypeDefinition::GetBooleanFromString(std::string_view String) -> bool
+{
+    if(String == "true")
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+auto Inspection::TypeDefinition::GetDataTypeFromString(std::string_view String) -> Inspection::TypeDefinition::DataType
+{
+    if(String == "boolean")
+    {
+        return Inspection::TypeDefinition::DataType::Boolean;
+    }
+    else if(String == "length")
+    {
+        return Inspection::TypeDefinition::DataType::Length;
+    }
+    else if(String == "nothing")
+    {
+        return Inspection::TypeDefinition::DataType::Nothing;
+    }
+    else if(String == "parameters")
+    {
+        return Inspection::TypeDefinition::DataType::Parameters;
+    }
+    else if(String == "single-precision-real")
+    {
+        return Inspection::TypeDefinition::DataType::SinglePrecisionReal;
+    }
+    else if(String == "string")
+    {
+        return Inspection::TypeDefinition::DataType::String;
+    }
+    else if(String == "type")
+    {
+        return Inspection::TypeDefinition::DataType::Type;
+    }
+    else if((String == "unsigned integer 8bit") || (String == "unsigned-integer-8bit"))
+    {
+        return Inspection::TypeDefinition::DataType::UnsignedInteger8Bit;
+    }
+    else if((String == "unsigned integer 16bit") || (String == "unsigned-integer-16bit"))
+    {
+        return Inspection::TypeDefinition::DataType::UnsignedInteger16Bit;
+    }
+    else if((String == "unsigned integer 32bit") || (String == "unsigned-integer-32bit"))
+    {
+        return Inspection::TypeDefinition::DataType::UnsignedInteger32Bit;
+    }
+    else if((String == "unsigned integer 64bit") || (String == "unsigned-integer-64bit"))
+    {
+        return Inspection::TypeDefinition::DataType::UnsignedInteger64Bit;
+    }
+    else
+    {
+        UNEXPECTED_CASE("Data type string == \"" + std::string{String} + '"');
+    }
 }

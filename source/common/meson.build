@@ -29,6 +29,7 @@ common_library = static_library(
     'source/type_definition/cast.cpp',
     'source/type_definition/data_reference.cpp',
     'source/type_definition/divide.cpp',
+    'source/type_definition/enumeration.cpp',
     'source/type_definition/equals.cpp',
     'source/type_definition/expression.cpp',
     'source/type_definition/field_reference.cpp',
