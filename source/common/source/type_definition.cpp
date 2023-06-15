@@ -597,34 +597,6 @@ auto Inspection::TypeDefinition::Forward::Load(XML::Element const * Element) -> 
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// Interpretation                                                                                //
-///////////////////////////////////////////////////////////////////////////////////////////////////
-
-std::unique_ptr<Inspection::TypeDefinition::Interpretation> Inspection::TypeDefinition::Interpretation::Load(const XML::Element * Element)
-{
-    ASSERTION(Element != nullptr);
-    
-    auto Result = std::unique_ptr<Inspection::TypeDefinition::Interpretation>{};
-    
-    ASSERTION(Element->GetName() == "interpretation");
-    for(auto ChildElement : Element->GetChildElements())
-    {
-        ASSERTION(ChildElement != nullptr);
-        if(ChildElement->GetName() == "apply-enumeration")
-        {
-            Result = Inspection::TypeDefinition::ApplyEnumeration::Load(ChildElement);
-        }
-        else
-        {
-            UNEXPECTED_CASE("ChildElement->GetName() == " + ChildElement->GetName());
-        }
-    }
-    
-    return Result;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
 // Part                                                                                          //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -744,9 +716,10 @@ auto Inspection::TypeDefinition::Part::_LoadProperty(const XML::Element * Elemen
         ASSERTION((m_PartType == Inspection::TypeDefinition::PartType::Field) || (m_PartType == Inspection::TypeDefinition::PartType::Forward));
         TypeReference = Inspection::TypeDefinition::TypeReference::Load(Element);
     }
-    else if(Element->GetName() == "interpretation")
+    else if(Element->GetName() == "apply-enumeration")
     {
-        Interpretations.push_back(Inspection::TypeDefinition::Interpretation::Load(Element));
+        ASSERTION((m_PartType == Inspection::TypeDefinition::PartType::Field) || (m_PartType == Inspection::TypeDefinition::PartType::Forward));
+        Interpretations.push_back(Inspection::TypeDefinition::ApplyEnumeration::Load(Element));
     }
     else if(Element->GetName() == "length")
     {

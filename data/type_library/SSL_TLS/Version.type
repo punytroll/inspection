@@ -15,47 +15,45 @@
 				<part>Unsigned</part>
 				<part>8Bit</part>
 			</type-reference>
-			<interpretation>
-				<apply-enumeration>
-					<enumeration base-data-type="unsigned integer 8bit">
-						<element base-value="1" valid="true">
-							<tag name="interpretation">
-								<value>
-									<string>TLS 1.0</string>
-								</value>
-							</tag>
-						</element>
-						<element base-value="2" valid="true">
-							<tag name="interpretation">
-								<value>
-									<string>TLS 1.1</string>
-								</value>
-							</tag>
-						</element>
-						<element base-value="3" valid="true">
-							<tag name="interpretation">
-								<value>
-									<string>TLS 1.2</string>
-								</value>
-							</tag>
-						</element>
-						<element base-value="4" valid="true">
-							<tag name="interpretation">
-								<value>
-									<string>TLS 1.3</string>
-								</value>
-							</tag>
-						</element>
-						<fallback-element valid="true">
-							<tag name="interpretation">
-								<value>
-									<nothing/>
-								</value>
-							</tag>
-						</fallback-element>
-					</enumeration>
-				</apply-enumeration>
-			</interpretation>
+			<apply-enumeration>
+				<enumeration base-data-type="unsigned integer 8bit">
+					<element base-value="1" valid="true">
+						<tag name="interpretation">
+							<value>
+								<string>TLS 1.0</string>
+							</value>
+						</tag>
+					</element>
+					<element base-value="2" valid="true">
+						<tag name="interpretation">
+							<value>
+								<string>TLS 1.1</string>
+							</value>
+						</tag>
+					</element>
+					<element base-value="3" valid="true">
+						<tag name="interpretation">
+							<value>
+								<string>TLS 1.2</string>
+							</value>
+						</tag>
+					</element>
+					<element base-value="4" valid="true">
+						<tag name="interpretation">
+							<value>
+								<string>TLS 1.3</string>
+							</value>
+						</tag>
+					</element>
+					<fallback-element valid="true">
+						<tag name="interpretation">
+							<value>
+								<nothing/>
+							</value>
+						</tag>
+					</fallback-element>
+				</enumeration>
+			</apply-enumeration>
 		</field>
 		<tag name="name">
 			<value>

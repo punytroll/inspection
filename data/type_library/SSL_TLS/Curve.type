@@ -6,60 +6,58 @@
 			<part>Unsigned</part>
 			<part>16Bit_BigEndian</part>
 		</type-reference>
-		<interpretation>
-			<apply-enumeration>
-				<enumeration base-data-type="unsigned integer 16bit">
-					<element base-value="23" valid="true">
-						<tag name="interpretation">
-							<value>
-								<string>secp256r1</string>
-							</value>
-						</tag>
-					</element>
-					<element base-value="24" valid="true">
-						<tag name="interpretation">
-							<value>
-								<string>secp384r1</string>
-							</value>
-						</tag>
-					</element>
-					<element base-value="25" valid="true">
-						<tag name="interpretation">
-							<value>
-								<string>secp256r1</string>
-							</value>
-						</tag>
-					</element>
-					<element base-value="29" valid="true">
-						<tag name="interpretation">
-							<value>
-								<string>x25519</string>
-							</value>
-						</tag>
-					</element>
-					<element base-value="256" valid="true">
-						<tag name="interpretation">
-							<value>
-								<string>ffdhe2048</string>
-							</value>
-						</tag>
-					</element>
-					<element base-value="257" valid="true">
-						<tag name="interpretation">
-							<value>
-								<string>ffdhe3072</string>
-							</value>
-						</tag>
-					</element>
-					<fallback-element valid="false">
-						<tag name="interpretation">
-							<value>
-								<nothing/>
-							</value>
-						</tag>
-					</fallback-element>
-				</enumeration>
-			</apply-enumeration>
-		</interpretation>
+		<apply-enumeration>
+			<enumeration base-data-type="unsigned integer 16bit">
+				<element base-value="23" valid="true">
+					<tag name="interpretation">
+						<value>
+							<string>secp256r1</string>
+						</value>
+					</tag>
+				</element>
+				<element base-value="24" valid="true">
+					<tag name="interpretation">
+						<value>
+							<string>secp384r1</string>
+						</value>
+					</tag>
+				</element>
+				<element base-value="25" valid="true">
+					<tag name="interpretation">
+						<value>
+							<string>secp256r1</string>
+						</value>
+					</tag>
+				</element>
+				<element base-value="29" valid="true">
+					<tag name="interpretation">
+						<value>
+							<string>x25519</string>
+						</value>
+					</tag>
+				</element>
+				<element base-value="256" valid="true">
+					<tag name="interpretation">
+						<value>
+							<string>ffdhe2048</string>
+						</value>
+					</tag>
+				</element>
+				<element base-value="257" valid="true">
+					<tag name="interpretation">
+						<value>
+							<string>ffdhe3072</string>
+						</value>
+					</tag>
+				</element>
+				<fallback-element valid="false">
+					<tag name="interpretation">
+						<value>
+							<nothing/>
+						</value>
+					</tag>
+				</fallback-element>
+			</enumeration>
+		</apply-enumeration>
 	</forward>
 </type>

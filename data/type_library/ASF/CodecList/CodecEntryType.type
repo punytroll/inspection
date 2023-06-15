@@ -6,32 +6,30 @@
 			<part>Unsigned</part>
 			<part>16Bit_LittleEndian</part>
 		</type-reference>
-		<interpretation>
-			<apply-enumeration>
-				<enumeration base-data-type="unsigned integer 16bit">
-					<element base-value="1" valid="true">
-						<tag name="interpretation">
-							<value>
-								<string>Video Codec</string>
-							</value>
-						</tag>
-					</element>
-					<element base-value="2" valid="true">
-						<tag name="interpretation">
-							<value>
-								<string>Audio Codec</string>
-							</value>
-						</tag>
-					</element>
-					<element base-value="65535" valid="true">
-						<tag name="interpretation">
-							<value>
-								<string>Unknown Codec</string>
-							</value>
-						</tag>
-					</element>
-				</enumeration>
-			</apply-enumeration>
-		</interpretation>
+		<apply-enumeration>
+			<enumeration base-data-type="unsigned integer 16bit">
+				<element base-value="1" valid="true">
+					<tag name="interpretation">
+						<value>
+							<string>Video Codec</string>
+						</value>
+					</tag>
+				</element>
+				<element base-value="2" valid="true">
+					<tag name="interpretation">
+						<value>
+							<string>Audio Codec</string>
+						</value>
+					</tag>
+				</element>
+				<element base-value="65535" valid="true">
+					<tag name="interpretation">
+						<value>
+							<string>Unknown Codec</string>
+						</value>
+					</tag>
+				</element>
+			</enumeration>
+		</apply-enumeration>
 	</forward>
 </type>

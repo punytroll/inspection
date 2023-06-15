@@ -6,32 +6,30 @@
 			<part>Unsigned</part>
 			<part>3Bit</part>
 		</type-reference>
-		<interpretation>
-			<apply-enumeration>
-				<enumeration base-data-type="unsigned integer 8bit">
-					<element base-value="0" valid="true">
-						<tag name="interpretation">
-							<value>
-								<string>not set</string>
-							</value>
-						</tag>
-					</element>
-					<element base-value="1" valid="true">
-						<tag name="interpretation">
-							<value>
-								<string>track gain adjustment</string>
-							</value>
-						</tag>
-					</element>
-					<element base-value="2" valid="true">
-						<tag name="interpretation">
-							<value>
-								<string>album gain adjustment</string>
-							</value>
-						</tag>
-					</element>
-				</enumeration>
-			</apply-enumeration>
-		</interpretation>
+		<apply-enumeration>
+			<enumeration base-data-type="unsigned integer 8bit">
+				<element base-value="0" valid="true">
+					<tag name="interpretation">
+						<value>
+							<string>not set</string>
+						</value>
+					</tag>
+				</element>
+				<element base-value="1" valid="true">
+					<tag name="interpretation">
+						<value>
+							<string>track gain adjustment</string>
+						</value>
+					</tag>
+				</element>
+				<element base-value="2" valid="true">
+					<tag name="interpretation">
+						<value>
+							<string>album gain adjustment</string>
+						</value>
+					</tag>
+				</element>
+			</enumeration>
+		</apply-enumeration>
 	</forward>
 </type>

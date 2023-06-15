@@ -6,37 +6,35 @@
 			<part>Unsigned</part>
 			<part>2Bit</part>
 		</type-reference>
-		<interpretation>
-			<apply-enumeration>
-				<enumeration base-data-type="unsigned integer 8bit">
-					<element base-value="0" valid="true">
-						<tag name="interpretation">
-							<value>
-								<string>partitioned Rice coding with 4-bit Rice parameter</string>
-							</value>
-						</tag>
-					</element>
-					<element base-value="1" valid="true">
-						<tag name="interpretation">
-							<value>
-								<string>partitioned Rice coding with 5-bit Rice parameter</string>
-							</value>
-						</tag>
-					</element>
-					<fallback-element valid="false">
-						<tag name="interpretation">
-							<value>
-								<nothing/>
-							</value>
-						</tag>
-						<tag name="error">
-							<value>
-								<string>Values 2 and 3 are reserved and MUST NOT be used.</string>
-							</value>
-						</tag>
-					</fallback-element>
-				</enumeration>
-			</apply-enumeration>
-		</interpretation>
+		<apply-enumeration>
+			<enumeration base-data-type="unsigned integer 8bit">
+				<element base-value="0" valid="true">
+					<tag name="interpretation">
+						<value>
+							<string>partitioned Rice coding with 4-bit Rice parameter</string>
+						</value>
+					</tag>
+				</element>
+				<element base-value="1" valid="true">
+					<tag name="interpretation">
+						<value>
+							<string>partitioned Rice coding with 5-bit Rice parameter</string>
+						</value>
+					</tag>
+				</element>
+				<fallback-element valid="false">
+					<tag name="interpretation">
+						<value>
+							<nothing/>
+						</value>
+					</tag>
+					<tag name="error">
+						<value>
+							<string>Values 2 and 3 are reserved and MUST NOT be used.</string>
+						</value>
+					</tag>
+				</fallback-element>
+			</enumeration>
+		</apply-enumeration>
 	</forward>
 </type>

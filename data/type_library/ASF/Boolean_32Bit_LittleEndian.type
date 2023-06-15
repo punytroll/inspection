@@ -6,25 +6,23 @@
 			<part>Unsigned</part>
 			<part>32Bit_LittleEndian</part>
 		</type-reference>
-		<interpretation>
-			<apply-enumeration>
-				<enumeration base-data-type="unsigned integer 32bit">
-					<element base-value="0" valid="true">
-						<tag name="value">
-							<value>
-								<boolean>false</boolean>
-							</value>
-						</tag>
-					</element>
-					<element base-value="1" valid="true">
-						<tag name="value">
-							<value>
-								<boolean>true</boolean>
-							</value>
-						</tag>
-					</element>
-				</enumeration>
-			</apply-enumeration>
-		</interpretation>
+		<apply-enumeration>
+			<enumeration base-data-type="unsigned integer 32bit">
+				<element base-value="0" valid="true">
+					<tag name="value">
+						<value>
+							<boolean>false</boolean>
+						</value>
+					</tag>
+				</element>
+				<element base-value="1" valid="true">
+					<tag name="value">
+						<value>
+							<boolean>true</boolean>
+						</value>
+					</tag>
+				</element>
+			</enumeration>
+		</apply-enumeration>
 	</forward>
 </type>

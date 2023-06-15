@@ -19,33 +19,31 @@
 				<part>Unsigned</part>
 				<part>32Bit_LittleEndian</part>
 			</type-reference>
-			<interpretation>
-				<apply-enumeration>
-					<enumeration base-data-type="unsigned integer 32bit">
-						<element base-value="1000" valid="true">
-							<tag name="interpretation">
-								<value>
-									<string>1.000 (old)</string>
-								</value>
-							</tag>
-						</element>
-						<element base-value="2000" valid="true">
-							<tag name="interpretation">
-								<value>
-									<string>2.000 (new)</string>
-								</value>
-							</tag>
-						</element>
-						<fallback-element valid="false">
-							<tag name="interpretation">
-								<value>
-									<nothing/>
-								</value>
-							</tag>
-						</fallback-element>
-					</enumeration>
-				</apply-enumeration>
-			</interpretation>
+			<apply-enumeration>
+				<enumeration base-data-type="unsigned integer 32bit">
+					<element base-value="1000" valid="true">
+						<tag name="interpretation">
+							<value>
+								<string>1.000 (old)</string>
+							</value>
+						</tag>
+					</element>
+					<element base-value="2000" valid="true">
+						<tag name="interpretation">
+							<value>
+								<string>2.000 (new)</string>
+							</value>
+						</tag>
+					</element>
+					<fallback-element valid="false">
+						<tag name="interpretation">
+							<value>
+								<nothing/>
+							</value>
+						</tag>
+					</fallback-element>
+				</enumeration>
+			</apply-enumeration>
 		</field>
 		<field name="TagSize">
 			<type-reference>

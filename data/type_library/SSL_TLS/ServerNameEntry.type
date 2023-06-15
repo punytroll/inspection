@@ -15,26 +15,24 @@
 				<part>Unsigned</part>
 				<part>8Bit</part>
 			</type-reference>
-			<interpretation>
-				<apply-enumeration>
-					<enumeration base-data-type="unsigned integer 8bit">
-						<element base-value="0" valid="true">
-							<tag name="interpretation">
-								<value>
-									<string>Hostname</string>
-								</value>
-							</tag>
-						</element>
-						<fallback-element valid="false">
-							<tag name="interpretation">
-								<value>
-									<nothing/>
-								</value>
-							</tag>
-						</fallback-element>
-					</enumeration>
-				</apply-enumeration>
-			</interpretation>
+			<apply-enumeration>
+				<enumeration base-data-type="unsigned integer 8bit">
+					<element base-value="0" valid="true">
+						<tag name="interpretation">
+							<value>
+								<string>Hostname</string>
+							</value>
+						</tag>
+					</element>
+					<fallback-element valid="false">
+						<tag name="interpretation">
+							<value>
+								<nothing/>
+							</value>
+						</tag>
+					</fallback-element>
+				</enumeration>
+			</apply-enumeration>
 		</field>
 		<field name="NameLength">
 			<type-reference>

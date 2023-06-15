@@ -21,36 +21,34 @@
 				<part>Unsigned</part>
 				<part>1Bit</part>
 			</type-reference>
-			<interpretation>
-				<apply-enumeration>
-					<enumeration base-data-type="unsigned integer 8bit">
-						<element base-value="1" valid="true">
-							<tag name="interpretation">
-								<value>
-									<string>MPEG Version 1</string>
-								</value>
-							</tag>
-							<tag name="standard">
-								<value>
-									<string>ISO/IEC 11172-3</string>
-								</value>
-							</tag>
-						</element>
-						<element base-value="0" valid="false">
-							<tag name="error">
-								<value>
-									<string>This audio version ID is reserved and MUST NOT be used.</string>
-								</value>
-							</tag>
-							<tag name="interpretation">
-								<value>
-									<nothing/>
-								</value>
-							</tag>
-						</element>
-					</enumeration>
-				</apply-enumeration>
-			</interpretation>
+			<apply-enumeration>
+				<enumeration base-data-type="unsigned integer 8bit">
+					<element base-value="1" valid="true">
+						<tag name="interpretation">
+							<value>
+								<string>MPEG Version 1</string>
+							</value>
+						</tag>
+						<tag name="standard">
+							<value>
+								<string>ISO/IEC 11172-3</string>
+							</value>
+						</tag>
+					</element>
+					<element base-value="0" valid="false">
+						<tag name="error">
+							<value>
+								<string>This audio version ID is reserved and MUST NOT be used.</string>
+							</value>
+						</tag>
+						<tag name="interpretation">
+							<value>
+								<nothing/>
+							</value>
+						</tag>
+					</element>
+				</enumeration>
+			</apply-enumeration>
 		</field>
 		<field name="LayerDescription">
 			<type-reference>
@@ -59,45 +57,43 @@
 				<part>Unsigned</part>
 				<part>2Bit</part>
 			</type-reference>
-			<interpretation>
-				<apply-enumeration>
-					<enumeration base-data-type="unsigned integer 8bit">
-						<element base-value="0" valid="false">
-							<tag name="error">
-								<value>
-									<string>This layer description is reserved and MUST NOT be used.</string>
-								</value>
-							</tag>
-							<tag name="interpretation">
-								<value>
-									<nothing/>
-								</value>
-							</tag>
-						</element>
-						<element base-value="1" valid="true">
-							<tag name="interpretation">
-								<value>
-									<string>Layer III</string>
-								</value>
-							</tag>
-						</element>
-						<element base-value="2" valid="true">
-							<tag name="interpretation">
-								<value>
-									<string>Layer II</string>
-								</value>
-							</tag>
-						</element>
-						<element base-value="3" valid="false">
-							<tag name="interpretation">
-								<value>
-									<string>Layer I</string>
-								</value>
-							</tag>
-						</element>
-					</enumeration>
-				</apply-enumeration>
-			</interpretation>
+			<apply-enumeration>
+				<enumeration base-data-type="unsigned integer 8bit">
+					<element base-value="0" valid="false">
+						<tag name="error">
+							<value>
+								<string>This layer description is reserved and MUST NOT be used.</string>
+							</value>
+						</tag>
+						<tag name="interpretation">
+							<value>
+								<nothing/>
+							</value>
+						</tag>
+					</element>
+					<element base-value="1" valid="true">
+						<tag name="interpretation">
+							<value>
+								<string>Layer III</string>
+							</value>
+						</tag>
+					</element>
+					<element base-value="2" valid="true">
+						<tag name="interpretation">
+							<value>
+								<string>Layer II</string>
+							</value>
+						</tag>
+					</element>
+					<element base-value="3" valid="false">
+						<tag name="interpretation">
+							<value>
+								<string>Layer I</string>
+							</value>
+						</tag>
+					</element>
+				</enumeration>
+			</apply-enumeration>
 		</field>
 		<field name="ProtectionBit">
 			<type-reference>
@@ -106,26 +102,24 @@
 				<part>Unsigned</part>
 				<part>1Bit</part>
 			</type-reference>
-			<interpretation>
-				<apply-enumeration>
-					<enumeration base-data-type="unsigned integer 8bit">
-						<element base-value="0" valid="true">
-							<tag name="redundancy">
-								<value>
-									<boolean>false</boolean>
-								</value>
-							</tag>
-						</element>
-						<element base-value="1" valid="true">
-							<tag name="redundancy">
-								<value>
-									<boolean>true</boolean>
-								</value>
-							</tag>
-						</element>
-					</enumeration>
-				</apply-enumeration>
-			</interpretation>
+			<apply-enumeration>
+				<enumeration base-data-type="unsigned integer 8bit">
+					<element base-value="0" valid="true">
+						<tag name="redundancy">
+							<value>
+								<boolean>false</boolean>
+							</value>
+						</tag>
+					</element>
+					<element base-value="1" valid="true">
+						<tag name="redundancy">
+							<value>
+								<boolean>true</boolean>
+							</value>
+						</tag>
+					</element>
+				</enumeration>
+			</apply-enumeration>
 		</field>
 		<field name="BitRateIndex">
 			<type-reference>
@@ -148,75 +142,73 @@
 				<part>Unsigned</part>
 				<part>2Bit</part>
 			</type-reference>
-			<interpretation>
-				<apply-enumeration>
-					<enumeration base-data-type="unsigned integer 8bit">
-						<element base-value="0" valid="true">
-							<tag name="value">
-								<value>
-									<unsigned-integer-32bit>44100</unsigned-integer-32bit>
-								</value>
-							</tag>
-							<tag name="unit">
-								<value>
-									<string>kHz</string>
-								</value>
-							</tag>
-							<tag name="interpretation">
-								<value>
-									<string>44.1 kHz</string>
-								</value>
-							</tag>
-						</element>
-						<element base-value="1" valid="true">
-							<tag name="value">
-								<value>
-									<unsigned-integer-32bit>48000</unsigned-integer-32bit>
-								</value>
-							</tag>
-							<tag name="unit">
-								<value>
-									<string>kHz</string>
-								</value>
-							</tag>
-							<tag name="interpretation">
-								<value>
-									<string>48 kHz</string>
-								</value>
-							</tag>
-						</element>
-						<element base-value="2" valid="true">
-							<tag name="value">
-								<value>
-									<unsigned-integer-32bit>32000</unsigned-integer-32bit>
-								</value>
-							</tag>
-							<tag name="unit">
-								<value>
-									<string>kHz</string>
-								</value>
-							</tag>
-							<tag name="interpretation">
-								<value>
-									<string>32 kHz</string>
-								</value>
-							</tag>
-						</element>
-						<element base-value="3" valid="false">
-							<tag name="interpretation">
-								<value>
-									<nothing/>
-								</value>
-							</tag>
-							<tag name="error">
-								<value>
-									<string>This sampling frequency is reserved and MUST NOT be used.</string>
-								</value>
-							</tag>
-						</element>
-					</enumeration>
-				</apply-enumeration>
-			</interpretation>
+			<apply-enumeration>
+				<enumeration base-data-type="unsigned integer 8bit">
+					<element base-value="0" valid="true">
+						<tag name="value">
+							<value>
+								<unsigned-integer-32bit>44100</unsigned-integer-32bit>
+							</value>
+						</tag>
+						<tag name="unit">
+							<value>
+								<string>kHz</string>
+							</value>
+						</tag>
+						<tag name="interpretation">
+							<value>
+								<string>44.1 kHz</string>
+							</value>
+						</tag>
+					</element>
+					<element base-value="1" valid="true">
+						<tag name="value">
+							<value>
+								<unsigned-integer-32bit>48000</unsigned-integer-32bit>
+							</value>
+						</tag>
+						<tag name="unit">
+							<value>
+								<string>kHz</string>
+							</value>
+						</tag>
+						<tag name="interpretation">
+							<value>
+								<string>48 kHz</string>
+							</value>
+						</tag>
+					</element>
+					<element base-value="2" valid="true">
+						<tag name="value">
+							<value>
+								<unsigned-integer-32bit>32000</unsigned-integer-32bit>
+							</value>
+						</tag>
+						<tag name="unit">
+							<value>
+								<string>kHz</string>
+							</value>
+						</tag>
+						<tag name="interpretation">
+							<value>
+								<string>32 kHz</string>
+							</value>
+						</tag>
+					</element>
+					<element base-value="3" valid="false">
+						<tag name="interpretation">
+							<value>
+								<nothing/>
+							</value>
+						</tag>
+						<tag name="error">
+							<value>
+								<string>This sampling frequency is reserved and MUST NOT be used.</string>
+							</value>
+						</tag>
+					</element>
+				</enumeration>
+			</apply-enumeration>
 		</field>
 		<field name="PaddingBit">
 			<type-reference>
@@ -225,26 +217,24 @@
 				<part>Unsigned</part>
 				<part>1Bit</part>
 			</type-reference>
-			<interpretation>
-				<apply-enumeration>
-					<enumeration base-data-type="unsigned integer 8bit">
-						<element base-value="0" valid="true">
-							<tag name="padding">
-								<value>
-									<boolean>false</boolean>
-								</value>
-							</tag>
-						</element>
-						<element base-value="1" valid="true">
-							<tag name="padding">
-								<value>
-									<boolean>true</boolean>
-								</value>
-							</tag>
-						</element>
-					</enumeration>
-				</apply-enumeration>
-			</interpretation>
+			<apply-enumeration>
+				<enumeration base-data-type="unsigned integer 8bit">
+					<element base-value="0" valid="true">
+						<tag name="padding">
+							<value>
+								<boolean>false</boolean>
+							</value>
+						</tag>
+					</element>
+					<element base-value="1" valid="true">
+						<tag name="padding">
+							<value>
+								<boolean>true</boolean>
+							</value>
+						</tag>
+					</element>
+				</enumeration>
+			</apply-enumeration>
 		</field>
 		<field name="PrivateBit">
 			<type-reference>
@@ -294,26 +284,24 @@
 				<part>Unsigned</part>
 				<part>1Bit</part>
 			</type-reference>
-			<interpretation>
-				<apply-enumeration>
-					<enumeration base-data-type="unsigned integer 8bit">
-						<element base-value="0" valid="true">
-							<tag name="copyright">
-								<value>
-									<boolean>false</boolean>
-								</value>
-							</tag>
-						</element>
-						<element base-value="1" valid="true">
-							<tag name="copyright">
-								<value>
-									<boolean>true</boolean>
-								</value>
-							</tag>
-						</element>
-					</enumeration>
-				</apply-enumeration>
-			</interpretation>
+			<apply-enumeration>
+				<enumeration base-data-type="unsigned integer 8bit">
+					<element base-value="0" valid="true">
+						<tag name="copyright">
+							<value>
+								<boolean>false</boolean>
+							</value>
+						</tag>
+					</element>
+					<element base-value="1" valid="true">
+						<tag name="copyright">
+							<value>
+								<boolean>true</boolean>
+							</value>
+						</tag>
+					</element>
+				</enumeration>
+			</apply-enumeration>
 		</field>
 		<field name="Original/Home">
 			<type-reference>
@@ -322,26 +310,24 @@
 				<part>Unsigned</part>
 				<part>1Bit</part>
 			</type-reference>
-			<interpretation>
-				<apply-enumeration>
-					<enumeration base-data-type="unsigned integer 8bit">
-						<element base-value="0" valid="true">
-							<tag name="original">
-								<value>
-									<boolean>false</boolean>
-								</value>
-							</tag>
-						</element>
-						<element base-value="1" valid="true">
-							<tag name="original">
-								<value>
-									<boolean>true</boolean>
-								</value>
-							</tag>
-						</element>
-					</enumeration>
-				</apply-enumeration>
-			</interpretation>
+			<apply-enumeration>
+				<enumeration base-data-type="unsigned integer 8bit">
+					<element base-value="0" valid="true">
+						<tag name="original">
+							<value>
+								<boolean>false</boolean>
+							</value>
+						</tag>
+					</element>
+					<element base-value="1" valid="true">
+						<tag name="original">
+							<value>
+								<boolean>true</boolean>
+							</value>
+						</tag>
+					</element>
+				</enumeration>
+			</apply-enumeration>
 		</field>
 		<field name="Emphasis">
 			<type-reference>
@@ -350,45 +336,43 @@
 				<part>Unsigned</part>
 				<part>2Bit</part>
 			</type-reference>
-			<interpretation>
-				<apply-enumeration>
-					<enumeration base-data-type="unsigned integer 8bit">
-						<element base-value="0" valid="true">
-							<tag name="interpretation">
-								<value>
-									<string>no emphasis</string>
-								</value>
-							</tag>
-						</element>
-						<element base-value="1" valid="true">
-							<tag name="interpretation">
-								<value>
-									<string>50/15 microsec. emphasis</string>
-								</value>
-							</tag>
-						</element>
-						<element base-value="2" valid="false">
-							<tag name="error">
-								<value>
-									<string>This emphasis is reserved and MUST NOT be used.</string>
-								</value>
-							</tag>
-							<tag name="interpretation">
-								<value>
-									<nothing/>
-								</value>
-							</tag>
-						</element>
-						<element base-value="3" valid="true">
-							<tag name="interpretation">
-								<value>
-									<string>CCITT J.17</string>
-								</value>
-							</tag>
-						</element>
-					</enumeration>
-				</apply-enumeration>
-			</interpretation>
+			<apply-enumeration>
+				<enumeration base-data-type="unsigned integer 8bit">
+					<element base-value="0" valid="true">
+						<tag name="interpretation">
+							<value>
+								<string>no emphasis</string>
+							</value>
+						</tag>
+					</element>
+					<element base-value="1" valid="true">
+						<tag name="interpretation">
+							<value>
+								<string>50/15 microsec. emphasis</string>
+							</value>
+						</tag>
+					</element>
+					<element base-value="2" valid="false">
+						<tag name="error">
+							<value>
+								<string>This emphasis is reserved and MUST NOT be used.</string>
+							</value>
+						</tag>
+						<tag name="interpretation">
+							<value>
+								<nothing/>
+							</value>
+						</tag>
+					</element>
+					<element base-value="3" valid="true">
+						<tag name="interpretation">
+							<value>
+								<string>CCITT J.17</string>
+							</value>
+						</tag>
+					</element>
+				</enumeration>
+			</apply-enumeration>
 		</field>
 	</sequence>
 </type>

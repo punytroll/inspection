@@ -6,147 +6,145 @@
 			<part>Unsigned</part>
 			<part>16Bit_LittleEndian</part>
 		</type-reference>
-		<interpretation>
-			<apply-enumeration>
-				<enumeration base-data-type="unsigned integer 16bit">
-					<element base-value="0" valid="false">
-						<tag name="constant name">
-							<value>
-								<string>WAVE_FORMAT_UNKNOWN</string>
-							</value>
-						</tag>
-						<tag name="description">
-							<value>
-								<string>Unknown or invalid format tag</string>
-							</value>
-						</tag>
-					</element>
-					<element base-value="1" valid="true">
-						<tag name="constant name">
-							<value>
-								<string>WAVE_FORMAT_PCM</string>
-							</value>
-						</tag>
-						<tag name="description">
-							<value>
-								<string>Pulse Code Modulation</string>
-							</value>
-						</tag>
-					</element>
-					<element base-value="2" valid="true">
-						<tag name="constant name">
-							<value>
-								<string>WAVE_FORMAT_ADPCM</string>
-							</value>
-						</tag>
-						<tag name="description">
-							<value>
-								<string>Microsoft Adaptive Differential PCM</string>
-							</value>
-						</tag>
-					</element>
-					<element base-value="3" valid="true">
-						<tag name="constant name">
-							<value>
-								<string>WAVE_FORMAT_IEEE_FLOAT</string>
-							</value>
-						</tag>
-						<tag name="description">
-							<value>
-								<string>32-bit floating-point</string>
-							</value>
-						</tag>
-					</element>
-					<element base-value="85" valid="true">
-						<tag name="constant name">
-							<value>
-								<string>WAVE_FORMAT_MPEGLAYER3</string>
-							</value>
-						</tag>
-						<tag name="description">
-							<value>
-								<string>ISO/MPEG Layer3</string>
-							</value>
-						</tag>
-					</element>
-					<element base-value="146" valid="true">
-						<tag name="constant name">
-							<value>
-								<string>WAVE_FORMAT_DOLBY_AC3_SPDIF</string>
-							</value>
-						</tag>
-						<tag name="description">
-							<value>
-								<string>Dolby Audio Codec 3 over S/PDIF</string>
-							</value>
-						</tag>
-					</element>
-					<element base-value="353" valid="true">
-						<tag name="constant name">
-							<value>
-								<string>WAVE_FORMAT_WMAUDIO2</string>
-							</value>
-						</tag>
-						<tag name="description">
-							<value>
-								<string>Windows Media Audio Standard (Versions 7, 8, and 9 Series)</string>
-							</value>
-						</tag>
-					</element>
-					<element base-value="354" valid="true">
-						<tag name="constant name">
-							<value>
-								<string>WAVE_FORMAT_WMAUDIO3</string>
-							</value>
-						</tag>
-						<tag name="description">
-							<value>
-								<string>Windows Media Audio Professional (9 Series)</string>
-							</value>
-						</tag>
-					</element>
-					<element base-value="355" valid="true">
-						<tag name="constant name">
-							<value>
-								<string>WAVE_FORMAT_WMAUDIO_LOSSLESS</string>
-							</value>
-						</tag>
-						<tag name="description">
-							<value>
-								<string>Windows Media Audio Lossless (9 Series)</string>
-							</value>
-						</tag>
-					</element>
-					<element base-value="356" valid="true">
-						<tag name="constant name">
-							<value>
-								<string>WAVE_FORMAT_WMASPDIF</string>
-							</value>
-						</tag>
-						<tag name="description">
-							<value>
-								<string>Windows Media Audio over S/PDIF</string>
-							</value>
-						</tag>
-					</element>
-					<element base-value="65534" valid="true">
-						<tag name="constant name">
-							<value>
-								<string>WAVE_FORMAT_EXTENSIBLE</string>
-							</value>
-						</tag>
-						<tag name="description">
-							<value>
-								<string>All new audio formats</string>
-							</value>
-						</tag>
-					</element>
-					<fallback-element valid="false">
-						<tag name="constant name"/>
-						<tag name="description"/>
-					</fallback-element>
-				</enumeration>
-			</apply-enumeration>
-		</interpretation>
+		<apply-enumeration>
+			<enumeration base-data-type="unsigned integer 16bit">
+				<element base-value="0" valid="false">
+					<tag name="constant name">
+						<value>
+							<string>WAVE_FORMAT_UNKNOWN</string>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>Unknown or invalid format tag</string>
+						</value>
+					</tag>
+				</element>
+				<element base-value="1" valid="true">
+					<tag name="constant name">
+						<value>
+							<string>WAVE_FORMAT_PCM</string>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>Pulse Code Modulation</string>
+						</value>
+					</tag>
+				</element>
+				<element base-value="2" valid="true">
+					<tag name="constant name">
+						<value>
+							<string>WAVE_FORMAT_ADPCM</string>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>Microsoft Adaptive Differential PCM</string>
+						</value>
+					</tag>
+				</element>
+				<element base-value="3" valid="true">
+					<tag name="constant name">
+						<value>
+							<string>WAVE_FORMAT_IEEE_FLOAT</string>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>32-bit floating-point</string>
+						</value>
+					</tag>
+				</element>
+				<element base-value="85" valid="true">
+					<tag name="constant name">
+						<value>
+							<string>WAVE_FORMAT_MPEGLAYER3</string>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>ISO/MPEG Layer3</string>
+						</value>
+					</tag>
+				</element>
+				<element base-value="146" valid="true">
+					<tag name="constant name">
+						<value>
+							<string>WAVE_FORMAT_DOLBY_AC3_SPDIF</string>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>Dolby Audio Codec 3 over S/PDIF</string>
+						</value>
+					</tag>
+				</element>
+				<element base-value="353" valid="true">
+					<tag name="constant name">
+						<value>
+							<string>WAVE_FORMAT_WMAUDIO2</string>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>Windows Media Audio Standard (Versions 7, 8, and 9 Series)</string>
+						</value>
+					</tag>
+				</element>
+				<element base-value="354" valid="true">
+					<tag name="constant name">
+						<value>
+							<string>WAVE_FORMAT_WMAUDIO3</string>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>Windows Media Audio Professional (9 Series)</string>
+						</value>
+					</tag>
+				</element>
+				<element base-value="355" valid="true">
+					<tag name="constant name">
+						<value>
+							<string>WAVE_FORMAT_WMAUDIO_LOSSLESS</string>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>Windows Media Audio Lossless (9 Series)</string>
+						</value>
+					</tag>
+				</element>
+				<element base-value="356" valid="true">
+					<tag name="constant name">
+						<value>
+							<string>WAVE_FORMAT_WMASPDIF</string>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>Windows Media Audio over S/PDIF</string>
+						</value>
+					</tag>
+				</element>
+				<element base-value="65534" valid="true">
+					<tag name="constant name">
+						<value>
+							<string>WAVE_FORMAT_EXTENSIBLE</string>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>All new audio formats</string>
+						</value>
+					</tag>
+				</element>
+				<fallback-element valid="false">
+					<tag name="constant name"/>
+					<tag name="description"/>
+				</fallback-element>
+			</enumeration>
+		</apply-enumeration>
 	</forward>
 </type>

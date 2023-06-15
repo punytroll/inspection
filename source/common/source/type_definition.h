@@ -27,6 +27,8 @@
 #include <unordered_map>
 #include <vector>
 
+#include "type_definition/interpretation.h"
+
 namespace XML
 {
     class Element;
@@ -52,22 +54,6 @@ namespace Inspection
             Select,
             Sequence,
             Type
-        };
-        
-        class Interpretation
-        {
-        public:
-            static std::unique_ptr<Inspection::TypeDefinition::Interpretation> Load(const XML::Element * Element);
-        public:
-            virtual ~Interpretation(void) = default;
-            virtual bool Apply(Inspection::ExecutionContext & ExecutionContext, Inspection::Value * Target) const = 0;
-        protected:
-            Interpretation(void) = default;
-        private:
-            Interpretation(const Inspection::TypeDefinition::Interpretation & Interpretation) = delete;
-            Interpretation(Inspection::TypeDefinition::Interpretation && Interpretation) = delete;
-            Inspection::TypeDefinition::Interpretation & operator=(const Inspection::TypeDefinition::Interpretation & Interpretation) = delete;
-            Inspection::TypeDefinition::Interpretation & operator=(Inspection::TypeDefinition::Interpretation && Interpretation) = delete;
         };
         
         class Tag;

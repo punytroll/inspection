@@ -6,39 +6,37 @@
 			<part>Unsigned</part>
 			<part>8Bit</part>
 		</type-reference>
-		<interpretation>
-			<apply-enumeration>
-				<enumeration base-data-type="unsigned integer 8bit">
-					<element base-value="1" valid="true">
-						<tag name="interpretation">
-							<value>
-								<string>Vorbis Identification Header</string>
-							</value>
-						</tag>
-					</element>
-					<element base-value="3" valid="true">
-						<tag name="interpretation">
-							<value>
-								<string>Vorbis Comment Header</string>
-							</value>
-						</tag>
-					</element>
-					<element base-value="5" valid="true">
-						<tag name="interpretation">
-							<value>
-								<string>Vorbis Setup Header</string>
-							</value>
-						</tag>
-					</element>
-					<fallback-element valid="false">
-						<tag name="interpretation">
-							<value>
-								<nothing/>
-							</value>
-						</tag>
-					</fallback-element>
-				</enumeration>
-			</apply-enumeration>
-		</interpretation>
+		<apply-enumeration>
+			<enumeration base-data-type="unsigned integer 8bit">
+				<element base-value="1" valid="true">
+					<tag name="interpretation">
+						<value>
+							<string>Vorbis Identification Header</string>
+						</value>
+					</tag>
+				</element>
+				<element base-value="3" valid="true">
+					<tag name="interpretation">
+						<value>
+							<string>Vorbis Comment Header</string>
+						</value>
+					</tag>
+				</element>
+				<element base-value="5" valid="true">
+					<tag name="interpretation">
+						<value>
+							<string>Vorbis Setup Header</string>
+						</value>
+					</tag>
+				</element>
+				<fallback-element valid="false">
+					<tag name="interpretation">
+						<value>
+							<nothing/>
+						</value>
+					</tag>
+				</fallback-element>
+			</enumeration>
+		</apply-enumeration>
 	</forward>
 </type>

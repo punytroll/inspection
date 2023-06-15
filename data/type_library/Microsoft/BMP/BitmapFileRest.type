@@ -67,48 +67,46 @@
 							<part>Unsigned</part>
 							<part>32Bit_LittleEndian</part>
 						</type-reference>
-						<interpretation>
-							<apply-enumeration>
-								<enumeration base-data-type="unsigned integer 32bit">
-									<element base-value="0" valid="true">
-										<tag name="constant name">
-											<value>
-												<string>BI_RGB</string>
-											</value>
-										</tag>
-										<tag name="interpretation">
-											<value>
-												<string>uncompressed RGB</string>
-											</value>
-										</tag>
-									</element>
-									<element base-value="3" valid="true">
-										<tag name="constant name">
-											<value>
-												<string>BI_BITFIELDS</string>
-											</value>
-										</tag>
-										<tag name="interpretation">
-											<value>
-												<string>uncompressed RGB with color masks</string>
-											</value>
-										</tag>
-									</element>
-									<fallback-element valid="false">
-										<tag name="constant name">
-											<value>
-												<nothing/>
-											</value>
-										</tag>
-										<tag name="interpretation">
-											<value>
-												<nothing/>
-											</value>
-										</tag>
-									</fallback-element>
-								</enumeration>
-							</apply-enumeration>
-						</interpretation>
+						<apply-enumeration>
+							<enumeration base-data-type="unsigned integer 32bit">
+								<element base-value="0" valid="true">
+									<tag name="constant name">
+										<value>
+											<string>BI_RGB</string>
+										</value>
+									</tag>
+									<tag name="interpretation">
+										<value>
+											<string>uncompressed RGB</string>
+										</value>
+									</tag>
+								</element>
+								<element base-value="3" valid="true">
+									<tag name="constant name">
+										<value>
+											<string>BI_BITFIELDS</string>
+										</value>
+									</tag>
+									<tag name="interpretation">
+										<value>
+											<string>uncompressed RGB with color masks</string>
+										</value>
+									</tag>
+								</element>
+								<fallback-element valid="false">
+									<tag name="constant name">
+										<value>
+											<nothing/>
+										</value>
+									</tag>
+									<tag name="interpretation">
+										<value>
+											<nothing/>
+										</value>
+									</tag>
+								</fallback-element>
+							</enumeration>
+						</apply-enumeration>
 					</field>
 					<field name="SizeImage">
 						<type-reference>
@@ -216,48 +214,46 @@
 							<part>Unsigned</part>
 							<part>32Bit_LittleEndian</part>
 						</type-reference>
-						<interpretation>
-							<apply-enumeration>
-								<enumeration base-data-type="unsigned integer 32bit">
-									<element base-value="0" valid="true">
-										<tag name="constant name">
-											<value>
-												<string>BI_RGB</string>
-											</value>
-										</tag>
-										<tag name="interpretation">
-											<value>
-												<string>uncompressed RGB</string>
-											</value>
-										</tag>
-									</element>
-									<element base-value="3" valid="true">
-										<tag name="constant name">
-											<value>
-												<string>BI_BITFIELDS</string>
-											</value>
-										</tag>
-										<tag name="interpretation">
-											<value>
-												<string>uncompressed RGB with color masks</string>
-											</value>
-										</tag>
-									</element>
-									<fallback-element valid="false">
-										<tag name="constant name">
-											<value>
-												<nothing/>
-											</value>
-										</tag>
-										<tag name="interpretation">
-											<value>
-												<nothing/>
-											</value>
-										</tag>
-									</fallback-element>
-								</enumeration>
-							</apply-enumeration>
-						</interpretation>
+						<apply-enumeration>
+							<enumeration base-data-type="unsigned integer 32bit">
+								<element base-value="0" valid="true">
+									<tag name="constant name">
+										<value>
+											<string>BI_RGB</string>
+										</value>
+									</tag>
+									<tag name="interpretation">
+										<value>
+											<string>uncompressed RGB</string>
+										</value>
+									</tag>
+								</element>
+								<element base-value="3" valid="true">
+									<tag name="constant name">
+										<value>
+											<string>BI_BITFIELDS</string>
+										</value>
+									</tag>
+									<tag name="interpretation">
+										<value>
+											<string>uncompressed RGB with color masks</string>
+										</value>
+									</tag>
+								</element>
+								<fallback-element valid="false">
+									<tag name="constant name">
+										<value>
+											<nothing/>
+										</value>
+									</tag>
+									<tag name="interpretation">
+										<value>
+											<nothing/>
+										</value>
+									</tag>
+								</fallback-element>
+							</enumeration>
+						</apply-enumeration>
 					</field>
 					<field name="SizeImage">
 						<type-reference>
