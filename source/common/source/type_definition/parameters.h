@@ -20,6 +20,7 @@
 #define INSPECTION__SOURCE__COMMON__SOURCE__TYPE_DEFINITION__PARAMETERS_H
 
 #include <memory>
+#include <unordered_map>
 
 #include "expression.h"
 

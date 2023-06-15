@@ -3,7 +3,6 @@
 
 #include <ostream>
 
-#include "type_definition.h"
 #include "type_definition/data_reference.h"
 
 namespace Inspection
@@ -11,6 +10,7 @@ namespace Inspection
     namespace TypeDefinition
     {
         enum class DataType;
+        enum class PartType;
     }
     
     auto operator<<(std::ostream & OStream, Inspection::TypeDefinition::DataReference const & DataReference) -> std::ostream &;

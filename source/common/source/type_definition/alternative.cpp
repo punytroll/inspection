@@ -24,6 +24,7 @@
 #include "../execution_context.h"
 #include "alternative.h"
 #include "parameters.h"
+#include "part_type.h"
 #include "type_reference.h"
 
 Inspection::TypeDefinition::Alternative::Alternative(void) :

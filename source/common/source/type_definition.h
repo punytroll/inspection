@@ -45,17 +45,6 @@ namespace Inspection
     
     namespace TypeDefinition
     {
-        enum class PartType
-        {
-            Alternative,
-            Array,
-            Field,
-            Forward,
-            Select,
-            Sequence,
-            Type
-        };
-        
         class Tag;
         
         class AddTag : public Inspection::TypeDefinition::Interpretation
@@ -150,6 +139,7 @@ namespace Inspection
         };
         
         class Parameters;
+        enum class PartType;
         class TypeReference;
         
         class Part

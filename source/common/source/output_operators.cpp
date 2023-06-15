@@ -15,6 +15,7 @@
 #include "length.h"
 #include "output_operators.h"
 #include "type_definition/data_type.h"
+#include "type_definition/part_type.h"
 #include "value.h"
 
 using namespace std::string_literals;

@@ -29,6 +29,7 @@
 #include "field_reference.h"
 #include "helper.h"
 #include "parameters.h"
+#include "part_type.h"
 #include "type_reference.h"
 
 using namespace std::string_literals;

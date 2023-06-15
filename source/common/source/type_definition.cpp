@@ -37,6 +37,7 @@
 #include "type_definition/function_call.h"
 #include "type_definition/helper.h"
 #include "type_definition/parameters.h"
+#include "type_definition/part_type.h"
 #include "type_definition/tag.h"
 #include "type_definition/type_reference.h"
 #include "type_definition.h"
