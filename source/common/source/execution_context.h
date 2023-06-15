@@ -37,6 +37,7 @@ namespace Inspection
     
     namespace TypeDefinition
     {
+        class FieldReference;
         class ParameterReference;
         class Type;
     }

@@ -32,6 +32,7 @@
 #include "type_definition/array.h"
 #include "type_definition/data_type.h"
 #include "type_definition/expression.h"
+#include "type_definition/field_reference.h"
 #include "type_definition/function_call.h"
 #include "type_definition/helper.h"
 #include "type_definition/tag.h"
@@ -564,60 +565,6 @@ auto Inspection::TypeDefinition::Field::Load(XML::Element const * Element) -> st
     
     ASSERTION(Element->HasAttribute("name") == true);
     Result->FieldName = Element->GetAttribute("name");
-    
-    return Result;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// FieldReference                                                                                //
-///////////////////////////////////////////////////////////////////////////////////////////////////
-
-std::any Inspection::TypeDefinition::FieldReference::GetAny(Inspection::ExecutionContext & ExecutionContext) const
-{
-    NOT_IMPLEMENTED("Called GetAny() on a FieldReference expression.");
-}
-
-Inspection::TypeDefinition::DataType Inspection::TypeDefinition::FieldReference::GetDataType(void) const
-{
-    NOT_IMPLEMENTED("Called GetDataType() on a FieldReference expression.");
-}
-
-Inspection::TypeDefinition::FieldReference::Root Inspection::TypeDefinition::FieldReference::GetRoot(void) const
-{
-    return m_Root;
-}
-
-std::unique_ptr<Inspection::TypeDefinition::FieldReference> Inspection::TypeDefinition::FieldReference::Load(const XML::Element * Element)
-{
-    ASSERTION(Element != nullptr);
-    
-    auto Result = std::unique_ptr<Inspection::TypeDefinition::FieldReference>{new Inspection::TypeDefinition::FieldReference{}};
-    
-    ASSERTION(Element->HasAttribute("root") == true);
-    if(Element->GetAttribute("root") == "current")
-    {
-        Result->m_Root = Inspection::TypeDefinition::FieldReference::Root::Current;
-    }
-    else if(Element->GetAttribute("root") == "type")
-    {
-        Result->m_Root = Inspection::TypeDefinition::FieldReference::Root::Type;
-    }
-    else
-    {
-        UNEXPECTED_CASE("Element->GetAttribute(\"root\") == " + Element->GetAttribute("root"));
-    }
-    for(auto ChildElement : Element->GetChildElements())
-    {
-        ASSERTION(ChildElement != nullptr);
-        ASSERTION(ChildElement->GetName() == "field");
-        ASSERTION(ChildElement->GetChildNodes().size() == 1);
-        
-        auto FieldReferenceFieldText = dynamic_cast<XML::Text const *>(ChildElement->GetChildNode(0));
-        
-        ASSERTION(FieldReferenceFieldText != nullptr);
-        Result->Parts.push_back(FieldReferenceFieldText->GetText());
-    }
     
     return Result;
 }

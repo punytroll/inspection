@@ -58,34 +58,6 @@ namespace Inspection
             Type
         };
         
-        class FieldReference : public Inspection::TypeDefinition::Expression
-        {
-        public:
-            static std::unique_ptr<Inspection::TypeDefinition::FieldReference> Load(const XML::Element * Element);
-        public:
-            enum class Root
-            {
-                Current,
-                Type
-            };
-        public:
-            virtual ~FieldReference(void) = default;
-            std::any GetAny(Inspection::ExecutionContext & ExecutionContext) const override;
-            Inspection::TypeDefinition::DataType GetDataType(void) const override;
-        public:
-            Inspection::TypeDefinition::FieldReference::Root GetRoot(void) const;
-        public:
-            std::vector<std::string> Parts;
-        private:
-            FieldReference(void) = default;
-            FieldReference(const Inspection::TypeDefinition::FieldReference & FieldReference) = delete;
-            FieldReference(Inspection::TypeDefinition::FieldReference && FieldReference) = delete;
-            Inspection::TypeDefinition::FieldReference & operator=(const Inspection::TypeDefinition::FieldReference & FieldReference) = delete;
-            Inspection::TypeDefinition::FieldReference & operator=(Inspection::TypeDefinition::FieldReference && FieldReference) = delete;
-        private:
-            Inspection::TypeDefinition::FieldReference::Root m_Root;
-        };
-        
         class Parameters : public Inspection::TypeDefinition::Expression
         {
         public:

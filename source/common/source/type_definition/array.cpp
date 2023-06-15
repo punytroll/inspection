@@ -27,6 +27,7 @@
 #include "../xml_helper.h"
 #include "array.h"
 #include "data_type.h"
+#include "field_reference.h"
 #include "helper.h"
 
 using namespace std::string_literals;

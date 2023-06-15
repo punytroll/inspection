@@ -28,6 +28,7 @@
 #include "length.h"
 #include "result.h"
 #include "type.h"
+#include "type_definition/field_reference.h"
 #include "type_definition/parameter_reference.h"
 #include "value.h"
 
@@ -153,9 +154,9 @@ Inspection::Value * Inspection::ExecutionContext::GetFieldFromFieldReference(Ins
     }
     Result = ExecutionStackIterator->m_Result.GetValue();
     
-    auto PartIterator = std::begin(FieldReference.Parts);
+    auto PartIterator = std::begin(FieldReference.GetParts());
     
-    while(PartIterator != std::end(FieldReference.Parts))
+    while(PartIterator != std::end(FieldReference.GetParts()))
     {
         // maybe, the field is already in the result
         if(Result->HasField(*PartIterator) == true)

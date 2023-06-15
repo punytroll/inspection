@@ -31,6 +31,7 @@ common_library = static_library(
     'source/type_definition/divide.cpp',
     'source/type_definition/equals.cpp',
     'source/type_definition/expression.cpp',
+    'source/type_definition/field_reference.cpp',
     'source/type_definition/function_call.cpp',
     'source/type_definition/helper.cpp',
     'source/type_definition/length.cpp',

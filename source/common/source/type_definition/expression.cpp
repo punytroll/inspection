@@ -28,6 +28,7 @@
 #include "divide.h"
 #include "equals.h"
 #include "expression.h"
+#include "field_reference.h"
 #include "function_call.h"
 #include "length.h"
 #include "less_than.h"
