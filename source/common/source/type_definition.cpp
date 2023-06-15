@@ -89,18 +89,6 @@ static auto ApplyEnumeration(Inspection::ExecutionContext & ExecutionContext, In
     return Result;
 }
 
-static auto GetParameters(Inspection::ExecutionContext & ExecutionContext, Inspection::TypeDefinition::Parameters const * Parameters) -> std::unordered_map<std::string, std::any>
-{
-    if(Parameters != nullptr)
-    {
-        return Parameters->GetParameters(ExecutionContext);
-    }
-    else
-    {
-        return std::unordered_map<std::string, std::any>{};
-    }
-}
-
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // AddTag                                                                                        //
@@ -624,7 +612,14 @@ auto Inspection::TypeDefinition::Part::ApplyInterpretations(Inspection::Executio
 
 auto Inspection::TypeDefinition::Part::GetParameters(Inspection::ExecutionContext & ExecutionContext) const -> std::unordered_map<std::string, std::any>
 {
-    return ::GetParameters(ExecutionContext, Parameters.get());
+    if(Parameters != nullptr)
+    {
+        return Parameters->GetParameters(ExecutionContext);
+    }
+    else
+    {
+        return std::unordered_map<std::string, std::any>{};
+    }
 }
 
 auto Inspection::TypeDefinition::Part::GetPartType(void) const -> Inspection::TypeDefinition::PartType
