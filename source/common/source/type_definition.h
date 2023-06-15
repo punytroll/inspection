@@ -84,14 +84,14 @@ namespace Inspection
         public:
             virtual ~ApplyEnumeration(void) = default;
             bool Apply(Inspection::ExecutionContext & ExecutionContext, Inspection::Value * Target) const override;
-        public:
-            std::unique_ptr<Inspection::TypeDefinition::Enumeration> Enumeration;
         private:
             ApplyEnumeration(void) = default;
             ApplyEnumeration(const Inspection::TypeDefinition::ApplyEnumeration & ApplyEnumeration) = delete;
             ApplyEnumeration(Inspection::TypeDefinition::ApplyEnumeration && ApplyEnumeration) = delete;
             Inspection::TypeDefinition::ApplyEnumeration & operator=(const Inspection::TypeDefinition::ApplyEnumeration & ApplyEnumeration) = delete;
             Inspection::TypeDefinition::ApplyEnumeration & operator=(Inspection::TypeDefinition::ApplyEnumeration && ApplyEnumeration) = delete;
+        private:
+            std::unique_ptr<Inspection::TypeDefinition::Enumeration> m_Enumeration;
         };
         
         enum class DataType;

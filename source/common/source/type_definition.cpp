@@ -122,45 +122,45 @@ std::unique_ptr<Inspection::TypeDefinition::AddTag> Inspection::TypeDefinition::
 
 bool Inspection::TypeDefinition::ApplyEnumeration::Apply(Inspection::ExecutionContext & ExecutionContext, Inspection::Value * Target) const
 {
-    ASSERTION(Enumeration != nullptr);
+    ASSERTION(m_Enumeration != nullptr);
     
     auto Result = true;
     
-    switch(Enumeration->GetBaseDataType())
+    switch(m_Enumeration->GetBaseDataType())
     {
     case Inspection::TypeDefinition::DataType::String:
         {
-            ::ApplyEnumeration<std::string>(ExecutionContext, *Enumeration, Target);
+            ::ApplyEnumeration<std::string>(ExecutionContext, *m_Enumeration, Target);
             
             break;
         }
     case Inspection::TypeDefinition::DataType::UnsignedInteger8Bit:
         {
-            ::ApplyEnumeration<std::uint8_t>(ExecutionContext, *Enumeration, Target);
+            ::ApplyEnumeration<std::uint8_t>(ExecutionContext, *m_Enumeration, Target);
             
             break;
         }
     case Inspection::TypeDefinition::DataType::UnsignedInteger16Bit:
         {
-            ::ApplyEnumeration<std::uint16_t>(ExecutionContext, *Enumeration, Target);
+            ::ApplyEnumeration<std::uint16_t>(ExecutionContext, *m_Enumeration, Target);
             
             break;
         }
     case Inspection::TypeDefinition::DataType::UnsignedInteger32Bit:
         {
-            ::ApplyEnumeration<std::uint32_t>(ExecutionContext, *Enumeration, Target);
+            ::ApplyEnumeration<std::uint32_t>(ExecutionContext, *m_Enumeration, Target);
             
             break;
         }
     case Inspection::TypeDefinition::DataType::Boolean:
         {
-            ::ApplyEnumeration<bool>(ExecutionContext, *Enumeration, Target);
+            ::ApplyEnumeration<bool>(ExecutionContext, *m_Enumeration, Target);
             
             break;
         }
     default:
         {
-            UNEXPECTED_CASE("Enumeration->BaseDataType == " + Inspection::to_string(Enumeration->GetBaseDataType()));
+            UNEXPECTED_CASE("Enumeration->BaseDataType == " + Inspection::to_string(m_Enumeration->GetBaseDataType()));
         }
     }
     
@@ -176,7 +176,7 @@ std::unique_ptr<Inspection::TypeDefinition::ApplyEnumeration> Inspection::TypeDe
         ASSERTION(ChildElement != nullptr);
         if(ChildElement->GetName() == "enumeration")
         {
-            Result->Enumeration = Inspection::TypeDefinition::Enumeration::Load(ChildElement);
+            Result->m_Enumeration = Inspection::TypeDefinition::Enumeration::Load(ChildElement);
         }
         else
         {
