@@ -1072,34 +1072,6 @@ auto Inspection::TypeDefinition::TypePart::Get(Inspection::ExecutionContext & Ex
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// TypeValue                                                                                     //
-///////////////////////////////////////////////////////////////////////////////////////////////////
-
-auto Inspection::TypeDefinition::TypeValue::GetAny(Inspection::ExecutionContext & ExecutionContext) const -> std::any
-{
-    m_Type->SetTypeRepository(ExecutionContext.GetTypeRepository());
-    
-    return const_cast<Inspection::TypeDefinition::Type const *>(m_Type.get());
-}
-
-auto Inspection::TypeDefinition::TypeValue::GetDataType() const -> Inspection::TypeDefinition::DataType
-{
-    return Inspection::TypeDefinition::DataType::Type;
-}
-
-auto Inspection::TypeDefinition::TypeValue::Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::TypeValue>
-{
-    ASSERTION(Element != nullptr);
-    
-    auto Result = std::unique_ptr<Inspection::TypeDefinition::TypeValue>{new Inspection::TypeDefinition::TypeValue{}};
-    
-    Result->m_Type = Inspection::TypeDefinition::Type::Load(Element, {"<anonymous>"}, nullptr);
-    
-    return Result;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
 // Verification                                                                                  //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 

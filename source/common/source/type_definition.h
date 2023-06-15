@@ -59,24 +59,6 @@ namespace Inspection
             Type
         };
         
-        class TypeValue : public Inspection::TypeDefinition::Expression
-        {
-        public:
-            static auto Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::TypeValue>;
-        public:
-            virtual ~TypeValue() = default;
-            auto GetAny(Inspection::ExecutionContext & ExecutionContext) const -> std::any override;
-            auto GetDataType() const -> Inspection::TypeDefinition::DataType override;
-        private:
-            TypeValue() = default;
-            TypeValue(Inspection::TypeDefinition::TypeValue const & TypeValue) = delete;
-            TypeValue(Inspection::TypeDefinition::TypeValue && TypeValue) = delete;
-            auto operator=(Inspection::TypeDefinition::TypeValue const & TypeValue) -> Inspection::TypeDefinition::TypeValue & = delete;
-            auto operator=(Inspection::TypeDefinition::TypeValue && TypeValue) -> Inspection::TypeDefinition::TypeValue & = delete;
-        private:
-            std::unique_ptr<Inspection::TypeDefinition::Type> m_Type;
-        };
-        
         class Tag;
         
         class Enumeration
