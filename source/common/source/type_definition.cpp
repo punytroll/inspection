@@ -28,6 +28,7 @@
 #include "length.h"
 #include "result.h"
 #include "type.h"
+#include "type_definition/add_tag.h"
 #include "type_definition/alternative.h"
 #include "type_definition/array.h"
 #include "type_definition/data_type.h"
@@ -86,32 +87,6 @@ static auto ApplyEnumeration(Inspection::ExecutionContext & ExecutionContext, In
             Result = false;
         }
     }
-    
-    return Result;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// AddTag                                                                                        //
-///////////////////////////////////////////////////////////////////////////////////////////////////
-
-bool Inspection::TypeDefinition::AddTag::Apply(Inspection::ExecutionContext & ExecutionContext, Inspection::Value * Target) const
-{
-    ASSERTION(Target != nullptr);
-    ASSERTION(m_Tag != nullptr);
-    Target->AddTag(m_Tag->Get(ExecutionContext));
-    
-    return true;
-}
-
-std::unique_ptr<Inspection::TypeDefinition::AddTag> Inspection::TypeDefinition::AddTag::Load(const XML::Element * Element)
-{
-    ASSERTION(Element != nullptr);
-    ASSERTION(Element->GetName() == "tag");
-    
-    auto Result = std::unique_ptr<Inspection::TypeDefinition::AddTag>{new Inspection::TypeDefinition::AddTag{}};
-    
-    Result->m_Tag = Inspection::TypeDefinition::Tag::Load(Element);
     
     return Result;
 }

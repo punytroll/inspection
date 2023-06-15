@@ -45,25 +45,6 @@ namespace Inspection
     
     namespace TypeDefinition
     {
-        class Tag;
-        
-        class AddTag : public Inspection::TypeDefinition::Interpretation
-        {
-        public:
-            static std::unique_ptr<Inspection::TypeDefinition::AddTag> Load(const XML::Element * Element);
-        public:
-            virtual ~AddTag(void) = default;
-            bool Apply(Inspection::ExecutionContext & ExecutionContext, Inspection::Value * Target) const override;
-        private:
-            AddTag(void) = default;
-            AddTag(const Inspection::TypeDefinition::AddTag & AddTag) = delete;
-            AddTag(Inspection::TypeDefinition::AddTag && AddTag) = delete;
-            Inspection::TypeDefinition::AddTag & operator=(const Inspection::TypeDefinition::AddTag & AddTag) = delete;
-            Inspection::TypeDefinition::AddTag & operator=(Inspection::TypeDefinition::AddTag && AddTag) = delete;
-        private:
-            std::unique_ptr<Inspection::TypeDefinition::Tag> m_Tag;
-        };
-        
         class Enumeration;
         
         class ApplyEnumeration : public Inspection::TypeDefinition::Interpretation

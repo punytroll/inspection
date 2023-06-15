@@ -23,6 +23,7 @@ common_library = static_library(
     'source/query.cpp',
     'source/reader.cpp',
     'source/type_definition/add.cpp',
+    'source/type_definition/add_tag.cpp',
     'source/type_definition/alternative.cpp',
     'source/type_definition/and.cpp',
     'source/type_definition/array.cpp',
