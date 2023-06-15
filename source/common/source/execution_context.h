@@ -24,7 +24,6 @@
 #include <list>
 #include <unordered_map>
 
-#include "type_definition.h"
 #include "type_definition/data_reference.h"
 
 namespace Inspection
@@ -39,6 +38,7 @@ namespace Inspection
     {
         class FieldReference;
         class ParameterReference;
+        class Part;
         class Type;
     }
     
