@@ -39,6 +39,7 @@ common_library = static_library(
     'source/type_definition/modulus.cpp',
     'source/type_definition/multiply.cpp',
     'source/type_definition/parameter_reference.cpp',
+    'source/type_definition/parameters.cpp',
     'source/type_definition/subtract.cpp',
     'source/type_definition/tag.cpp',
     'source/type_definition/type_reference.cpp',

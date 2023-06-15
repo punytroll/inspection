@@ -28,6 +28,7 @@
 #include <vector>
 
 #include "type_definition/expression.h"
+#include "type_definition/parameters.h"
 #include "type_definition/type_reference.h"
 
 namespace XML
@@ -56,43 +57,6 @@ namespace Inspection
             Select,
             Sequence,
             Type
-        };
-        
-        class Parameters : public Inspection::TypeDefinition::Expression
-        {
-        public:
-            static std::unique_ptr<Inspection::TypeDefinition::Parameters> Load(const XML::Element * Element);
-        public:
-            class Parameter
-            {
-            public:
-                static std::unique_ptr<Inspection::TypeDefinition::Parameters::Parameter> Load(const XML::Element * Element);
-            public:
-                std::any GetAny(Inspection::ExecutionContext & ExecutionContext) const;
-                const std::string & GetName(void) const;
-            private:
-                Parameter(void) = default;
-                Parameter(const Inspection::TypeDefinition::Parameters::Parameter & Parameter) = delete;
-                Parameter(Inspection::TypeDefinition::Parameters::Parameter && Parameter) = delete;
-                Inspection::TypeDefinition::Parameters::Parameter & operator=(const Inspection::TypeDefinition::Parameters::Parameter & Parameter) = delete;
-                Inspection::TypeDefinition::Parameters::Parameter & operator=(Inspection::TypeDefinition::Parameters::Parameter && Parameter) = delete;
-            private:
-                std::string m_Name;
-                std::unique_ptr<Inspection::TypeDefinition::Expression> m_Expression;
-            };
-        public:
-            virtual ~Parameters(void) = default;
-            std::any GetAny(Inspection::ExecutionContext & ExecutionContext) const override;
-            Inspection::TypeDefinition::DataType GetDataType(void) const override;
-            std::unordered_map<std::string, std::any> GetParameters(Inspection::ExecutionContext & ExecutionContext) const;
-        private:
-            Parameters(void) = default;
-            Parameters(const Inspection::TypeDefinition::Parameters & Parameters) = delete;
-            Parameters(Inspection::TypeDefinition::Parameters && Parameters) = delete;
-            Inspection::TypeDefinition::Parameters & operator=(const Inspection::TypeDefinition::Parameters & Parameters) = delete;
-            Inspection::TypeDefinition::Parameters & operator=(Inspection::TypeDefinition::Parameters && Parameters) = delete;
-        private:
-            std::vector<std::unique_ptr<Inspection::TypeDefinition::Parameters::Parameter>> m_Parameters;
         };
         
         class TypeValue : public Inspection::TypeDefinition::Expression

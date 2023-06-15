@@ -35,6 +35,7 @@
 #include "modulus.h"
 #include "multiply.h"
 #include "parameter_reference.h"
+#include "parameters.h"
 #include "subtract.h"
 #include "value.h"
 #include "../type_definition.h"
