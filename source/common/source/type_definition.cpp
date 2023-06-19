@@ -30,6 +30,7 @@
 #include "type.h"
 #include "type_definition/add_tag.h"
 #include "type_definition/alternative.h"
+#include "type_definition/apply_enumeration.h"
 #include "type_definition/array.h"
 #include "type_definition/data_type.h"
 #include "type_definition/enumeration.h"
@@ -47,121 +48,6 @@
 #include "xml_helper.h"
 
 using namespace std::string_literals;
-
-static auto ApplyTags(Inspection::ExecutionContext & ExecutionContext, std::vector<std::unique_ptr<Inspection::TypeDefinition::Tag>> const & Tags, Inspection::Value * Target) -> void
-{
-    ASSERTION(Target != nullptr);
-    for(auto & Tag : Tags)
-    {
-        ASSERTION(Tag != nullptr);
-        Target->AddTag(Tag->Get(ExecutionContext));
-    }
-}
-
-template<typename DataType>
-static auto ApplyEnumeration(Inspection::ExecutionContext & ExecutionContext, Inspection::TypeDefinition::Enumeration const & Enumeration, Inspection::Value * Target) -> bool
-{
-    auto Result = false;
-    auto BaseValueString = to_string_cast(std::any_cast<DataType const &>(Target->GetData()));
-    auto ElementIterator = std::find_if(Enumeration.GetElements().begin(), Enumeration.GetElements().end(), [&BaseValueString](auto & Element)
-                                                                                                            {
-                                                                                                                return Element.BaseValue == BaseValueString;
-                                                                                                            });
-    
-    if(ElementIterator != Enumeration.GetElements().end())
-    {
-        ApplyTags(ExecutionContext, ElementIterator->Tags, Target);
-        Result = ElementIterator->Valid;
-    }
-    else
-    {
-        if(Enumeration.GetFallbackElement().has_value() == true)
-        {
-            ApplyTags(ExecutionContext, Enumeration.GetFallbackElement()->Tags, Target);
-            Target->AddTag("error", "Could find no enumeration element for the base value \"" + BaseValueString + "\".");
-            Result = Enumeration.GetFallbackElement()->Valid;
-        }
-        else
-        {
-            Target->AddTag("error", "Could find neither an enumeration element nor an enumeration fallback element for the base value \"" + BaseValueString + "\".");
-            Result = false;
-        }
-    }
-    
-    return Result;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// ApplyEnumeration                                                                              //
-///////////////////////////////////////////////////////////////////////////////////////////////////
-
-bool Inspection::TypeDefinition::ApplyEnumeration::Apply(Inspection::ExecutionContext & ExecutionContext, Inspection::Value * Target) const
-{
-    ASSERTION(m_Enumeration != nullptr);
-    
-    auto Result = true;
-    
-    switch(m_Enumeration->GetBaseDataType())
-    {
-    case Inspection::TypeDefinition::DataType::String:
-        {
-            ::ApplyEnumeration<std::string>(ExecutionContext, *m_Enumeration, Target);
-            
-            break;
-        }
-    case Inspection::TypeDefinition::DataType::UnsignedInteger8Bit:
-        {
-            ::ApplyEnumeration<std::uint8_t>(ExecutionContext, *m_Enumeration, Target);
-            
-            break;
-        }
-    case Inspection::TypeDefinition::DataType::UnsignedInteger16Bit:
-        {
-            ::ApplyEnumeration<std::uint16_t>(ExecutionContext, *m_Enumeration, Target);
-            
-            break;
-        }
-    case Inspection::TypeDefinition::DataType::UnsignedInteger32Bit:
-        {
-            ::ApplyEnumeration<std::uint32_t>(ExecutionContext, *m_Enumeration, Target);
-            
-            break;
-        }
-    case Inspection::TypeDefinition::DataType::Boolean:
-        {
-            ::ApplyEnumeration<bool>(ExecutionContext, *m_Enumeration, Target);
-            
-            break;
-        }
-    default:
-        {
-            UNEXPECTED_CASE("Enumeration->BaseDataType == " + Inspection::to_string(m_Enumeration->GetBaseDataType()));
-        }
-    }
-    
-    return Result;
-}
-
-std::unique_ptr<Inspection::TypeDefinition::ApplyEnumeration> Inspection::TypeDefinition::ApplyEnumeration::Load(const XML::Element * Element)
-{
-    auto Result = std::unique_ptr<Inspection::TypeDefinition::ApplyEnumeration>{new Inspection::TypeDefinition::ApplyEnumeration{}};
-    
-    for(auto ChildElement : Element->GetChildElements())
-    {
-        ASSERTION(ChildElement != nullptr);
-        if(ChildElement->GetName() == "enumeration")
-        {
-            Result->m_Enumeration = Inspection::TypeDefinition::Enumeration::Load(ChildElement);
-        }
-        else
-        {
-            UNEXPECTED_CASE("ChildElement->GetName() == " + ChildElement->GetName());
-        }
-    }
-    
-    return Result;
-}
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////

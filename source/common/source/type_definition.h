@@ -47,23 +47,6 @@ namespace Inspection
     {
         class Enumeration;
         
-        class ApplyEnumeration : public Inspection::TypeDefinition::Interpretation
-        {
-        public:
-            static std::unique_ptr<Inspection::TypeDefinition::ApplyEnumeration> Load(const XML::Element * Element);
-        public:
-            virtual ~ApplyEnumeration(void) = default;
-            bool Apply(Inspection::ExecutionContext & ExecutionContext, Inspection::Value * Target) const override;
-        private:
-            ApplyEnumeration(void) = default;
-            ApplyEnumeration(const Inspection::TypeDefinition::ApplyEnumeration & ApplyEnumeration) = delete;
-            ApplyEnumeration(Inspection::TypeDefinition::ApplyEnumeration && ApplyEnumeration) = delete;
-            Inspection::TypeDefinition::ApplyEnumeration & operator=(const Inspection::TypeDefinition::ApplyEnumeration & ApplyEnumeration) = delete;
-            Inspection::TypeDefinition::ApplyEnumeration & operator=(Inspection::TypeDefinition::ApplyEnumeration && ApplyEnumeration) = delete;
-        private:
-            std::unique_ptr<Inspection::TypeDefinition::Enumeration> m_Enumeration;
-        };
-        
         enum class DataType;
         
         class BitsInterpretation : public Inspection::TypeDefinition::Interpretation
