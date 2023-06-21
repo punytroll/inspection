@@ -83,25 +83,6 @@ namespace Inspection
             std::string m_Name;
         };
         
-        class Expression;
-        
-        class Verification : public Inspection::TypeDefinition::Interpretation
-        {
-        public:
-            static std::unique_ptr<Inspection::TypeDefinition::Verification> Load(const XML::Element * Element);
-        public:
-            virtual ~Verification(void) = default;
-            bool Apply(Inspection::ExecutionContext & ExecutionContext, Inspection::Value * Target) const override;
-        private:
-            Verification(void) = default;
-            Verification(const Inspection::TypeDefinition::Verification & Verification) = delete;
-            Verification(Inspection::TypeDefinition::Verification && Verification) = delete;
-            Inspection::TypeDefinition::Verification & operator=(const Inspection::TypeDefinition::Verification & Verification) = delete;
-            Inspection::TypeDefinition::Verification & operator=(Inspection::TypeDefinition::Verification && Verification) = delete;
-        private:
-            std::unique_ptr<Inspection::TypeDefinition::Expression> m_Expression;
-        };
-        
         class Parameters;
         enum class PartType;
         class TypeReference;

@@ -42,6 +42,7 @@
 #include "type_definition/part_type.h"
 #include "type_definition/tag.h"
 #include "type_definition/type_reference.h"
+#include "type_definition/verification.h"
 #include "type_definition.h"
 #include "type_repository.h"
 #include "value.h"
@@ -850,40 +851,6 @@ auto Inspection::TypeDefinition::TypePart::Create() -> std::unique_ptr<Inspectio
 auto Inspection::TypeDefinition::TypePart::Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result>
 {
     NOT_IMPLEMENTED("Called Get() on a Type part.");
-}
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// Verification                                                                                  //
-///////////////////////////////////////////////////////////////////////////////////////////////////
-
-bool Inspection::TypeDefinition::Verification::Apply(Inspection::ExecutionContext & ExecutionContext, Inspection::Value * Target) const
-{
-    ASSERTION(m_Expression != nullptr);
-    
-    auto VerificationAny = m_Expression->GetAny(ExecutionContext);
-    
-    ASSERTION(VerificationAny.type() == typeid(bool));
-    
-    auto Result = std::any_cast<bool>(VerificationAny);
-    
-    if(Result == false)
-    {
-        Target->AddTag("error", "The value failed to verify."s);
-    }
-    
-    return Result;
-}
-
-std::unique_ptr<Inspection::TypeDefinition::Verification> Inspection::TypeDefinition::Verification::Load(const XML::Element * Element)
-{
-    ASSERTION(Element != nullptr);
-    
-    auto Result = std::unique_ptr<Inspection::TypeDefinition::Verification>{new Inspection::TypeDefinition::Verification{}};
-    
-    Result->m_Expression = Inspection::TypeDefinition::Expression::Load(Element);
-    
-    return Result;
 }
 
 auto Inspection::TypeDefinition::GetDataVerificationFromString(std::string_view String) -> Inspection::TypeDefinition::BitsInterpretation::DataVerification
