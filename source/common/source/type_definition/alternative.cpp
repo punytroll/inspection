@@ -23,6 +23,7 @@
 
 #include "../execution_context.h"
 #include "alternative.h"
+#include "interpretation.h"
 #include "parameters.h"
 #include "part_type.h"
 #include "type_reference.h"

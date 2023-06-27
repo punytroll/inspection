@@ -26,6 +26,7 @@
 #include "internal_output_operators.h"
 #include "result.h"
 #include "type.h"
+#include "type_definition/interpretation.h"
 #include "type_definition/parameters.h"
 #include "type_definition/part_type.h"
 #include "type_definition/type_reference.h"

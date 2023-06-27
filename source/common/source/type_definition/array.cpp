@@ -28,6 +28,7 @@
 #include "data_type.h"
 #include "field_reference.h"
 #include "helper.h"
+#include "interpretation.h"
 #include "parameters.h"
 #include "part_type.h"
 #include "type_reference.h"

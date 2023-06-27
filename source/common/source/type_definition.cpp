@@ -39,6 +39,7 @@
 #include "type_definition/field_reference.h"
 #include "type_definition/function_call.h"
 #include "type_definition/helper.h"
+#include "type_definition/interpretation.h"
 #include "type_definition/parameters.h"
 #include "type_definition/part_type.h"
 #include "type_definition/tag.h"
@@ -55,7 +56,7 @@ using namespace std::string_literals;
 // Field                                                                                         //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-Inspection::TypeDefinition::Field::Field(void) :
+Inspection::TypeDefinition::Field::Field() :
     Inspection::TypeDefinition::Part{Inspection::TypeDefinition::PartType::Field}
 {
 }
@@ -70,7 +71,7 @@ auto Inspection::TypeDefinition::Field::Get(Inspection::ExecutionContext & Execu
     {
         ASSERTION(TypeReference != nullptr);
         
-        const auto * FieldType = TypeReference->GetType(ExecutionContext);
+        auto const * FieldType = TypeReference->GetType(ExecutionContext);
         
         ASSERTION(FieldType != nullptr);
         
@@ -83,12 +84,12 @@ auto Inspection::TypeDefinition::Field::Get(Inspection::ExecutionContext & Execu
     {
         ASSERTION(Parts.size() == 1);
         
-        const auto & Part = Parts.front();
+        auto const & Part = Parts.front();
         auto PartReader = std::unique_ptr<Inspection::Reader>{};
         
         if(Part->Length != nullptr)
         {
-            PartReader = std::make_unique<Inspection::Reader>(Reader, std::any_cast<const Inspection::Length &>(Part->Length->GetAny(ExecutionContext)));
+            PartReader = std::make_unique<Inspection::Reader>(Reader, std::any_cast<Inspection::Length const &>(Part->Length->GetAny(ExecutionContext)));
         }
         else
         {
@@ -129,7 +130,7 @@ auto Inspection::TypeDefinition::Field::Load(XML::Element const * Element) -> st
 // Forward                                                                                       //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-Inspection::TypeDefinition::Forward::Forward(void) :
+Inspection::TypeDefinition::Forward::Forward() :
     Inspection::TypeDefinition::Part{Inspection::TypeDefinition::PartType::Forward}
 {
 }
@@ -167,7 +168,7 @@ auto Inspection::TypeDefinition::Forward::Get(Inspection::ExecutionContext & Exe
         
         if(Part->Length != nullptr)
         {
-            PartReader = std::make_unique<Inspection::Reader>(Reader, std::any_cast<const Inspection::Length &>(Part->Length->GetAny(ExecutionContext)));
+            PartReader = std::make_unique<Inspection::Reader>(Reader, std::any_cast<Inspection::Length const &>(Part->Length->GetAny(ExecutionContext)));
         }
         else
         {
@@ -212,7 +213,7 @@ auto Inspection::TypeDefinition::Part::ApplyInterpretations(Inspection::Executio
 {
     auto Result = true;
     
-    for(const auto & Interpretation : Interpretations)
+    for(auto const & Interpretation : Interpretations)
     {
         ASSERTION(Interpretation != nullptr);
         Result &= Interpretation->Apply(ExecutionContext, Target);
@@ -237,12 +238,12 @@ auto Inspection::TypeDefinition::Part::GetParameters(Inspection::ExecutionContex
     }
 }
 
-auto Inspection::TypeDefinition::Part::GetPartType(void) const -> Inspection::TypeDefinition::PartType
+auto Inspection::TypeDefinition::Part::GetPartType() const -> Inspection::TypeDefinition::PartType
 {
     return m_PartType;
 }
 
-auto Inspection::TypeDefinition::Part::Load(const XML::Element * Element) -> std::unique_ptr<Inspection::TypeDefinition::Part>
+auto Inspection::TypeDefinition::Part::Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::Part>
 {
     ASSERTION(Element != nullptr);
     
@@ -309,16 +310,17 @@ auto Inspection::TypeDefinition::Part::m_AddPartResult(Inspection::Result * Resu
     }
 }
 
-auto Inspection::TypeDefinition::Part::_LoadProperties(const XML::Element * Element) -> void
+auto Inspection::TypeDefinition::Part::_LoadProperties(XML::Element const * Element) -> void
 {
-    for(auto ChildElement : Element->GetChildElements())
+    ASSERTION(Element != nullptr);
+    for(auto const & ChildElement : Element->GetChildElements())
     {
         ASSERTION(ChildElement != nullptr);
         _LoadProperty(ChildElement);
     }
 }
 
-auto Inspection::TypeDefinition::Part::_LoadProperty(const XML::Element * Element) -> void
+auto Inspection::TypeDefinition::Part::_LoadProperty(XML::Element const * Element) -> void
 {
     ASSERTION(Element != nullptr);
     if(Element->GetName() == "type-reference")
@@ -342,10 +344,10 @@ auto Inspection::TypeDefinition::Part::_LoadProperty(const XML::Element * Elemen
     }
     else if(Element->GetName() == "verification")
     {
-        for(auto ChildElement : Element->GetChildElements())
+        for(auto const & ChildElement : Element->GetChildElements())
         {
             ASSERTION(ChildElement != nullptr);
-            Interpretations.push_back(Inspection::TypeDefinition::Verification::Load(dynamic_cast<const XML::Element *>(ChildElement)));
+            Interpretations.push_back(Inspection::TypeDefinition::Verification::Load(ChildElement));
         }
     }
     else if(Element->GetName() == "tag")
@@ -379,7 +381,7 @@ auto Inspection::TypeDefinition::Part::_LoadProperty(const XML::Element * Elemen
 // Select                                                                                        //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-Inspection::TypeDefinition::Select::Select(void) :
+Inspection::TypeDefinition::Select::Select() :
     Inspection::TypeDefinition::Part{Inspection::TypeDefinition::PartType::Select}
 {
 }
@@ -396,31 +398,30 @@ auto Inspection::TypeDefinition::Select::Get(Inspection::ExecutionContext & Exec
     for(auto CaseIterator = std::begin(m_Cases); CaseIterator != std::end(m_Cases); ++CaseIterator)
     {
         auto const & Case = *CaseIterator;
-        auto WhenAny = Case->GetWhen().GetAny(ExecutionContext);
+        auto WhenAny = Case.When->GetAny(ExecutionContext);
         
         ASSERTION(WhenAny.type() == typeid(bool));
         if(std::any_cast<bool>(WhenAny) == true)
         {
             FoundCase = true;
-            if(Case->HasPart() == true)
+            if(Case.Part != nullptr)
             {
-                auto const & Part = Case->GetPart();
                 auto PartReader = std::unique_ptr<Inspection::Reader>{};
                 
-                if(Part.Length != nullptr)
+                if(Case.Part->Length != nullptr)
                 {
-                    PartReader = std::make_unique<Inspection::Reader>(Reader, std::any_cast<const Inspection::Length &>(Part.Length->GetAny(ExecutionContext)));
+                    PartReader = std::make_unique<Inspection::Reader>(Reader, std::any_cast<Inspection::Length const &>(Case.Part->Length->GetAny(ExecutionContext)));
                 }
                 else
                 {
                     PartReader = std::make_unique<Inspection::Reader>(Reader);
                 }
                 
-                auto PartParameters = Part.GetParameters(ExecutionContext);
-                auto PartResult = Part.Get(ExecutionContext, *PartReader, PartParameters);
+                auto PartParameters = Case.Part->GetParameters(ExecutionContext);
+                auto PartResult = Case.Part->Get(ExecutionContext, *PartReader, PartParameters);
                 
                 Continue = PartResult->GetSuccess();
-                m_AddPartResult(Result.get(), Part, PartResult.get());
+                m_AddPartResult(Result.get(), *(Case.Part), PartResult.get());
                 Reader.AdvancePosition(PartReader->GetConsumedLength());
             }
             
@@ -430,28 +431,25 @@ auto Inspection::TypeDefinition::Select::Get(Inspection::ExecutionContext & Exec
     if(FoundCase == false)
     {
         ASSERTION(Continue == true);
-        INVALID_INPUT_IF(m_Else == nullptr, "At least one \"case\" must evaluate to true or an \"else\" must be given.");
-        if(m_Else->HasPart() == true)
+        INVALID_INPUT_IF(m_ElsePart == nullptr, "At least one \"case\" must evaluate to true if no \"else\" has been given.");
+        
+        auto PartReader = std::unique_ptr<Inspection::Reader>{};
+        
+        if(m_ElsePart->Length != nullptr)
         {
-            auto const & Part = m_Else->GetPart();
-            auto PartReader = std::unique_ptr<Inspection::Reader>{};
-            
-            if(Part.Length != nullptr)
-            {
-                PartReader = std::make_unique<Inspection::Reader>(Reader, std::any_cast<const Inspection::Length &>(Part.Length->GetAny(ExecutionContext)));
-            }
-            else
-            {
-                PartReader = std::make_unique<Inspection::Reader>(Reader);
-            }
-            
-            auto PartParameters = Part.GetParameters(ExecutionContext);
-            auto PartResult = Part.Get(ExecutionContext, *PartReader, PartParameters);
-            
-            Continue = PartResult->GetSuccess();
-            m_AddPartResult(Result.get(), Part, PartResult.get());
-            Reader.AdvancePosition(PartReader->GetConsumedLength());
+            PartReader = std::make_unique<Inspection::Reader>(Reader, std::any_cast<Inspection::Length const &>(m_ElsePart->Length->GetAny(ExecutionContext)));
         }
+        else
+        {
+            PartReader = std::make_unique<Inspection::Reader>(Reader);
+        }
+        
+        auto PartParameters = m_ElsePart->GetParameters(ExecutionContext);
+        auto PartResult = m_ElsePart->Get(ExecutionContext, *PartReader, PartParameters);
+        
+        Continue = PartResult->GetSuccess();
+        m_AddPartResult(Result.get(), *m_ElsePart, PartResult.get());
+        Reader.AdvancePosition(PartReader->GetConsumedLength());
     }
     ExecutionContext.Pop();
     // finalization
@@ -469,12 +467,36 @@ auto Inspection::TypeDefinition::Select::_LoadProperty(XML::Element const * Elem
 {
     if(Element->GetName() == "case")
     {
-        m_Cases.push_back(Inspection::TypeDefinition::Select::Case::Load(Element));
+        auto Case = Inspection::TypeDefinition::Select::Case{};
+        
+        for(auto const & ChildElement : Element->GetChildElements())
+        {
+            ASSERTION(ChildElement != nullptr);
+            if(ChildElement->GetName() == "when")
+            {
+                INVALID_INPUT_IF(Case.When != nullptr, "Only one \"when\" element allowed per \"case\".");
+                Case.When = Inspection::TypeDefinition::Expression::LoadFromWithin(ChildElement);
+            }
+            else
+            {
+                INVALID_INPUT_IF(Case.Part != nullptr, "Only one part may be given in a \"case\".");
+                Case.Part = Inspection::TypeDefinition::Part::Load(ChildElement);
+            }
+        }
+        m_Cases.emplace_back(std::move(Case));
     }
     else if(Element->GetName() == "else")
     {
-        INVALID_INPUT_IF(m_Else != nullptr, "Only one \"else\" element allowed on \"select\" parts.");
-        m_Else = Inspection::TypeDefinition::Select::Case::Load(Element);
+        INVALID_INPUT_IF(m_ElsePart != nullptr, "Only one \"else\" element allowed on \"select\" parts.");
+        
+        auto ChildElementsRange = Element->GetChildElements();
+        auto ChildElements = std::vector<XML::Element const *>{ChildElementsRange.begin(), ChildElementsRange.end()};
+        
+        INVALID_INPUT_IF(ChildElements.size() > 1, "Too many parts in an \"else\" element.");
+        if(ChildElements.size() > 0)
+        {
+            m_ElsePart = Inspection::TypeDefinition::Part::Load(ChildElements.front());
+        }
     }
     else
     {
@@ -484,59 +506,10 @@ auto Inspection::TypeDefinition::Select::_LoadProperty(XML::Element const * Elem
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// Select::Case                                                                                  //
-///////////////////////////////////////////////////////////////////////////////////////////////////
-
-auto Inspection::TypeDefinition::Select::Case::GetPart() const -> Inspection::TypeDefinition::Part const &
-{
-    ASSERTION(m_Part != nullptr);
-    
-    return *m_Part;
-}
-
-auto Inspection::TypeDefinition::Select::Case::GetWhen() const -> Inspection::TypeDefinition::Expression const &
-{
-    ASSERTION(m_When != nullptr);
-    
-    return *m_When;
-}
-
-auto Inspection::TypeDefinition::Select::Case::HasPart() const -> bool
-{
-    return m_Part != nullptr;
-}
-
-auto Inspection::TypeDefinition::Select::Case::Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::Select::Case>
-{
-    ASSERTION(Element != nullptr);
-    
-    auto Result = std::unique_ptr<Inspection::TypeDefinition::Select::Case>{new Inspection::TypeDefinition::Select::Case{}};
-    
-    for(auto ChildElement : Element->GetChildElements())
-    {
-        ASSERTION(ChildElement != nullptr);
-        if(ChildElement->GetName() == "when")
-        {
-            ASSERTION(Result->m_When== nullptr);
-            Result->m_When = Inspection::TypeDefinition::Expression::LoadFromWithin(ChildElement);
-        }
-        else
-        {
-            ASSERTION(Result->m_Part == nullptr);
-            Result->m_Part = Inspection::TypeDefinition::Part::Load(ChildElement);
-        }
-    }
-    INVALID_INPUT_IF(Element->GetName() == "case" && Result->m_When == nullptr, "Case parts need a <when> specification.");
-    
-    return Result;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
 // Sequence                                                                                      //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-Inspection::TypeDefinition::Sequence::Sequence(void) :
+Inspection::TypeDefinition::Sequence::Sequence() :
     Inspection::TypeDefinition::Part{Inspection::TypeDefinition::PartType::Sequence}
 {
 }
@@ -554,7 +527,7 @@ auto Inspection::TypeDefinition::Sequence::Get(Inspection::ExecutionContext & Ex
         
         if(Part->Length != nullptr)
         {
-            PartReader = std::make_unique<Inspection::Reader>(Reader, std::any_cast<const Inspection::Length &>(Part->Length->GetAny(ExecutionContext)));
+            PartReader = std::make_unique<Inspection::Reader>(Reader, std::any_cast<Inspection::Length const &>(Part->Length->GetAny(ExecutionContext)));
         }
         else
         {
@@ -590,7 +563,7 @@ auto Inspection::TypeDefinition::Sequence::Load(XML::Element const * Element) ->
 // TypePart                                                                                      //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-Inspection::TypeDefinition::TypePart::TypePart(void) :
+Inspection::TypeDefinition::TypePart::TypePart() :
     Inspection::TypeDefinition::Part{Inspection::TypeDefinition::PartType::Type}
 {
 }
