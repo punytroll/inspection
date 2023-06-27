@@ -20,6 +20,7 @@
 #include <value.h>
 
 #include "data_type.h"
+#include "data_verification.h"
 #include "helper.h"
 
 using namespace std::string_literals;
@@ -117,5 +118,25 @@ auto Inspection::TypeDefinition::GetDataTypeFromString(std::string_view String) 
     else
     {
         UNEXPECTED_CASE("Data type string == \"" + std::string{String} + '"');
+    }
+}
+
+auto Inspection::TypeDefinition::GetDataVerificationFromString(std::string_view String) -> Inspection::TypeDefinition::DataVerification
+{
+    if(String == "set")
+    {
+        return Inspection::TypeDefinition::DataVerification::Set;
+    }
+    else if(String == "set or unset")
+    {
+        return Inspection::TypeDefinition::DataVerification::SetOrUnset;
+    }
+    else if(String == "unset")
+    {
+        return Inspection::TypeDefinition::DataVerification::Unset;
+    }
+    else
+    {
+        UNEXPECTED_CASE("Data verification string == \"" + std::string{String} + '"');
     }
 }

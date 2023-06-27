@@ -46,43 +46,7 @@ namespace Inspection
     namespace TypeDefinition
     {
         class Enumeration;
-        
         enum class DataType;
-        
-        class BitsInterpretation : public Inspection::TypeDefinition::Interpretation
-        {
-        public:
-            static auto Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::BitsInterpretation>;
-        public:
-            enum class DataVerification
-            {
-                Set,
-                SetOrUnset,
-                Unset
-            };
-        public:
-            auto Apply(Inspection::ExecutionContext & ExecutionContext, Inspection::Value * Target) const -> bool override;
-            auto GetAsDataType() const -> Inspection::TypeDefinition::DataType;
-            auto GetBeginIndex(void) const -> std::uint64_t;
-            auto GetDataVerification() const -> Inspection::TypeDefinition::BitsInterpretation::DataVerification;
-            auto GetInterpretations(void) const -> std::vector<std::unique_ptr<Inspection::TypeDefinition::Interpretation>> const &;
-            auto GetLength(void) const -> std::uint64_t;
-            auto GetName(void) const -> std::string const &;
-        private:
-            BitsInterpretation(void) = default;
-            BitsInterpretation(Inspection::TypeDefinition::BitsInterpretation const & BitsInterpretation) = delete;
-            BitsInterpretation(Inspection::TypeDefinition::BitsInterpretation && BitsInterpretation) = delete;
-            auto operator=(Inspection::TypeDefinition::BitsInterpretation const & BitsInterpretation) -> Inspection::TypeDefinition::BitsInterpretation & = delete;
-            auto operator=(Inspection::TypeDefinition::BitsInterpretation && BitsInterpretation) -> Inspection::TypeDefinition::BitsInterpretation & = delete;
-        private:
-            Inspection::TypeDefinition::DataType m_AsDataType;
-            std::uint64_t m_BeginIndex;
-            std::vector<std::unique_ptr<Inspection::TypeDefinition::Interpretation>> m_Interpretations;
-            std::uint64_t m_Length;
-            Inspection::TypeDefinition::BitsInterpretation::DataVerification m_DataVerification;
-            std::string m_Name;
-        };
-        
         class Parameters;
         enum class PartType;
         class TypeReference;
@@ -216,8 +180,6 @@ namespace Inspection
             auto operator=(Inspection::TypeDefinition::TypePart const & TypePart) -> Inspection::TypeDefinition::TypePart & = delete;
             auto operator=(Inspection::TypeDefinition::TypePart && TypePart) -> Inspection::TypeDefinition::TypePart & = delete;
         };
-        
-        auto GetDataVerificationFromString(std::string_view String) -> Inspection::TypeDefinition::BitsInterpretation::DataVerification;
     }
 }
 
