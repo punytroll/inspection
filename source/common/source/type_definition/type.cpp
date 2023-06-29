@@ -20,19 +20,20 @@
 
 #include <xml_puny_dom/xml_puny_dom.h>
 
-#include "assertion.h"
-#include "execution_context.h"
-#include "getters.h"
-#include "internal_output_operators.h"
-#include "result.h"
-#include "type.h"
-#include "type_definition/interpretation.h"
-#include "type_definition/parameters.h"
-#include "type_definition/part_type.h"
-#include "type_definition/type_part.h"
-#include "type_definition/type_reference.h"
-#include "type_repository.h"
-#include "xml_helper.h"
+#include <assertion.h>
+#include <getters.h>
+#include <result.h>
+#include <type.h>
+#include <type_repository.h>
+
+#include "../execution_context.h"
+#include "../internal_output_operators.h"
+#include "../xml_helper.h"
+#include "interpretation.h"
+#include "parameters.h"
+#include "part_type.h"
+#include "type_part.h"
+#include "type_reference.h"
 
 using namespace std::string_literals;
 
