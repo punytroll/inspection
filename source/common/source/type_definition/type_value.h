@@ -47,7 +47,7 @@ namespace Inspection
         public:
             static auto Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::TypeValue>;
         public:
-            virtual ~TypeValue() = default;
+            ~TypeValue() override = default;
             auto GetAny(Inspection::ExecutionContext & ExecutionContext) const -> std::any override;
             auto GetDataType() const -> Inspection::TypeDefinition::DataType override;
         private:
