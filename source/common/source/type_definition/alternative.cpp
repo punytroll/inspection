@@ -39,13 +39,13 @@ auto Inspection::TypeDefinition::Alternative::Get(Inspection::ExecutionContext &
     auto FoundAlternative = false;
     
     ExecutionContext.Push(*this, *Result, Reader, Parameters);
-    for(auto const & Part  : Parts)
+    for(auto const & Part  : GetParts())
     {
         auto PartReader = std::unique_ptr<Inspection::Reader>{};
         
-        if(Part->Length != nullptr)
+        if(Part->HasLength() == true)
         {
-            PartReader = std::make_unique<Inspection::Reader>(Reader, std::any_cast<Inspection::Length const &>(Part->Length->GetAny(ExecutionContext)));
+            PartReader = std::make_unique<Inspection::Reader>(Reader, std::any_cast<Inspection::Length const &>(Part->GetLengthAny(ExecutionContext)));
         }
         else
         {

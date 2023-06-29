@@ -21,6 +21,7 @@
 #include <xml_puny_dom/xml_puny_dom.h>
 
 #include <assertion.h>
+#include <type_repository.h>
 
 #include "../execution_context.h"
 #include "../internal_output_operators.h"
@@ -29,7 +30,7 @@
 
 auto Inspection::TypeDefinition::TypeReference::GetAny(Inspection::ExecutionContext & ExecutionContext) const -> std::any
 {
-    return GetType(ExecutionContext);
+    return ExecutionContext.GetTypeRepository().GetType(m_Parts);
 }
 
 auto Inspection::TypeDefinition::TypeReference::GetDataType() const -> Inspection::TypeDefinition::DataType
@@ -37,9 +38,9 @@ auto Inspection::TypeDefinition::TypeReference::GetDataType() const -> Inspectio
     return Inspection::TypeDefinition::DataType::Type;
 }
 
-auto Inspection::TypeDefinition::TypeReference::GetType(Inspection::ExecutionContext & ExecutionContext) const -> Inspection::TypeDefinition::Type const *
+auto Inspection::TypeDefinition::TypeReference::GetType(Inspection::ExecutionContext & ExecutionContext) const -> Inspection::TypeDefinition::Type const &
 {
-    return ExecutionContext.GetType(m_Parts);
+    return *(ExecutionContext.GetTypeRepository().GetType(m_Parts));
 }
 
 auto Inspection::TypeDefinition::TypeReference::Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::TypeReference>

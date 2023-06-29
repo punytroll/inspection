@@ -217,11 +217,6 @@ std::uint32_t Inspection::ExecutionContext::GetExecutionStackSize() const
     return m_ExecutionStack.size();
 }
 
-auto Inspection::ExecutionContext::GetType(std::vector<std::string> const & PathParts) -> Inspection::TypeDefinition::Type const *
-{
-    return m_TypeRepository.GetType(PathParts);
-}
-
 Inspection::Value * Inspection::ExecutionContext::m_GetValueFromDataReferenceFromCurrent(std::vector<Inspection::TypeDefinition::DataReference::Part> const & Parts, Inspection::Value * Current)
 {
     auto Result = Current;

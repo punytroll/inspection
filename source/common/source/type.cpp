@@ -80,9 +80,9 @@ auto Inspection::TypeDefinition::Type::Get(Inspection::ExecutionContext & Execut
             
             auto PartReader = std::unique_ptr<Inspection::Reader>{};
             
-            if(m_Part->Length != nullptr)
+            if(m_Part->HasLength() == true)
             {
-                PartReader = std::make_unique<Inspection::Reader>(Reader, std::any_cast<Inspection::Length const &>(m_Part->Length->GetAny(ExecutionContext)));
+                PartReader = std::make_unique<Inspection::Reader>(Reader, std::any_cast<Inspection::Length const &>(m_Part->GetLengthAny(ExecutionContext)));
             }
             else
             {
@@ -103,15 +103,15 @@ auto Inspection::TypeDefinition::Type::Get(Inspection::ExecutionContext & Execut
                 }
             case Inspection::TypeDefinition::PartType::Array:
                 {
-                    ASSERTION(m_Part->FieldName.has_value() == true);
-                    Result->GetValue()->AppendField(m_Part->FieldName.value(), PartResult->ExtractValue());
+                    ASSERTION(m_Part->HasFieldName() == true);
+                    Result->GetValue()->AppendField(m_Part->GetFieldName(), PartResult->ExtractValue());
                     
                     break;
                 }
             case Inspection::TypeDefinition::PartType::Field:
                 {
-                    ASSERTION(m_Part->FieldName.has_value() == true);
-                    Result->GetValue()->AppendField(m_Part->FieldName.value(), PartResult->ExtractValue());
+                    ASSERTION(m_Part->HasFieldName() == true);
+                    Result->GetValue()->AppendField(m_Part->GetFieldName(), PartResult->ExtractValue());
                     
                     break;
                 }

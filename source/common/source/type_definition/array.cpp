@@ -372,7 +372,7 @@ auto Inspection::TypeDefinition::Array::Load(XML::Element const * Element) -> st
     auto Result = std::unique_ptr<Inspection::TypeDefinition::Array>{new Inspection::TypeDefinition::Array{}};
     
     ASSERTION(Element->HasAttribute("name") == true);
-    Result->FieldName = Element->GetAttribute("name");
+    Result->m_FieldName = Element->GetAttribute("name");
     
     return Result;
 }

@@ -57,26 +57,32 @@ namespace Inspection
             virtual ~Part() = default;
             auto ApplyInterpretations(Inspection::ExecutionContext & ExecutionContext, Inspection::Value * Target) const -> bool;
             virtual auto Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result> = 0;
+            auto GetFieldName() const -> std::string const &;
+            auto GetLengthAny(Inspection::ExecutionContext & ExecutionContext) const -> std::any;
             auto GetParameters(Inspection::ExecutionContext & ExecutionContext) const -> std::unordered_map<std::string, std::any>;
+            auto GetParts() const -> std::vector<std::unique_ptr<Inspection::TypeDefinition::Part>> const &;
             auto GetPartType() const -> Inspection::TypeDefinition::PartType;
-        public:
-            std::optional<std::string> FieldName;
-            std::unique_ptr<Inspection::TypeDefinition::TypeReference> TypeReference;
-            std::vector<std::unique_ptr<Inspection::TypeDefinition::Interpretation>> Interpretations;
-            std::unique_ptr<Inspection::TypeDefinition::Expression> Length;
-            std::unique_ptr<Inspection::TypeDefinition::Parameters> Parameters;
-            std::vector<std::unique_ptr<Inspection::TypeDefinition::Part>> Parts;
+            auto GetTypeFromTypeReference(Inspection::ExecutionContext & ExecutionContext) const -> Inspection::TypeDefinition::Type const &;
+            auto HasFieldName() const -> bool;
+            auto HasLength() const -> bool;
+            auto HasTypeReference() const -> bool;
         protected:
             auto _LoadProperties(XML::Element const * Element) -> void;
             virtual auto _LoadProperty(XML::Element const * Element) -> void;
             auto m_AddPartResult(Inspection::Result * Result, Inspection::TypeDefinition::Part const & Part, Inspection::Result * PartResult) const -> void;
+            std::optional<std::string> m_FieldName;
         private:
             Part(Inspection::TypeDefinition::Part const & Part) = delete;
             Part(Inspection::TypeDefinition::Part && Part) = delete;
             auto operator=(Inspection::TypeDefinition::Part const & Part) -> Inspection::TypeDefinition::Part & = delete;
             auto operator=(Inspection::TypeDefinition::Part && Part) -> Inspection::TypeDefinition::Part & = delete;
         private:
+            std::vector<std::unique_ptr<Inspection::TypeDefinition::Interpretation>> m_Interpretations;
+            std::unique_ptr<Inspection::TypeDefinition::Expression> m_Length;
+            std::unique_ptr<Inspection::TypeDefinition::Parameters> m_Parameters;
+            std::vector<std::unique_ptr<Inspection::TypeDefinition::Part>> m_Parts;
             Inspection::TypeDefinition::PartType m_PartType;
+            std::unique_ptr<Inspection::TypeDefinition::TypeReference> m_TypeReference;
         };
         
         class Field : public Inspection::TypeDefinition::Part
