@@ -30,7 +30,6 @@ namespace Inspection
     class ExecutionContext;
     class Reader;
     class Result;
-    class TypeRepository;
     
     class Type
     {
