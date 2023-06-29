@@ -16,8 +16,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 **/
 
-#ifndef INSPECTION__SOURCE__COMMON__SOURCE__TYPE_DEFINITION__ALTERNATIVE_H
-#define INSPECTION__SOURCE__COMMON__SOURCE__TYPE_DEFINITION__ALTERNATIVE_H
+#ifndef INSPECTION__SOURCE__COMMON__SOURCE__TYPE_DEFINITION__FIELD_H
+#define INSPECTION__SOURCE__COMMON__SOURCE__TYPE_DEFINITION__FIELD_H
 
 #include <any>
 #include <memory>
@@ -34,24 +34,25 @@ namespace XML
 namespace Inspection
 {
     class ExecutionContext;
-    class Value;
+    class Reader;
+    class Result;
     
     namespace TypeDefinition
     {
-        class Alternative : public Inspection::TypeDefinition::Part
+        class Field : public Inspection::TypeDefinition::Part
         {
         public:
-            static auto Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::Alternative>;
+            static auto Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::Field>;
         public:
-            ~Alternative(void) override = default;
+            ~Field() override = default;
             auto Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result> override;
         private:
-            Alternative(void);
-            Alternative(Inspection::TypeDefinition::Alternative const & Alternative) = delete;
-            Alternative(Inspection::TypeDefinition::Alternative && Alternative) = delete;
-            auto operator=(Inspection::TypeDefinition::Alternative const & Alternative) -> Inspection::TypeDefinition::Alternative & = delete;
-            auto operator=(Inspection::TypeDefinition::Alternative && Alternative) -> Inspection::TypeDefinition::Alternative & = delete;
-        }; 
+            Field();
+            Field(Inspection::TypeDefinition::Field const & Field) = delete;
+            Field(Inspection::TypeDefinition::Field && Field) = delete;
+            auto operator=(Inspection::TypeDefinition::Field const & Field) -> Inspection::TypeDefinition::Field & = delete;
+            auto operator=(Inspection::TypeDefinition::Field && Field) -> Inspection::TypeDefinition::Field & = delete;
+        };
     }
 }
 

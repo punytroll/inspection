@@ -19,10 +19,13 @@
 #ifndef INSPECTION__SOURCE__COMMON__SOURCE__TYPE_DEFINITION__ARRAY_H
 #define INSPECTION__SOURCE__COMMON__SOURCE__TYPE_DEFINITION__ARRAY_H
 
+#include <any>
 #include <memory>
+#include <optional>
 #include <string>
+#include <unordered_map>
 
-#include "../type_definition.h"
+#include "part.h"
 
 namespace XML
 {
@@ -36,6 +39,8 @@ namespace Inspection
     
     namespace TypeDefinition
     {
+        class FieldReference;
+        
         class Array : public Inspection::TypeDefinition::Part
         {
         public:

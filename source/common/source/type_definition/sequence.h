@@ -16,8 +16,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 **/
 
-#ifndef INSPECTION__SOURCE__COMMON__SOURCE__TYPE_DEFINITION__ALTERNATIVE_H
-#define INSPECTION__SOURCE__COMMON__SOURCE__TYPE_DEFINITION__ALTERNATIVE_H
+#ifndef INSPECTION__SOURCE__COMMON__SOURCE__TYPE_DEFINITION__SEQUENCE_H
+#define INSPECTION__SOURCE__COMMON__SOURCE__TYPE_DEFINITION__SEQUENCE_H
 
 #include <any>
 #include <memory>
@@ -34,24 +34,25 @@ namespace XML
 namespace Inspection
 {
     class ExecutionContext;
-    class Value;
+    class Reader;
+    class Result;
     
     namespace TypeDefinition
     {
-        class Alternative : public Inspection::TypeDefinition::Part
+        class Sequence : public Inspection::TypeDefinition::Part
         {
         public:
-            static auto Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::Alternative>;
+            static auto Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::Sequence>;
         public:
-            ~Alternative(void) override = default;
+            ~Sequence() override = default;
             auto Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result> override;
         private:
-            Alternative(void);
-            Alternative(Inspection::TypeDefinition::Alternative const & Alternative) = delete;
-            Alternative(Inspection::TypeDefinition::Alternative && Alternative) = delete;
-            auto operator=(Inspection::TypeDefinition::Alternative const & Alternative) -> Inspection::TypeDefinition::Alternative & = delete;
-            auto operator=(Inspection::TypeDefinition::Alternative && Alternative) -> Inspection::TypeDefinition::Alternative & = delete;
-        }; 
+            Sequence();
+            Sequence(Inspection::TypeDefinition::Sequence const & Sequence) = delete;
+            Sequence(Inspection::TypeDefinition::Sequence && Sequence) = delete;
+            auto operator=(Inspection::TypeDefinition::Sequence const & Sequence) -> Inspection::TypeDefinition::Sequence & = delete;
+            auto operator=(Inspection::TypeDefinition::Sequence && Sequence) -> Inspection::TypeDefinition::Sequence & = delete;
+        };
     }
 }
 
