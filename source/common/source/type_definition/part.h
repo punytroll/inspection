@@ -53,7 +53,7 @@ namespace Inspection
             static auto Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::Part>;
         public:
             Part(Inspection::TypeDefinition::PartType Type);
-            virtual ~Part() = default;
+            virtual ~Part();
             auto ApplyInterpretations(Inspection::ExecutionContext & ExecutionContext, Inspection::Value * Target) const -> bool;
             virtual auto Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result> = 0;
             auto GetFieldName() const -> std::string const &;

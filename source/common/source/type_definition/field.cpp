@@ -24,12 +24,9 @@
 #include <value.h>
 
 #include "../execution_context.h"
-#include "interpretation.h"
 #include "field.h"
-#include "parameters.h"
 #include "part_type.h"
 #include "type.h"
-#include "type_reference.h"
 
 Inspection::TypeDefinition::Field::Field() :
     Inspection::TypeDefinition::Part{Inspection::TypeDefinition::PartType::Field}

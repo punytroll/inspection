@@ -22,11 +22,8 @@
 #include <result.h>
 
 #include "../execution_context.h"
-#include "interpretation.h"
-#include "parameters.h"
 #include "part_type.h"
 #include "sequence.h"
-#include "type_reference.h"
 
 Inspection::TypeDefinition::Sequence::Sequence() :
     Inspection::TypeDefinition::Part{Inspection::TypeDefinition::PartType::Sequence}

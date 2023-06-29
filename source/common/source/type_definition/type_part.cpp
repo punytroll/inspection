@@ -21,11 +21,8 @@
 #include <assertion.h>
 
 #include "expression.h"
-#include "interpretation.h"
-#include "parameters.h"
 #include "part_type.h"
 #include "type_part.h"
-#include "type_reference.h"
 
 Inspection::TypeDefinition::TypePart::TypePart() :
     Inspection::TypeDefinition::Part{Inspection::TypeDefinition::PartType::Type}

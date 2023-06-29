@@ -23,11 +23,8 @@
 
 #include "../execution_context.h"
 #include "forward.h"
-#include "interpretation.h"
-#include "parameters.h"
 #include "part_type.h"
 #include "type.h"
-#include "type_reference.h"
 
 Inspection::TypeDefinition::Forward::Forward() :
     Inspection::TypeDefinition::Part{Inspection::TypeDefinition::PartType::Forward}

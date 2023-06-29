@@ -24,11 +24,8 @@
 
 #include "../execution_context.h"
 #include "expression.h"
-#include "interpretation.h"
-#include "parameters.h"
 #include "part_type.h"
 #include "select.h"
-#include "type_reference.h"
 
 Inspection::TypeDefinition::Select::Select() :
     Inspection::TypeDefinition::Part{Inspection::TypeDefinition::PartType::Select}

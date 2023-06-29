@@ -46,6 +46,10 @@ Inspection::TypeDefinition::Part::Part(Inspection::TypeDefinition::PartType Part
 {
 }
 
+Inspection::TypeDefinition::Part::~Part()
+{
+}
+
 auto Inspection::TypeDefinition::Part::ApplyInterpretations(Inspection::ExecutionContext & ExecutionContext, Inspection::Value * Target) const -> bool
 {
     auto Result = true;
