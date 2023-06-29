@@ -49,10 +49,10 @@ namespace Inspection
             static auto Load(XML::Element const * Element, std::vector<std::string> const & PathParts) -> std::unique_ptr<Inspection::TypeDefinition::Type>;
             static auto Load(XML::Element const * Element, std::vector<std::string> const & PathParts, TypeRepository * TypeRepository) -> std::unique_ptr<Inspection::TypeDefinition::Type>;
         public:
-            ~Type();
-            auto Get(Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result>;
-            auto Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result>;
-            auto GetPathParts() const -> std::vector<std::string> const &;
+            ~Type() override;
+            auto Get(Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result> override;
+            auto Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result> override;
+            auto GetPathParts() const -> std::vector<std::string> const & override;
             auto SetTypeRepository(Inspection::TypeRepository & TypeRepository) -> void;
         private:
             Type(std::vector<std::string> const & PathParts, TypeRepository * TypeRepository);
