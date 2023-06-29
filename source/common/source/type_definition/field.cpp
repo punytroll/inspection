@@ -21,7 +21,6 @@
 #include <length.h>
 #include <reader.h>
 #include <result.h>
-#include <type.h>
 #include <value.h>
 
 #include "../execution_context.h"
@@ -29,6 +28,7 @@
 #include "field.h"
 #include "parameters.h"
 #include "part_type.h"
+#include "type.h"
 #include "type_reference.h"
 
 Inspection::TypeDefinition::Field::Field() :

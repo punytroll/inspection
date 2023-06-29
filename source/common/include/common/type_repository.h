@@ -12,6 +12,7 @@ namespace Inspection
 {
     class Result;
     class Reader;
+    class Type;
     
     namespace TypeDefinition
     {
@@ -25,7 +26,7 @@ namespace Inspection
         TypeRepository(void);
         ~TypeRepository(void);
         auto Get(std::vector<std::string> const & PathParts, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) -> std::unique_ptr<Inspection::Result>;
-        auto GetType(std::vector<std::string> const & PathParts) -> Inspection::TypeDefinition::Type const *;
+        auto GetType(std::vector<std::string> const & PathParts) -> Inspection::Type const *;
     private:
         auto m_GetOrLoadType(std::vector<std::string> const & PathParts) -> Inspection::TypeDefinition::Type *;
         auto m_GetOrLoadModule(std::vector<std::string> const & PathParts) -> Inspection::TypeDefinition::Module *;

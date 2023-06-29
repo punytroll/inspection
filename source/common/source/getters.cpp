@@ -157,7 +157,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_Array_AtLeastOne_EndedByFail
             ElementName = std::any_cast< std::string >(ElementNameIterator->second);
         }
         
-        auto ElementType{std::any_cast< const Inspection::TypeDefinition::Type * >(Parameters.at("ElementType"))};
+        auto ElementType = std::any_cast<Inspection::Type const *>(Parameters.at("ElementType"));
         std::uint64_t ElementIndexInArray{0};
         
         while((Continue == true) && (Reader.HasRemaining() == true))
@@ -241,7 +241,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_Array_EndedByNumberOfElement
             ElementName = std::any_cast< std::string >(ElementNameIterator->second);
         }
         
-        auto ElementType{std::any_cast< const Inspection::TypeDefinition::Type * >(Parameters.at("ElementType"))};
+        auto ElementType = std::any_cast<Inspection::Type const *>(Parameters.at("ElementType"));
         auto NumberOfElements{std::any_cast<std::uint64_t>(Parameters.at("NumberOfElements"))};
         std::uint64_t ElementIndexInArray{0};
         
@@ -316,7 +316,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_Array_EndedByPredicate(Inspe
         }
         
         auto EndPredicate = std::any_cast<std::function<bool (Inspection::Value *)>>(Parameters.at("EndPredicate"));
-        const auto ElementType = std::any_cast<const Inspection::TypeDefinition::Type *>(Parameters.at("ElementType"));
+        auto ElementType = std::any_cast<Inspection::Type const *>(Parameters.at("ElementType"));
         auto ElementIndexInArray = std::uint64_t{0};
         
         while(Continue == true)

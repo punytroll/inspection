@@ -5,11 +5,13 @@
 
 #include <xml_puny_dom/xml_puny_dom.h>
 
-#include "helper.h"
-#include "result.h"
-#include "type.h"
-#include "type_repository.h"
-#include "type_library_path.h"
+#include <helper.h>
+#include <result.h>
+#include <type.h>
+#include <type_library_path.h>
+#include <type_repository.h>
+
+#include "type_definition/type.h"
 
 namespace Inspection
 {
@@ -46,7 +48,7 @@ auto Inspection::TypeRepository::Get(std::vector<std::string> const & PathParts,
     return m_GetOrLoadType(PathParts)->Get(Reader, Parameters);
 }
 
-auto Inspection::TypeRepository::GetType(std::vector<std::string> const & PathParts) -> Inspection::TypeDefinition::Type const *
+auto Inspection::TypeRepository::GetType(std::vector<std::string> const & PathParts) -> Inspection::Type const *
 {
     return m_GetOrLoadType(PathParts);
 }

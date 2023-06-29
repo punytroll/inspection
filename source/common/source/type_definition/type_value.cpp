@@ -21,17 +21,17 @@
 #include <xml_puny_dom/xml_puny_dom.h>
 
 #include <assertion.h>
-#include <type.h>
 
 #include "../execution_context.h"
 #include "data_type.h"
+#include "type.h"
 #include "type_value.h"
 
 auto Inspection::TypeDefinition::TypeValue::GetAny(Inspection::ExecutionContext & ExecutionContext) const -> std::any
 {
     m_Type->SetTypeRepository(ExecutionContext.GetTypeRepository());
     
-    return const_cast<Inspection::TypeDefinition::Type const *>(m_Type.get());
+    return dynamic_cast<Inspection::Type const *>(m_Type.get());
 }
 
 auto Inspection::TypeDefinition::TypeValue::GetDataType() const -> Inspection::TypeDefinition::DataType

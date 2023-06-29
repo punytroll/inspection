@@ -26,6 +26,7 @@
 #include "../execution_context.h"
 #include "../internal_output_operators.h"
 #include "data_type.h"
+#include "type.h"
 #include "type_reference.h"
 
 auto Inspection::TypeDefinition::TypeReference::GetAny(Inspection::ExecutionContext & ExecutionContext) const -> std::any
@@ -40,7 +41,7 @@ auto Inspection::TypeDefinition::TypeReference::GetDataType() const -> Inspectio
 
 auto Inspection::TypeDefinition::TypeReference::GetType(Inspection::ExecutionContext & ExecutionContext) const -> Inspection::TypeDefinition::Type const &
 {
-    return *(ExecutionContext.GetTypeRepository().GetType(m_Parts));
+    return dynamic_cast<Inspection::TypeDefinition::Type const &>(*(ExecutionContext.GetTypeRepository().GetType(m_Parts)));
 }
 
 auto Inspection::TypeDefinition::TypeReference::Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::TypeReference>

@@ -19,7 +19,6 @@
 #include <xml_puny_dom/xml_puny_dom.h>
 
 #include <assertion.h>
-#include <type.h>
 
 #include "add.h"
 #include "and.h"
@@ -37,6 +36,7 @@
 #include "parameter_reference.h"
 #include "parameters.h"
 #include "subtract.h"
+#include "type.h"
 #include "type_reference.h"
 #include "type_value.h"
 #include "value.h"

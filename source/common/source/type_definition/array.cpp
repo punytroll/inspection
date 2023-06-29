@@ -19,7 +19,6 @@
 #include <xml_puny_dom/xml_puny_dom.h>
 
 #include <result.h>
-#include <type.h>
 #include <value.h>
 
 #include "../execution_context.h"
@@ -31,6 +30,7 @@
 #include "interpretation.h"
 #include "parameters.h"
 #include "part_type.h"
+#include "type.h"
 #include "type_reference.h"
 
 using namespace std::string_literals;
@@ -59,9 +59,9 @@ auto Inspection::TypeDefinition::Array::Get(Inspection::ExecutionContext & Execu
             auto ElementTypeAny = m_ElementType->GetAny(ExecutionContext);
             
             ASSERTION(ElementTypeAny.has_value() == true);
-            ASSERTION(ElementTypeAny.type() == typeid(Inspection::TypeDefinition::Type const *));
+            ASSERTION(ElementTypeAny.type() == typeid(Inspection::Type const *));
             
-            auto ElementType = std::any_cast<Inspection::TypeDefinition::Type const *>(ElementTypeAny);
+            auto ElementType = std::any_cast<Inspection::Type const *>(ElementTypeAny);
             
             ASSERTION(ElementType != nullptr);
             
@@ -139,9 +139,9 @@ auto Inspection::TypeDefinition::Array::Get(Inspection::ExecutionContext & Execu
             auto ElementTypeAny = m_ElementType->GetAny(ExecutionContext);
             
             ASSERTION(ElementTypeAny.has_value() == true);
-            ASSERTION(ElementTypeAny.type() == typeid(Inspection::TypeDefinition::Type const *));
+            ASSERTION(ElementTypeAny.type() == typeid(Inspection::Type const *));
             
-            auto ElementType = std::any_cast<Inspection::TypeDefinition::Type const *>(ElementTypeAny);
+            auto ElementType = std::any_cast<Inspection::Type const *>(ElementTypeAny);
             
             ASSERTION(ElementType != nullptr);
             
@@ -198,9 +198,9 @@ auto Inspection::TypeDefinition::Array::Get(Inspection::ExecutionContext & Execu
             auto ElementTypeAny = m_ElementType->GetAny(ExecutionContext);
             
             ASSERTION(ElementTypeAny.has_value() == true);
-            ASSERTION(ElementTypeAny.type() == typeid(Inspection::TypeDefinition::Type const *));
+            ASSERTION(ElementTypeAny.type() == typeid(Inspection::Type const *));
             
-            auto ElementType = std::any_cast<Inspection::TypeDefinition::Type const *>(ElementTypeAny);
+            auto ElementType = std::any_cast<Inspection::Type const *>(ElementTypeAny);
             
             ASSERTION(ElementType != nullptr);
             
@@ -260,9 +260,9 @@ auto Inspection::TypeDefinition::Array::Get(Inspection::ExecutionContext & Execu
             auto ElementTypeAny = m_ElementType->GetAny(ExecutionContext);
             
             ASSERTION(ElementTypeAny.has_value() == true);
-            ASSERTION(ElementTypeAny.type() == typeid(Inspection::TypeDefinition::Type const *));
+            ASSERTION(ElementTypeAny.type() == typeid(Inspection::Type const *));
             
-            auto ElementType = std::any_cast<Inspection::TypeDefinition::Type const *>(ElementTypeAny);
+            auto ElementType = std::any_cast<Inspection::Type const *>(ElementTypeAny);
             
             ASSERTION(ElementType != nullptr);
             
@@ -319,9 +319,9 @@ auto Inspection::TypeDefinition::Array::Get(Inspection::ExecutionContext & Execu
             auto ElementTypeAny = m_ElementType->GetAny(ExecutionContext);
             
             ASSERTION(ElementTypeAny.has_value() == true);
-            ASSERTION(ElementTypeAny.type() == typeid(Inspection::TypeDefinition::Type const *));
+            ASSERTION(ElementTypeAny.type() == typeid(Inspection::Type const *));
             
-            auto ElementType = std::any_cast<Inspection::TypeDefinition::Type const *>(ElementTypeAny);
+            auto ElementType = std::any_cast<Inspection::Type const *>(ElementTypeAny);
             
             ASSERTION(ElementType != nullptr);
             
