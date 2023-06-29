@@ -34,10 +34,7 @@ namespace Inspection
     class Type
     {
     public:
-        virtual ~Type()
-        {
-        }
-        
+        virtual ~Type() = default;
         virtual auto Get(Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result> = 0;
         virtual auto Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result> = 0;
         virtual auto GetPathParts() const -> std::vector<std::string> const & = 0;
