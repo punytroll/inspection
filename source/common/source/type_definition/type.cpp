@@ -16,8 +16,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 **/
 
-#include <any>
-
 #include <xml_puny_dom/xml_puny_dom.h>
 
 #include <assertion.h>
