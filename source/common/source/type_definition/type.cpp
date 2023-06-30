@@ -26,6 +26,7 @@
 #include "../execution_context.h"
 #include "../internal_output_operators.h"
 #include "../xml_helper.h"
+#include "data_type.h"
 #include "interpretation.h"
 #include "parameters.h"
 #include "part_type.h"
@@ -35,9 +36,8 @@
 
 using namespace std::string_literals;
 
-Inspection::TypeDefinition::Type::Type(std::vector<std::string> const & PathParts, Inspection::TypeRepository * TypeRepository) :
-    m_PathParts{PathParts},
-    m_TypeRepository{TypeRepository}
+Inspection::TypeDefinition::Type::Type(std::vector<std::string> const & PathParts) :
+    m_PathParts{PathParts}
 {
 }
 
@@ -47,7 +47,7 @@ Inspection::TypeDefinition::Type::~Type()
 
 auto Inspection::TypeDefinition::Type::Get(Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result>
 {
-    auto ExecutionContext = Inspection::ExecutionContext{*this, *m_TypeRepository};
+    auto ExecutionContext = Inspection::ExecutionContext{*this, Inspection::g_TypeRepository};
     auto Result = Get(ExecutionContext, Reader, Parameters);
     
     ASSERTION(ExecutionContext.GetExecutionStackSize() == 0);
@@ -75,8 +75,6 @@ auto Inspection::TypeDefinition::Type::Get(Inspection::ExecutionContext & Execut
         }
         else if(m_Part != nullptr)
         {
-            ASSERTION(m_TypeRepository != nullptr);
-            
             auto PartReader = std::unique_ptr<Inspection::Reader>{};
             
             if(m_Part->HasLength() == true)
@@ -152,6 +150,16 @@ auto Inspection::TypeDefinition::Type::Get(Inspection::ExecutionContext & Execut
     return Result;
 }
 
+auto Inspection::TypeDefinition::Type::GetAny(Inspection::ExecutionContext & ExecutionContext) const -> std::any
+{
+    return dynamic_cast<Inspection::Type const *>(this);
+}
+
+auto Inspection::TypeDefinition::Type::GetDataType() const -> Inspection::TypeDefinition::DataType
+{
+    return Inspection::TypeDefinition::DataType::Type;
+}
+
 auto Inspection::TypeDefinition::Type::GetPathParts(void) const -> std::vector<std::string> const &
 {
     return m_PathParts;
@@ -159,14 +167,9 @@ auto Inspection::TypeDefinition::Type::GetPathParts(void) const -> std::vector<s
 
 auto Inspection::TypeDefinition::Type::Load(XML::Element const * Element, std::vector<std::string> const & PathParts) -> std::unique_ptr<Inspection::TypeDefinition::Type>
 {
-    return Inspection::TypeDefinition::Type::Load(Element, PathParts, nullptr);
-}
-
-auto Inspection::TypeDefinition::Type::Load(XML::Element const * Element, std::vector<std::string> const & PathParts, TypeRepository * TypeRepository) -> std::unique_ptr<Inspection::TypeDefinition::Type>
-{
     ASSERTION(Element != nullptr);
     
-    auto Result = std::unique_ptr<Inspection::TypeDefinition::Type>{new Inspection::TypeDefinition::Type{PathParts, TypeRepository}};
+    auto Result = std::unique_ptr<Inspection::TypeDefinition::Type>{new Inspection::TypeDefinition::Type{PathParts}};
     
     for(auto ChildElement : Element->GetChildElements())
     {
@@ -575,9 +578,4 @@ auto Inspection::TypeDefinition::Type::Load(XML::Element const * Element, std::v
     }
     
     return Result;
-}
-
-auto Inspection::TypeDefinition::Type::SetTypeRepository(Inspection::TypeRepository & TypeRepository) -> void
-{
-    m_TypeRepository = &TypeRepository;
 }

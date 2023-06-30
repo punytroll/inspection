@@ -54,7 +54,6 @@ common_library = static_library(
     'source/type_definition/type.cpp',
     'source/type_definition/type_part.cpp',
     'source/type_definition/type_reference.cpp',
-    'source/type_definition/type_value.cpp',
     'source/type_definition/verification.cpp',
     'source/type_definition/value.cpp',
     'source/type_repository.cpp',

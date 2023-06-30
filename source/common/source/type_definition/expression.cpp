@@ -38,7 +38,6 @@
 #include "subtract.h"
 #include "type.h"
 #include "type_reference.h"
-#include "type_value.h"
 #include "value.h"
 #include "../xml_helper.h"
 
@@ -111,7 +110,7 @@ auto Inspection::TypeDefinition::Expression::Load(XML::Element const * Element) 
     }
     else if(Element->GetName() == "type")
     {
-        Result = Inspection::TypeDefinition::TypeValue::Load(Element);
+        Result = Inspection::TypeDefinition::Type::Load(Element, {"<anonymous>"});
     }
     else if(Element->GetName() == "type-reference")
     {

@@ -27,6 +27,8 @@
 
 #include <type.h>
 
+#include "expression.h"
+
 namespace XML
 {
     class Element;
@@ -43,23 +45,22 @@ namespace Inspection
     {
         class Part;
         
-        class Type : public Inspection::Type
+        class Type : public Inspection::Type, public Inspection::TypeDefinition::Expression
         {
         public:
             static auto Load(XML::Element const * Element, std::vector<std::string> const & PathParts) -> std::unique_ptr<Inspection::TypeDefinition::Type>;
-            static auto Load(XML::Element const * Element, std::vector<std::string> const & PathParts, TypeRepository * TypeRepository) -> std::unique_ptr<Inspection::TypeDefinition::Type>;
         public:
             ~Type() override;
             auto Get(Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result> override;
             auto Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result> override;
+            auto GetAny(Inspection::ExecutionContext & ExecutionContext) const -> std::any override;
+            auto GetDataType() const -> Inspection::TypeDefinition::DataType override;
             auto GetPathParts() const -> std::vector<std::string> const & override;
-            auto SetTypeRepository(Inspection::TypeRepository & TypeRepository) -> void;
         private:
-            Type(std::vector<std::string> const & PathParts, TypeRepository * TypeRepository);
+            Type(std::vector<std::string> const & PathParts);
             std::function<std::unique_ptr<Inspection::Result> (Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters)> m_HardcodedGetter;
             std::unique_ptr<Inspection::TypeDefinition::Part> m_Part;
             std::vector<std::string> m_PathParts;
-            Inspection::TypeRepository * m_TypeRepository;
         };
     }
 }
