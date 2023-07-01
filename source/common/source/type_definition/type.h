@@ -28,6 +28,7 @@
 #include <type.h>
 
 #include "expression.h"
+#include "part.h"
 
 namespace XML
 {
@@ -45,7 +46,7 @@ namespace Inspection
     {
         class Part;
         
-        class Type : public Inspection::Type, public Inspection::TypeDefinition::Expression
+        class Type : public Inspection::Type, public Inspection::TypeDefinition::Expression, public Inspection::TypeDefinition::Part
         {
         public:
             static auto Load(XML::Element const * Element, std::vector<std::string> const & PathParts) -> std::unique_ptr<Inspection::TypeDefinition::Type>;

@@ -31,12 +31,12 @@
 #include "parameters.h"
 #include "part_type.h"
 #include "type.h"
-#include "type_part.h"
 #include "type_reference.h"
 
 using namespace std::string_literals;
 
 Inspection::TypeDefinition::Type::Type(std::vector<std::string> const & PathParts) :
+    Inspection::TypeDefinition::Part{Inspection::TypeDefinition::PartType::Type},
     m_PathParts{PathParts}
 {
 }
@@ -63,9 +63,7 @@ auto Inspection::TypeDefinition::Type::Get(Inspection::ExecutionContext & Execut
     // reading
     if(Continue == true)
     {
-        auto TypePart = Inspection::TypeDefinition::TypePart::Create();
-        
-        ExecutionContext.Push(*TypePart, *Result, Reader, Parameters);
+        ExecutionContext.Push(*this, *Result, Reader, Parameters);
         if(m_HardcodedGetter != nullptr)
         {
             auto HardcodedResult = m_HardcodedGetter(Reader, Parameters);
