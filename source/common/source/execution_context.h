@@ -39,7 +39,6 @@ namespace Inspection
         class FieldReference;
         class ParameterReference;
         class Part;
-        class Type;
     }
     
     class ExecutionContext
@@ -56,7 +55,7 @@ namespace Inspection
             Inspection::Result & m_Result;
         };
     public:
-        ExecutionContext(Inspection::TypeDefinition::Type const & Type, Inspection::TypeRepository & TypeRepository);
+        ExecutionContext(Inspection::TypeRepository & TypeRepository);
         void Push(Inspection::TypeDefinition::Part const & Part, Inspection::Result & Result, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters);
         void Pop();
         Inspection::Result & GetTopLevelResult() const;
@@ -69,7 +68,6 @@ namespace Inspection
     private:
         Inspection::Value * m_GetValueFromDataReferenceFromCurrent(std::vector<Inspection::TypeDefinition::DataReference::Part> const & Parts, Inspection::Value * Current);
         std::list<Inspection::ExecutionContext::Element> m_ExecutionStack;
-        Inspection::TypeDefinition::Type const & m_Type;
         Inspection::TypeRepository & m_TypeRepository;
     };
 }

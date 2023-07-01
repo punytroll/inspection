@@ -40,8 +40,7 @@ Inspection::ExecutionContext::Element::Element(Inspection::TypeDefinition::Part 
 {
 }
 
-Inspection::ExecutionContext::ExecutionContext(Inspection::TypeDefinition::Type const & Type, Inspection::TypeRepository & TypeRepository) :
-    m_Type{Type},
+Inspection::ExecutionContext::ExecutionContext(Inspection::TypeRepository & TypeRepository) :
     m_TypeRepository{TypeRepository}
 {
 }
