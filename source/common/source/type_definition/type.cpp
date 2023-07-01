@@ -88,52 +88,7 @@ auto Inspection::TypeDefinition::Type::Get(Inspection::ExecutionContext & Execut
             auto PartResult = m_Part->Get(ExecutionContext, *PartReader, PartParameters);
             
             Continue = PartResult->GetSuccess();
-            switch(m_Part->GetPartType())
-            {
-            case Inspection::TypeDefinition::PartType::Alternative:
-                {
-                    Result->GetValue()->Extend(PartResult->ExtractValue());
-                    
-                    break;
-                }
-            case Inspection::TypeDefinition::PartType::Array:
-                {
-                    ASSERTION(m_Part->HasFieldName() == true);
-                    Result->GetValue()->AppendField(m_Part->GetFieldName(), PartResult->ExtractValue());
-                    
-                    break;
-                }
-            case Inspection::TypeDefinition::PartType::Field:
-                {
-                    ASSERTION(m_Part->HasFieldName() == true);
-                    Result->GetValue()->AppendField(m_Part->GetFieldName(), PartResult->ExtractValue());
-                    
-                    break;
-                }
-            case Inspection::TypeDefinition::PartType::Forward:
-                {
-                    Result->GetValue()->Extend(PartResult->ExtractValue());
-                    
-                    break;
-                }
-            case Inspection::TypeDefinition::PartType::Select:
-                {
-                    Result->GetValue()->Extend(PartResult->ExtractValue());
-                    
-                    break;
-                }
-            case Inspection::TypeDefinition::PartType::Sequence:
-                {
-                    Result->GetValue()->Extend(PartResult->ExtractValue());
-                    
-                    break;
-                }
-            case Inspection::TypeDefinition::PartType::Type:
-                {
-                    // a type inside a type should be excluded earlier
-                    IMPOSSIBLE_CODE_REACHED("m_Part->GetPartType() == " + Inspection::to_string(m_Part->GetPartType()));
-                }
-            }
+            m_AddPartResult(Result.get(), *m_Part, PartResult.get());
             Reader.AdvancePosition(PartReader->GetConsumedLength());
         }
         else
