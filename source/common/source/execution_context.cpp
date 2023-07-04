@@ -32,9 +32,8 @@
 #include "type_definition/parameter_reference.h"
 #include "value.h"
 
-Inspection::ExecutionContext::Element::Element(Inspection::TypeDefinition::Part const & Part, Inspection::Result & Result, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) :
+Inspection::ExecutionContext::Element::Element(Inspection::Result & Result, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) :
     m_Parameters{Parameters},
-    m_Part{Part},
     m_Reader{Reader},
     m_Result{Result}
 {
@@ -45,9 +44,9 @@ Inspection::ExecutionContext::ExecutionContext(Inspection::TypeRepository & Type
 {
 }
 
-void Inspection::ExecutionContext::Push(Inspection::TypeDefinition::Part const & Part, Inspection::Result & Result, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters)
+void Inspection::ExecutionContext::Push(Inspection::Result & Result, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters)
 {
-    m_ExecutionStack.emplace_back(Part, Result, Reader, Parameters);
+    m_ExecutionStack.emplace_back(Result, Reader, Parameters);
 }
 
 void Inspection::ExecutionContext::Pop()

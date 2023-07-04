@@ -35,7 +35,7 @@ auto Inspection::TypeDefinition::Sequence::Get(Inspection::ExecutionContext & Ex
     auto Result = std::make_unique<Inspection::Result>();
     auto Continue = true;
     
-    ExecutionContext.Push(*this, *Result, Reader, Parameters);
+    ExecutionContext.Push(*Result, Reader, Parameters);
     for(auto PartIterator = std::begin(GetParts()); ((Continue == true) && (PartIterator != std::end(GetParts()))); ++PartIterator)
     {
         auto const & Part = *PartIterator;

@@ -63,7 +63,7 @@ auto Inspection::TypeDefinition::Type::Get(Inspection::ExecutionContext & Execut
     // reading
     if(Continue == true)
     {
-        ExecutionContext.Push(*this, *Result, Reader, Parameters);
+        ExecutionContext.Push(*Result, Reader, Parameters);
         if(m_HardcodedGetter != nullptr)
         {
             auto HardcodedResult = m_HardcodedGetter(Reader, Parameters);

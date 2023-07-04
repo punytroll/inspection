@@ -43,7 +43,7 @@ auto Inspection::TypeDefinition::Array::Get(Inspection::ExecutionContext & Execu
     auto Result = std::make_unique<Inspection::Result>();
     auto Continue = true;
     
-    ExecutionContext.Push(*this, *Result, Reader, Parameters);
+    ExecutionContext.Push(*Result, Reader, Parameters);
     Result->GetValue()->AddTag("array");
     switch(m_IterateType)
     {

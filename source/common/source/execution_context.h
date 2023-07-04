@@ -47,16 +47,15 @@ namespace Inspection
         class Element
         {
         public:
-            Element(Inspection::TypeDefinition::Part const & Part, Inspection::Result & Result, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters);
+            Element(Inspection::Result & Result, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters);
             
             std::unordered_map<std::string, std::any> const & m_Parameters;
-            Inspection::TypeDefinition::Part const & m_Part;
             Inspection::Reader & m_Reader;
             Inspection::Result & m_Result;
         };
     public:
         ExecutionContext(Inspection::TypeRepository & TypeRepository);
-        void Push(Inspection::TypeDefinition::Part const & Part, Inspection::Result & Result, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters);
+        void Push(Inspection::Result & Result, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters);
         void Pop();
         Inspection::Result & GetTopLevelResult() const;
         Inspection::Value * GetValueFromDataReference(Inspection::TypeDefinition::DataReference const & DataReference);

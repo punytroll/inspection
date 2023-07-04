@@ -36,7 +36,7 @@ auto Inspection::TypeDefinition::Forward::Get(Inspection::ExecutionContext & Exe
     auto Result = std::make_unique<Inspection::Result>();
     auto Continue = true;
     
-    ExecutionContext.Push(*this, *Result, Reader, Parameters);
+    ExecutionContext.Push(*Result, Reader, Parameters);
     if(HasTypeReference() == true)
     {
         auto const & ForwardType = GetTypeFromTypeReference(ExecutionContext);

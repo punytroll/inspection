@@ -35,7 +35,7 @@ auto Inspection::TypeDefinition::Alternative::Get(Inspection::ExecutionContext &
     auto Result = std::make_unique<Inspection::Result>();
     auto FoundAlternative = false;
     
-    ExecutionContext.Push(*this, *Result, Reader, Parameters);
+    ExecutionContext.Push(*Result, Reader, Parameters);
     for(auto const & Part  : GetParts())
     {
         auto PartReader = std::unique_ptr<Inspection::Reader>{};

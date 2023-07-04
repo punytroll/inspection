@@ -37,7 +37,7 @@ auto Inspection::TypeDefinition::Select::Get(Inspection::ExecutionContext & Exec
     auto Result = std::make_unique<Inspection::Result>();
     auto Continue = true;
     
-    ExecutionContext.Push(*this, *Result, Reader, Parameters);
+    ExecutionContext.Push(*Result, Reader, Parameters);
     
     auto FoundCase = false;
     
