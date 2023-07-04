@@ -39,6 +39,21 @@ Inspection::ExecutionContext::Element::Element(Inspection::Result & Result, Insp
 {
 }
 
+auto Inspection::ExecutionContext::Element::GetParameters() -> std::unordered_map<std::string, std::any> const &
+{
+    return m_Parameters;
+}
+
+auto Inspection::ExecutionContext::Element::GetReader() -> Inspection::Reader &
+{
+    return m_Reader;
+}
+
+auto Inspection::ExecutionContext::Element::GetResult() -> Inspection::Result &
+{
+    return m_Result;
+}
+
 Inspection::ExecutionContext::ExecutionContext(Inspection::TypeRepository & TypeRepository) :
     m_TypeRepository{TypeRepository}
 {
@@ -54,11 +69,6 @@ void Inspection::ExecutionContext::Pop()
     m_ExecutionStack.pop_back();
 }
 
-Inspection::Result & Inspection::ExecutionContext::GetTopLevelResult() const
-{
-    return m_ExecutionStack.front().m_Result;
-}
-
 Inspection::Value * Inspection::ExecutionContext::GetValueFromDataReference(Inspection::TypeDefinition::DataReference const & DataReference)
 {
     auto Result = static_cast<Inspection::Value *>(nullptr);
@@ -68,7 +78,7 @@ Inspection::Value * Inspection::ExecutionContext::GetValueFromDataReference(Insp
     {
     case Inspection::TypeDefinition::DataReference::Root::Current:
         {
-            Result = m_GetValueFromDataReferenceFromCurrent(DataReference.GetParts(), m_ExecutionStack.back().m_Result.GetValue());
+            Result = m_GetValueFromDataReferenceFromCurrent(DataReference.GetParts(), m_ExecutionStack.back().GetResult().GetValue());
             
             break;
         }
@@ -76,7 +86,7 @@ Inspection::Value * Inspection::ExecutionContext::GetValueFromDataReference(Insp
         {
             auto ExecutionStackIterator = std::begin(m_ExecutionStack);
             
-            Result = ExecutionStackIterator->m_Result.GetValue();
+            Result = ExecutionStackIterator->GetResult().GetValue();
             
             auto const & Parts = DataReference.GetParts();
             auto PartIterator = std::begin(Parts);
@@ -100,7 +110,7 @@ Inspection::Value * Inspection::ExecutionContext::GetValueFromDataReference(Insp
                         {
                             ++ExecutionStackIterator;
                             ASSERTION_MESSAGE(ExecutionStackIterator != std::end(m_ExecutionStack), "Could not find the field \"" + PartIterator->GetName() + "\" on the execution stack.");
-                            Result = ExecutionStackIterator->m_Result.GetValue();
+                            Result = ExecutionStackIterator->GetResult().GetValue();
                             if(Result->HasField(PartIterator->GetName()) == true)
                             {
                                 Result = Result->GetField(PartIterator->GetName());
@@ -150,7 +160,7 @@ Inspection::Value * Inspection::ExecutionContext::GetFieldFromFieldReference(Ins
             break;
         }
     }
-    Result = ExecutionStackIterator->m_Result.GetValue();
+    Result = ExecutionStackIterator->GetResult().GetValue();
     
     auto PartIterator = std::begin(FieldReference.GetParts());
     
@@ -166,7 +176,7 @@ Inspection::Value * Inspection::ExecutionContext::GetFieldFromFieldReference(Ins
         else
         {
             ++ExecutionStackIterator;
-            Result = ExecutionStackIterator->m_Result.GetValue();
+            Result = ExecutionStackIterator->GetResult().GetValue();
             if(Result->HasField(*PartIterator) == true)
             {
                 Result = Result->GetField(*PartIterator);
@@ -184,9 +194,9 @@ const std::any & Inspection::ExecutionContext::GetAnyReferenceFromParameterRefer
     
     while(ExecutionStackIterator != std::rend(m_ExecutionStack))
     {
-        auto ParameterIterator = ExecutionStackIterator->m_Parameters.find(ParameterReference.GetName());
+        auto ParameterIterator = ExecutionStackIterator->GetParameters().find(ParameterReference.GetName());
         
-        if(ParameterIterator != ExecutionStackIterator->m_Parameters.end())
+        if(ParameterIterator != ExecutionStackIterator->GetParameters().end())
         {
             return ParameterIterator->second;
         }
@@ -204,7 +214,7 @@ std::unordered_map<std::string, std::any> Inspection::ExecutionContext::GetAllPa
     
     for(auto ExecutionStackElement : m_ExecutionStack)
     {
-        Result.insert(std::begin(ExecutionStackElement.m_Parameters), std::end(ExecutionStackElement.m_Parameters));
+        Result.insert(std::begin(ExecutionStackElement.GetParameters()), std::end(ExecutionStackElement.GetParameters()));
     }
     
     return Result;

@@ -48,7 +48,10 @@ namespace Inspection
         {
         public:
             Element(Inspection::Result & Result, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters);
-            
+            auto GetParameters() -> std::unordered_map<std::string, std::any> const &;
+            auto GetReader() -> Inspection::Reader &;
+            auto GetResult() -> Inspection::Result &;
+        private:
             std::unordered_map<std::string, std::any> const & m_Parameters;
             Inspection::Reader & m_Reader;
             Inspection::Result & m_Result;
@@ -57,7 +60,6 @@ namespace Inspection
         ExecutionContext(Inspection::TypeRepository & TypeRepository);
         void Push(Inspection::Result & Result, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters);
         void Pop();
-        Inspection::Result & GetTopLevelResult() const;
         Inspection::Value * GetValueFromDataReference(Inspection::TypeDefinition::DataReference const & DataReference);
         Inspection::Value * GetFieldFromFieldReference(Inspection::TypeDefinition::FieldReference const & FieldReference);
         const std::any & GetAnyReferenceFromParameterReference(Inspection::TypeDefinition::ParameterReference const & ParameterReference);
