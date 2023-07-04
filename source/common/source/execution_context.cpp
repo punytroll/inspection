@@ -29,7 +29,6 @@
 #include "result.h"
 #include "type.h"
 #include "type_definition/field_reference.h"
-#include "type_definition/parameter_reference.h"
 #include "value.h"
 
 Inspection::ExecutionContext::Element::Element(Inspection::Result & Result, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) :

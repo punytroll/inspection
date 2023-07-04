@@ -22,7 +22,9 @@
 
 #include <any>
 #include <list>
+#include <string>
 #include <unordered_map>
+#include <vector>
 
 #include "type_definition/data_reference.h"
 
@@ -37,8 +39,6 @@ namespace Inspection
     namespace TypeDefinition
     {
         class FieldReference;
-        class ParameterReference;
-        class Part;
     }
     
     class ExecutionContext
