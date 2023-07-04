@@ -58,16 +58,16 @@ namespace Inspection
         };
     public:
         ExecutionContext(Inspection::TypeRepository & TypeRepository);
-        void Push(Inspection::Result & Result, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters);
-        void Pop();
-        Inspection::Value * GetValueFromDataReference(Inspection::TypeDefinition::DataReference const & DataReference);
-        Inspection::Value * GetFieldFromFieldReference(Inspection::TypeDefinition::FieldReference const & FieldReference);
-        const std::any & GetAnyReferenceFromParameterReference(Inspection::TypeDefinition::ParameterReference const & ParameterReference);
-        std::unordered_map<std::string, std::any> GetAllParameters();
-        std::uint32_t GetExecutionStackSize() const;
-        Inspection::TypeRepository & GetTypeRepository();
+        auto Push(Inspection::Result & Result, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) -> void;
+        auto Pop() -> void;
+        auto GetValueFromDataReference(Inspection::TypeDefinition::DataReference const & DataReference) -> Inspection::Value *;
+        auto GetFieldFromFieldReference(Inspection::TypeDefinition::FieldReference const & FieldReference) -> Inspection::Value *;
+        auto GetAnyReferenceFromParameterReference(Inspection::TypeDefinition::ParameterReference const & ParameterReference) -> std::any const &;
+        auto GetAllParameters() -> std::unordered_map<std::string, std::any>;
+        auto GetExecutionStackSize() const -> std::uint32_t;
+        auto GetTypeRepository() -> Inspection::TypeRepository &;
     private:
-        Inspection::Value * m_GetValueFromDataReferenceFromCurrent(std::vector<Inspection::TypeDefinition::DataReference::Part> const & Parts, Inspection::Value * Current);
+        auto m_GetValueFromDataReferenceFromCurrent(std::vector<Inspection::TypeDefinition::DataReference::Part> const & Parts, Inspection::Value * Current) -> Inspection::Value *;
         std::list<Inspection::ExecutionContext::Element> m_ExecutionStack;
         Inspection::TypeRepository & m_TypeRepository;
     };

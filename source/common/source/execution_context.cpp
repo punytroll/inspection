@@ -59,17 +59,17 @@ Inspection::ExecutionContext::ExecutionContext(Inspection::TypeRepository & Type
 {
 }
 
-void Inspection::ExecutionContext::Push(Inspection::Result & Result, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters)
+auto Inspection::ExecutionContext::Push(Inspection::Result & Result, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) -> void
 {
     m_ExecutionStack.emplace_back(Result, Reader, Parameters);
 }
 
-void Inspection::ExecutionContext::Pop()
+auto Inspection::ExecutionContext::Pop() -> void
 {
     m_ExecutionStack.pop_back();
 }
 
-Inspection::Value * Inspection::ExecutionContext::GetValueFromDataReference(Inspection::TypeDefinition::DataReference const & DataReference)
+auto Inspection::ExecutionContext::GetValueFromDataReference(Inspection::TypeDefinition::DataReference const & DataReference) -> Inspection::Value *
 {
     auto Result = static_cast<Inspection::Value *>(nullptr);
     
@@ -138,7 +138,7 @@ Inspection::Value * Inspection::ExecutionContext::GetValueFromDataReference(Insp
     return Result;
 }
 
-Inspection::Value * Inspection::ExecutionContext::GetFieldFromFieldReference(Inspection::TypeDefinition::FieldReference const & FieldReference)
+auto Inspection::ExecutionContext::GetFieldFromFieldReference(Inspection::TypeDefinition::FieldReference const & FieldReference) -> Inspection::Value *
 {
     auto Result = static_cast<Inspection::Value *>(nullptr);
     auto ExecutionStackIterator = std::list<Inspection::ExecutionContext::Element>::iterator{};
@@ -188,7 +188,7 @@ Inspection::Value * Inspection::ExecutionContext::GetFieldFromFieldReference(Ins
     return Result;
 }
 
-const std::any & Inspection::ExecutionContext::GetAnyReferenceFromParameterReference(Inspection::TypeDefinition::ParameterReference const & ParameterReference)
+auto Inspection::ExecutionContext::GetAnyReferenceFromParameterReference(Inspection::TypeDefinition::ParameterReference const & ParameterReference) -> std::any const &
 {
     auto ExecutionStackIterator = std::rbegin(m_ExecutionStack);
     
@@ -208,11 +208,11 @@ const std::any & Inspection::ExecutionContext::GetAnyReferenceFromParameterRefer
     throw std::runtime_error{"Could not find named parameter \"" + ParameterReference.GetName() + "\"."};
 }
 
-std::unordered_map<std::string, std::any> Inspection::ExecutionContext::GetAllParameters()
+auto Inspection::ExecutionContext::GetAllParameters() -> std::unordered_map<std::string, std::any>
 {
     auto Result = std::unordered_map<std::string, std::any>{};
     
-    for(auto ExecutionStackElement : m_ExecutionStack)
+    for(auto & ExecutionStackElement : m_ExecutionStack)
     {
         Result.insert(std::begin(ExecutionStackElement.GetParameters()), std::end(ExecutionStackElement.GetParameters()));
     }
@@ -220,12 +220,12 @@ std::unordered_map<std::string, std::any> Inspection::ExecutionContext::GetAllPa
     return Result;
 }
 
-std::uint32_t Inspection::ExecutionContext::GetExecutionStackSize() const
+auto Inspection::ExecutionContext::GetExecutionStackSize() const -> std::uint32_t
 {
     return m_ExecutionStack.size();
 }
 
-Inspection::Value * Inspection::ExecutionContext::m_GetValueFromDataReferenceFromCurrent(std::vector<Inspection::TypeDefinition::DataReference::Part> const & Parts, Inspection::Value * Current)
+auto Inspection::ExecutionContext::m_GetValueFromDataReferenceFromCurrent(std::vector<Inspection::TypeDefinition::DataReference::Part> const & Parts, Inspection::Value * Current) -> Inspection::Value *
 {
     auto Result = Current;
     auto EndIterator = std::end(Parts);
