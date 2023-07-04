@@ -27,17 +27,12 @@
 
 auto Inspection::TypeDefinition::ParameterReference::GetAny(Inspection::ExecutionContext & ExecutionContext) const -> std::any
 {
-    return ExecutionContext.GetAnyReferenceFromParameterReference(*this);
+    return ExecutionContext.GetParameterAny(m_Name);
 }
 
 auto Inspection::TypeDefinition::ParameterReference::GetDataType() const -> Inspection::TypeDefinition::DataType
 {
     NOT_IMPLEMENTED("Called GetDataType() on a ParameterReference expression.");
-}
-
-auto Inspection::TypeDefinition::ParameterReference::GetName() const -> std::string const &
-{
-    return m_Name;
 }
 
 auto Inspection::TypeDefinition::ParameterReference::Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::ParameterReference>

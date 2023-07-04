@@ -48,7 +48,7 @@ namespace Inspection
         {
         public:
             Element(Inspection::Result & Result, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters);
-            auto GetParameters() -> std::unordered_map<std::string, std::any> const &;
+            auto GetParameters() const -> std::unordered_map<std::string, std::any> const &;
             auto GetReader() -> Inspection::Reader &;
             auto GetResult() -> Inspection::Result &;
         private:
@@ -62,7 +62,7 @@ namespace Inspection
         auto Pop() -> void;
         auto GetValueFromDataReference(Inspection::TypeDefinition::DataReference const & DataReference) -> Inspection::Value *;
         auto GetFieldFromFieldReference(Inspection::TypeDefinition::FieldReference const & FieldReference) -> Inspection::Value *;
-        auto GetAnyReferenceFromParameterReference(Inspection::TypeDefinition::ParameterReference const & ParameterReference) -> std::any const &;
+        auto GetParameterAny(std::string const & ParameterName) -> std::any const &;
         auto GetAllParameters() -> std::unordered_map<std::string, std::any>;
         auto GetExecutionStackSize() const -> std::uint32_t;
         auto GetTypeRepository() -> Inspection::TypeRepository &;

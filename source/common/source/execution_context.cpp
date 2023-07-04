@@ -39,7 +39,7 @@ Inspection::ExecutionContext::Element::Element(Inspection::Result & Result, Insp
 {
 }
 
-auto Inspection::ExecutionContext::Element::GetParameters() -> std::unordered_map<std::string, std::any> const &
+auto Inspection::ExecutionContext::Element::GetParameters() const -> std::unordered_map<std::string, std::any> const &
 {
     return m_Parameters;
 }
@@ -188,13 +188,13 @@ auto Inspection::ExecutionContext::GetFieldFromFieldReference(Inspection::TypeDe
     return Result;
 }
 
-auto Inspection::ExecutionContext::GetAnyReferenceFromParameterReference(Inspection::TypeDefinition::ParameterReference const & ParameterReference) -> std::any const &
+auto Inspection::ExecutionContext::GetParameterAny(std::string const & ParameterName) -> std::any const &
 {
     auto ExecutionStackIterator = std::rbegin(m_ExecutionStack);
     
     while(ExecutionStackIterator != std::rend(m_ExecutionStack))
     {
-        auto ParameterIterator = ExecutionStackIterator->GetParameters().find(ParameterReference.GetName());
+        auto ParameterIterator = ExecutionStackIterator->GetParameters().find(ParameterName);
         
         if(ParameterIterator != ExecutionStackIterator->GetParameters().end())
         {
@@ -205,7 +205,7 @@ auto Inspection::ExecutionContext::GetAnyReferenceFromParameterReference(Inspect
             ++ExecutionStackIterator;
         }
     }
-    throw std::runtime_error{"Could not find named parameter \"" + ParameterReference.GetName() + "\"."};
+    throw std::runtime_error{"Could not find named parameter \"" + ParameterName + "\"."};
 }
 
 auto Inspection::ExecutionContext::GetAllParameters() -> std::unordered_map<std::string, std::any>

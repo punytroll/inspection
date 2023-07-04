@@ -49,7 +49,6 @@ namespace Inspection
             virtual ~ParameterReference() = default;
             auto GetAny(Inspection::ExecutionContext & ExecutionContext) const -> std::any override;
             auto GetDataType() const -> Inspection::TypeDefinition::DataType override;
-            auto GetName() const -> std::string const &;
         private:
             ParameterReference() = default;
             ParameterReference(Inspection::TypeDefinition::ParameterReference const & ParameterReference) = delete;
