@@ -37,6 +37,7 @@ namespace Inspection
     class Reader;
     class Result;
     class Value;
+    class Type;
     
     namespace TypeDefinition
     {
@@ -44,7 +45,6 @@ namespace Inspection
         class Interpretation;
         class Parameters;
         enum class PartType;
-        class Type;
         class TypeReference;
         
         class Part
@@ -61,7 +61,7 @@ namespace Inspection
             auto GetParameters(Inspection::ExecutionContext & ExecutionContext) const -> std::unordered_map<std::string, std::any>;
             auto GetParts() const -> std::vector<std::unique_ptr<Inspection::TypeDefinition::Part>> const &;
             auto GetPartType() const -> Inspection::TypeDefinition::PartType;
-            auto GetTypeFromTypeReference(Inspection::ExecutionContext & ExecutionContext) const -> Inspection::TypeDefinition::Type const &;
+            auto GetTypeFromTypeReference(Inspection::ExecutionContext & ExecutionContext) const -> Inspection::Type const &;
             auto HasFieldName() const -> bool;
             auto HasLength() const -> bool;
             auto HasTypeReference() const -> bool;

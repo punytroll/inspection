@@ -39,9 +39,9 @@ auto Inspection::TypeDefinition::TypeReference::GetDataType() const -> Inspectio
     return Inspection::TypeDefinition::DataType::Type;
 }
 
-auto Inspection::TypeDefinition::TypeReference::GetType(Inspection::ExecutionContext & ExecutionContext) const -> Inspection::TypeDefinition::Type const &
+auto Inspection::TypeDefinition::TypeReference::GetType(Inspection::ExecutionContext & ExecutionContext) const -> Inspection::Type const &
 {
-    return dynamic_cast<Inspection::TypeDefinition::Type const &>(*(ExecutionContext.GetTypeRepository().GetType(m_Parts)));
+    return *(ExecutionContext.GetTypeRepository().GetType(m_Parts));
 }
 
 auto Inspection::TypeDefinition::TypeReference::Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::TypeReference>

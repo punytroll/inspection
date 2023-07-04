@@ -103,7 +103,7 @@ auto Inspection::TypeDefinition::Part::GetPartType() const -> Inspection::TypeDe
     return m_PartType;
 }
 
-auto Inspection::TypeDefinition::Part::GetTypeFromTypeReference(Inspection::ExecutionContext & ExecutionContext) const -> Inspection::TypeDefinition::Type const &
+auto Inspection::TypeDefinition::Part::GetTypeFromTypeReference(Inspection::ExecutionContext & ExecutionContext) const -> Inspection::Type const &
 {
     ASSERTION(m_TypeReference != nullptr);
     
