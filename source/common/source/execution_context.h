@@ -64,11 +64,11 @@ namespace Inspection
         auto GetFieldFromFieldReference(Inspection::TypeDefinition::FieldReference const & FieldReference) -> Inspection::Value *;
         auto GetParameterAny(std::string const & ParameterName) -> std::any const &;
         auto GetAllParameters() -> std::unordered_map<std::string, std::any>;
-        auto GetExecutionStackSize() const -> std::uint32_t;
+        auto GetStackSize() const -> std::uint32_t;
         auto GetTypeRepository() -> Inspection::TypeRepository &;
     private:
         auto m_GetValueFromDataReferenceFromCurrent(std::vector<Inspection::TypeDefinition::DataReference::Part> const & Parts, Inspection::Value * Current) -> Inspection::Value *;
-        std::list<Inspection::ExecutionContext::Element> m_ExecutionStack;
+        std::list<Inspection::ExecutionContext::Element> m_Stack;
         Inspection::TypeRepository & m_TypeRepository;
     };
 }

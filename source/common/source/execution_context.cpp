@@ -60,30 +60,30 @@ Inspection::ExecutionContext::ExecutionContext(Inspection::TypeRepository & Type
 
 auto Inspection::ExecutionContext::Push(Inspection::Result & Result, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) -> void
 {
-    m_ExecutionStack.emplace_back(Result, Reader, Parameters);
+    m_Stack.emplace_back(Result, Reader, Parameters);
 }
 
 auto Inspection::ExecutionContext::Pop() -> void
 {
-    m_ExecutionStack.pop_back();
+    m_Stack.pop_back();
 }
 
 auto Inspection::ExecutionContext::GetValueFromDataReference(Inspection::TypeDefinition::DataReference const & DataReference) -> Inspection::Value *
 {
     auto Result = static_cast<Inspection::Value *>(nullptr);
     
-    ASSERTION(m_ExecutionStack.size() > 0);
+    ASSERTION(m_Stack.size() > 0);
     switch(DataReference.GetRoot())
     {
     case Inspection::TypeDefinition::DataReference::Root::Current:
         {
-            Result = m_GetValueFromDataReferenceFromCurrent(DataReference.GetParts(), m_ExecutionStack.back().GetResult().GetValue());
+            Result = m_GetValueFromDataReferenceFromCurrent(DataReference.GetParts(), m_Stack.back().GetResult().GetValue());
             
             break;
         }
     case Inspection::TypeDefinition::DataReference::Root::Type:
         {
-            auto ExecutionStackIterator = std::begin(m_ExecutionStack);
+            auto ExecutionStackIterator = std::begin(m_Stack);
             
             Result = ExecutionStackIterator->GetResult().GetValue();
             
@@ -108,7 +108,7 @@ auto Inspection::ExecutionContext::GetValueFromDataReference(Inspection::TypeDef
                         else
                         {
                             ++ExecutionStackIterator;
-                            ASSERTION_MESSAGE(ExecutionStackIterator != std::end(m_ExecutionStack), "Could not find the field \"" + PartIterator->GetName() + "\" on the execution stack.");
+                            ASSERTION_MESSAGE(ExecutionStackIterator != std::end(m_Stack), "Could not find the field \"" + PartIterator->GetName() + "\" on the execution stack.");
                             Result = ExecutionStackIterator->GetResult().GetValue();
                             if(Result->HasField(PartIterator->GetName()) == true)
                             {
@@ -146,15 +146,15 @@ auto Inspection::ExecutionContext::GetFieldFromFieldReference(Inspection::TypeDe
     {
     case Inspection::TypeDefinition::FieldReference::Root::Current:
         {
-            ASSERTION(m_ExecutionStack.size() > 0);
-            ExecutionStackIterator = std::prev(std::end(m_ExecutionStack));
+            ASSERTION(m_Stack.size() > 0);
+            ExecutionStackIterator = std::prev(std::end(m_Stack));
             
             break;
         }
     case Inspection::TypeDefinition::FieldReference::Root::Type:
         {
-            ASSERTION(m_ExecutionStack.size() > 0);
-            ExecutionStackIterator = std::begin(m_ExecutionStack);
+            ASSERTION(m_Stack.size() > 0);
+            ExecutionStackIterator = std::begin(m_Stack);
             
             break;
         }
@@ -189,9 +189,9 @@ auto Inspection::ExecutionContext::GetFieldFromFieldReference(Inspection::TypeDe
 
 auto Inspection::ExecutionContext::GetParameterAny(std::string const & ParameterName) -> std::any const &
 {
-    auto ExecutionStackIterator = std::rbegin(m_ExecutionStack);
+    auto ExecutionStackIterator = std::rbegin(m_Stack);
     
-    while(ExecutionStackIterator != std::rend(m_ExecutionStack))
+    while(ExecutionStackIterator != std::rend(m_Stack))
     {
         auto ParameterIterator = ExecutionStackIterator->GetParameters().find(ParameterName);
         
@@ -211,7 +211,7 @@ auto Inspection::ExecutionContext::GetAllParameters() -> std::unordered_map<std:
 {
     auto Result = std::unordered_map<std::string, std::any>{};
     
-    for(auto & ExecutionStackElement : m_ExecutionStack)
+    for(auto & ExecutionStackElement : m_Stack)
     {
         Result.insert(std::begin(ExecutionStackElement.GetParameters()), std::end(ExecutionStackElement.GetParameters()));
     }
@@ -219,9 +219,9 @@ auto Inspection::ExecutionContext::GetAllParameters() -> std::unordered_map<std:
     return Result;
 }
 
-auto Inspection::ExecutionContext::GetExecutionStackSize() const -> std::uint32_t
+auto Inspection::ExecutionContext::GetStackSize() const -> std::uint32_t
 {
-    return m_ExecutionStack.size();
+    return m_Stack.size();
 }
 
 auto Inspection::ExecutionContext::m_GetValueFromDataReferenceFromCurrent(std::vector<Inspection::TypeDefinition::DataReference::Part> const & Parts, Inspection::Value * Current) -> Inspection::Value *

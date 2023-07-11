@@ -50,7 +50,7 @@ auto Inspection::TypeDefinition::Type::Get(Inspection::Reader & Reader, std::uno
     auto ExecutionContext = Inspection::ExecutionContext{Inspection::g_TypeRepository};
     auto Result = Get(ExecutionContext, Reader, Parameters);
     
-    ASSERTION(ExecutionContext.GetExecutionStackSize() == 0);
+    ASSERTION(ExecutionContext.GetStackSize() == 0);
     
     return Result;
 }
