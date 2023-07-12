@@ -48,7 +48,17 @@ auto Inspection::ExecutionContext::Element::GetReader() -> Inspection::Reader &
     return m_Reader;
 }
 
+auto Inspection::ExecutionContext::Element::GetReader() const -> Inspection::Reader const &
+{
+    return m_Reader;
+}
+
 auto Inspection::ExecutionContext::Element::GetResult() -> Inspection::Result &
+{
+    return m_Result;
+}
+
+auto Inspection::ExecutionContext::Element::GetResult() const -> Inspection::Result const &
 {
     return m_Result;
 }
@@ -137,56 +147,6 @@ auto Inspection::ExecutionContext::GetValueFromDataReference(Inspection::TypeDef
     return Result;
 }
 
-auto Inspection::ExecutionContext::GetFieldFromFieldReference(Inspection::TypeDefinition::FieldReference const & FieldReference) -> Inspection::Value *
-{
-    auto Result = static_cast<Inspection::Value *>(nullptr);
-    auto ExecutionStackIterator = std::list<Inspection::ExecutionContext::Element>::iterator{};
-    
-    switch(FieldReference.GetRoot())
-    {
-    case Inspection::TypeDefinition::FieldReference::Root::Current:
-        {
-            ASSERTION(m_Stack.size() > 0);
-            ExecutionStackIterator = std::prev(std::end(m_Stack));
-            
-            break;
-        }
-    case Inspection::TypeDefinition::FieldReference::Root::Type:
-        {
-            ASSERTION(m_Stack.size() > 0);
-            ExecutionStackIterator = std::begin(m_Stack);
-            
-            break;
-        }
-    }
-    Result = ExecutionStackIterator->GetResult().GetValue();
-    
-    auto PartIterator = std::begin(FieldReference.GetParts());
-    
-    while(PartIterator != std::end(FieldReference.GetParts()))
-    {
-        // maybe, the field is already in the result
-        if(Result->HasField(*PartIterator) == true)
-        {
-            Result = Result->GetField(*PartIterator);
-            ++PartIterator;
-        }
-        // if not, the field might be in the current stack
-        else
-        {
-            ++ExecutionStackIterator;
-            Result = ExecutionStackIterator->GetResult().GetValue();
-            if(Result->HasField(*PartIterator) == true)
-            {
-                Result = Result->GetField(*PartIterator);
-                ++PartIterator;
-            }
-        }
-    }
-    
-    return Result;
-}
-
 auto Inspection::ExecutionContext::GetParameterAny(std::string const & ParameterName) -> std::any const &
 {
     auto ExecutionStackIterator = std::rbegin(m_Stack);
@@ -214,6 +174,18 @@ auto Inspection::ExecutionContext::GetAllParameters() -> std::unordered_map<std:
     for(auto & ExecutionStackElement : m_Stack)
     {
         Result.insert(std::begin(ExecutionStackElement.GetParameters()), std::end(ExecutionStackElement.GetParameters()));
+    }
+    
+    return Result;
+}
+
+auto Inspection::ExecutionContext::GetStack() const -> std::list<Inspection::ExecutionContext::Element const *>
+{
+    auto Result = std::list<Inspection::ExecutionContext::Element const *>{};
+    
+    for(auto const & StackElement : m_Stack)
+    {
+        Result.push_back(&StackElement);
     }
     
     return Result;

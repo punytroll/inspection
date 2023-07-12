@@ -120,7 +120,7 @@ auto Inspection::TypeDefinition::Array::Get(Inspection::ExecutionContext & Execu
             
             ASSERTION(m_IterateForEachField != nullptr);
             
-            auto IterateField = ExecutionContext.GetFieldFromFieldReference(*m_IterateForEachField);
+            auto IterateField = m_IterateForEachField->GetField(ExecutionContext);
             
             ASSERTION(IterateField != nullptr);
             

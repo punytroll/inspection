@@ -21,7 +21,10 @@
 #include <xml_puny_dom/xml_puny_dom.h>
 
 #include <assertion.h>
+#include <result.h>
+#include <value.h>
 
+#include "../execution_context.h"
 #include "../internal_output_operators.h"
 #include "field_reference.h"
 
@@ -35,14 +38,55 @@ auto Inspection::TypeDefinition::FieldReference::GetDataType() const -> Inspecti
     NOT_IMPLEMENTED("Called GetDataType() on a FieldReference expression.");
 }
 
-auto Inspection::TypeDefinition::FieldReference::GetRoot() const -> Inspection::TypeDefinition::FieldReference::Root
+auto Inspection::TypeDefinition::FieldReference::GetField(Inspection::ExecutionContext & ExecutionContext) const -> Inspection::Value const *
 {
-    return m_Root;
-}
-
-auto Inspection::TypeDefinition::FieldReference::GetParts() const -> std::vector<std::string> const &
-{
-    return m_Parts;
+    auto Result = static_cast<Inspection::Value const *>(nullptr);
+    auto const ExecutionStack = ExecutionContext.GetStack();
+    auto ExecutionStackIterator = std::list<Inspection::ExecutionContext::Element const *>::const_iterator{};
+    
+    switch(m_Root)
+    {
+    case Inspection::TypeDefinition::FieldReference::Root::Current:
+        {
+            ASSERTION(ExecutionStack.size() > 0);
+            ExecutionStackIterator = std::prev(std::end(ExecutionStack));
+            
+            break;
+        }
+    case Inspection::TypeDefinition::FieldReference::Root::Type:
+        {
+            ASSERTION(ExecutionStack.size() > 0);
+            ExecutionStackIterator = std::begin(ExecutionStack);
+            
+            break;
+        }
+    }
+    Result = (*ExecutionStackIterator)->GetResult().GetValue();
+    
+    auto PartIterator = std::begin(m_Parts);
+    
+    while(PartIterator != std::end(m_Parts))
+    {
+        // maybe, the field is already in the result
+        if(Result->HasField(*PartIterator) == true)
+        {
+            Result = Result->GetField(*PartIterator);
+            ++PartIterator;
+        }
+        // if not, the field might be in the current stack
+        else
+        {
+            ++ExecutionStackIterator;
+            Result = (*ExecutionStackIterator)->GetResult().GetValue();
+            if(Result->HasField(*PartIterator) == true)
+            {
+                Result = Result->GetField(*PartIterator);
+                ++PartIterator;
+            }
+        }
+    }
+    
+    return Result;
 }
 
 auto Inspection::TypeDefinition::FieldReference::Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::FieldReference>

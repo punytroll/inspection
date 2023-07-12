@@ -38,6 +38,7 @@ namespace XML
 namespace Inspection
 {
     class ExecutionContext;
+    class Value;
     
     namespace TypeDefinition
     {
@@ -57,8 +58,7 @@ namespace Inspection
             virtual ~FieldReference() = default;
             auto GetAny(Inspection::ExecutionContext & ExecutionContext) const -> std::any override;
             auto GetDataType() const -> Inspection::TypeDefinition::DataType override;
-            auto GetParts() const -> std::vector<std::string> const &;
-            auto GetRoot() const -> Inspection::TypeDefinition::FieldReference::Root;
+            auto GetField(Inspection::ExecutionContext & ExecutionContext) const -> Inspection::Value const *;
         private:
             FieldReference() = default;
             FieldReference(Inspection::TypeDefinition::FieldReference const & FieldReference) = delete;

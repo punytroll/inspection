@@ -43,14 +43,16 @@ namespace Inspection
     
     class ExecutionContext
     {
-    private:
+    public:
         class Element
         {
         public:
             Element(Inspection::Result & Result, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters);
             auto GetParameters() const -> std::unordered_map<std::string, std::any> const &;
             auto GetReader() -> Inspection::Reader &;
+            auto GetReader() const -> Inspection::Reader const &;
             auto GetResult() -> Inspection::Result &;
+            auto GetResult() const -> Inspection::Result const &;
         private:
             std::unordered_map<std::string, std::any> const & m_Parameters;
             Inspection::Reader & m_Reader;
@@ -61,9 +63,9 @@ namespace Inspection
         auto Push(Inspection::Result & Result, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) -> void;
         auto Pop() -> void;
         auto GetValueFromDataReference(Inspection::TypeDefinition::DataReference const & DataReference) -> Inspection::Value *;
-        auto GetFieldFromFieldReference(Inspection::TypeDefinition::FieldReference const & FieldReference) -> Inspection::Value *;
         auto GetParameterAny(std::string const & ParameterName) -> std::any const &;
         auto GetAllParameters() -> std::unordered_map<std::string, std::any>;
+        auto GetStack() const -> std::list<Inspection::ExecutionContext::Element const *>;
         auto GetStackSize() const -> std::uint32_t;
         auto GetTypeRepository() -> Inspection::TypeRepository &;
     private:

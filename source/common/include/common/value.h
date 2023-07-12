@@ -154,6 +154,19 @@ namespace Inspection
             throw std::invalid_argument("Could not find a field named \"" + std::string{Name} + "\".");
         }
         
+        auto GetField(std::string_view Name) const -> Inspection::Value const *
+        {
+            for(auto const & Field : m_Fields)
+            {
+                if(Field->GetName() == Name)
+                {
+                    return Field.get();
+                }
+            }
+            
+            throw std::invalid_argument("Could not find a field named \"" + std::string{Name} + "\".");
+        }
+        
         auto GetFields() const -> std::list<std::unique_ptr<Inspection::Value>> const &
         {
             return m_Fields;

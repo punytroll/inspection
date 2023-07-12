@@ -38,6 +38,11 @@ namespace Inspection
             return m_Value.get();
         }
         
+        auto GetValue() const -> Inspection::Value const *
+        {
+            return m_Value.get();
+        }
+        
         auto SetSuccess(bool Success) -> void
         {
             m_Success = Success;
