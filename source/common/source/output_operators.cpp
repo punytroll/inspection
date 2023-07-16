@@ -310,65 +310,6 @@ auto Inspection::operator<<(std::ostream & OStream, Inspection::Value const & Va
     return m_PrintValue(OStream, Value, "");
 }
 
-std::ostream & Inspection::operator<<(std::ostream & OStream, const Inspection::TypeDefinition::DataReference & DataReference)
-{
-    OStream << "DataReference[" << DataReference.GetRoot() << ", {";
-    
-    auto First = true;
-    
-    for(auto & Part : DataReference.GetParts())
-    {
-        if(First == false)
-        {
-            OStream << ", ";
-        }
-        else
-        {
-            First = false;
-        }
-        OStream << Part;
-    }
-    
-    return OStream << "}]";
-}
-
-std::ostream & Inspection::operator<<(std::ostream & OStream, const enum Inspection::TypeDefinition::DataReference::Root & Root)
-{
-    switch(Root)
-    {
-    case Inspection::TypeDefinition::DataReference::Root::Type:
-        {
-            return OStream << "Type";
-        }
-    case Inspection::TypeDefinition::DataReference::Root::Current:
-        {
-            return OStream << "Current";
-        }
-    }
-    IMPOSSIBLE_CODE_REACHED("switch handling of Inspection::TypeDefinition::DataReference::Root incomplete");
-}
-
-std::ostream & Inspection::operator<<(std::ostream & OStream, const Inspection::TypeDefinition::DataReference::Part & Part)
-{
-    return OStream << "Part[" << Part.GetType() << ", \"" << Part.GetName() << "\"]";
-}
-
-std::ostream & Inspection::operator<<(std::ostream & OStream, const enum Inspection::TypeDefinition::DataReference::Part::Type & Type)
-{
-    switch(Type)
-    {
-    case Inspection::TypeDefinition::DataReference::Part::Type::Field:
-        {
-            return OStream << "Field";
-        }
-    case Inspection::TypeDefinition::DataReference::Part::Type::Tag:
-        {
-            return OStream << "Tag";
-        }
-    }
-    IMPOSSIBLE_CODE_REACHED("switch handling of Inspection::TypeDefinition::DataReference::Part::Type incomplete");
-}
-
 auto Inspection::operator<<(std::ostream & OStream, enum Inspection::TypeDefinition::DataType const & DataType) -> std::ostream &
 {
     switch(DataType)

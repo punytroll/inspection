@@ -33,6 +33,7 @@
 #include "data_type.h"
 #include "data_verification.h"
 #include "enumeration.h"
+#include "expression.h"
 #include "helper.h"
 #include "tag.h"
 

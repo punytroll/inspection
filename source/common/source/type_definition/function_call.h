@@ -22,6 +22,8 @@
 #include <memory>
 #include <string>
 
+#include "expression.h"
+
 namespace XML
 {
     class Element;

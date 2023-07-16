@@ -141,6 +141,19 @@ namespace Inspection
             throw std::invalid_argument("Could not find a tag named \"" + std::string{Name} + "\".");
         }
         
+        auto GetTag(std::string_view Name) const -> Inspection::Value const *
+        {
+            for(auto const & Tag : m_Tags)
+            {
+                if(Tag->GetName() == Name)
+                {
+                    return Tag.get();
+                }
+            }
+            
+            throw std::invalid_argument("Could not find a tag named \"" + std::string{Name} + "\".");
+        }
+        
         auto GetField(std::string_view Name) -> Inspection::Value *
         {
             for(auto & Field : m_Fields)

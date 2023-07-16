@@ -21,6 +21,7 @@
 #include <xml_puny_dom/xml_puny_dom.h>
 
 #include <assertion.h>
+#include <result.h>
 #include <value.h>
 
 #include "../execution_context.h"
@@ -28,8 +29,94 @@
 
 auto Inspection::TypeDefinition::DataReference::GetAny(Inspection::ExecutionContext & ExecutionContext) const -> std::any
 {
-    auto Value = ExecutionContext.GetValueFromDataReference(*this);
+    auto const ExecutionStack = ExecutionContext.GetStack();
     
+    ASSERTION(ExecutionStack.size() > 0);
+    
+    auto Value = static_cast<Inspection::Value const *>(nullptr);
+    
+    switch(m_Root)
+    {
+    case Inspection::TypeDefinition::DataReference::Root::Current:
+        {
+            Value = ExecutionStack.back()->GetResult().GetValue();
+            
+            auto EndIterator = std::end(m_Parts);
+            
+            for(auto PartIterator = std::begin(m_Parts); (Value != nullptr) && (PartIterator != EndIterator); ++PartIterator)
+            {
+                switch(PartIterator->GetType())
+                {
+                case Inspection::TypeDefinition::DataReference::Part::Type::Field:
+                    {
+                        // we are looking for a field
+                        Value = Value->GetField(PartIterator->GetName());
+                        
+                        break;
+                    }
+                case Inspection::TypeDefinition::DataReference::Part::Type::Tag:
+                    {
+                        // we are looking for a tag
+                        Value = Value->GetTag(PartIterator->GetName());
+                        
+                        break;
+                    }
+                }
+            }
+            
+            break;
+        }
+    case Inspection::TypeDefinition::DataReference::Root::Type:
+        {
+            auto ExecutionStackIterator = std::begin(ExecutionStack);
+            
+            Value = (*ExecutionStackIterator)->GetResult().GetValue();
+            
+            auto PartIterator = std::begin(m_Parts);
+            auto EndIterator = std::end(m_Parts);
+            
+            while(PartIterator != EndIterator)
+            {
+                switch(PartIterator->GetType())
+                {
+                case Inspection::TypeDefinition::DataReference::Part::Type::Field:
+                    {
+                        // we are looking for a field
+                        // maybe, the field is already in the result
+                        if(Value->HasField(PartIterator->GetName()) == true)
+                        {
+                            Value = Value->GetField(PartIterator->GetName());
+                            ++PartIterator;
+                        }
+                        // if not, the field might be in the current stack
+                        else
+                        {
+                            ++ExecutionStackIterator;
+                            ASSERTION_MESSAGE(ExecutionStackIterator != std::end(ExecutionStack), "Could not find the field \"" + PartIterator->GetName() + "\" on the execution stack.");
+                            Value = (*ExecutionStackIterator)->GetResult().GetValue();
+                            if(Value->HasField(PartIterator->GetName()) == true)
+                            {
+                                Value = Value->GetField(PartIterator->GetName());
+                                ++PartIterator;
+                            }
+                        }
+                        
+                        break;
+                    }
+                case Inspection::TypeDefinition::DataReference::Part::Type::Tag:
+                    {
+                        // we are looking for a tag
+                        Value = Value->GetTag(PartIterator->GetName());
+                        ++PartIterator;
+                        
+                        break;
+                    }
+                }
+            }
+            
+            break;
+        }
+    }
     ASSERTION(Value != nullptr);
     
     return Value->GetData();
@@ -38,16 +125,6 @@ auto Inspection::TypeDefinition::DataReference::GetAny(Inspection::ExecutionCont
 auto Inspection::TypeDefinition::DataReference::GetDataType() const -> Inspection::TypeDefinition::DataType
 {
     NOT_IMPLEMENTED("Called GetDataType() on a DataReference expression.");
-}
-
-auto Inspection::TypeDefinition::DataReference::GetParts() const -> std::vector<Inspection::TypeDefinition::DataReference::Part> const &
-{
-    return m_Parts;
-}
-
-auto Inspection::TypeDefinition::DataReference::GetRoot() const -> Inspection::TypeDefinition::DataReference::Root
-{
-    return m_Root;
 }
 
 auto Inspection::TypeDefinition::DataReference::Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::DataReference>

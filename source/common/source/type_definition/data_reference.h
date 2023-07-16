@@ -71,8 +71,6 @@ namespace Inspection
             virtual ~DataReference() = default;
             auto GetAny(Inspection::ExecutionContext & ExecutionContext) const -> std::any override;
             auto GetDataType() const -> Inspection::TypeDefinition::DataType override;
-            auto GetParts() const -> std::vector<Inspection::TypeDefinition::DataReference::Part> const &;
-            auto GetRoot() const -> Inspection::TypeDefinition::DataReference::Root;
         private:
             DataReference() = default;
             DataReference(Inspection::TypeDefinition::DataReference const & DataReference) = delete;

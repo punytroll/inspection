@@ -62,7 +62,6 @@ namespace Inspection
         ExecutionContext(Inspection::TypeRepository & TypeRepository);
         auto Push(Inspection::Result & Result, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) -> void;
         auto Pop() -> void;
-        auto GetValueFromDataReference(Inspection::TypeDefinition::DataReference const & DataReference) -> Inspection::Value *;
         auto GetParameterAny(std::string const & ParameterName) -> std::any const &;
         auto GetAllParameters() -> std::unordered_map<std::string, std::any>;
         auto GetStack() const -> std::list<Inspection::ExecutionContext::Element const *>;
