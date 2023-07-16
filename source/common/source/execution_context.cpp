@@ -87,7 +87,30 @@ auto Inspection::ExecutionContext::GetValueFromDataReference(Inspection::TypeDef
     {
     case Inspection::TypeDefinition::DataReference::Root::Current:
         {
-            Result = m_GetValueFromDataReferenceFromCurrent(DataReference.GetParts(), m_Stack.back().GetResult().GetValue());
+            Result = m_Stack.back().GetResult().GetValue();
+            
+            auto EndIterator = std::end(DataReference.GetParts());
+            
+            for(auto PartIterator = std::begin(DataReference.GetParts()); (Result != nullptr) && (PartIterator != EndIterator); ++PartIterator)
+            {
+                switch(PartIterator->GetType())
+                {
+                case Inspection::TypeDefinition::DataReference::Part::Type::Field:
+                    {
+                        // we are looking for a field
+                        Result = Result->GetField(PartIterator->GetName());
+                        
+                        break;
+                    }
+                case Inspection::TypeDefinition::DataReference::Part::Type::Tag:
+                    {
+                        // we are looking for a tag
+                        Result = Result->GetTag(PartIterator->GetName());
+                        
+                        break;
+                    }
+                }
+            }
             
             break;
         }
@@ -194,35 +217,6 @@ auto Inspection::ExecutionContext::GetStack() const -> std::list<Inspection::Exe
 auto Inspection::ExecutionContext::GetStackSize() const -> std::uint32_t
 {
     return m_Stack.size();
-}
-
-auto Inspection::ExecutionContext::m_GetValueFromDataReferenceFromCurrent(std::vector<Inspection::TypeDefinition::DataReference::Part> const & Parts, Inspection::Value * Current) -> Inspection::Value *
-{
-    auto Result = Current;
-    auto EndIterator = std::end(Parts);
-    
-    for(auto PartIterator = std::begin(Parts); (Result != nullptr) && (PartIterator != EndIterator); ++PartIterator)
-    {
-        switch(PartIterator->GetType())
-        {
-        case Inspection::TypeDefinition::DataReference::Part::Type::Field:
-            {
-                // we are looking for a field
-                Result = Result->GetField(PartIterator->GetName());
-                
-                break;
-            }
-        case Inspection::TypeDefinition::DataReference::Part::Type::Tag:
-            {
-                // we are looking for a tag
-                Result = Result->GetTag(PartIterator->GetName());
-                
-                break;
-            }
-        }
-    }
-    
-    return Result;
 }
 
 auto Inspection::ExecutionContext::GetTypeRepository() -> Inspection::TypeRepository &

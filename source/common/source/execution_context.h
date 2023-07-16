@@ -69,7 +69,6 @@ namespace Inspection
         auto GetStackSize() const -> std::uint32_t;
         auto GetTypeRepository() -> Inspection::TypeRepository &;
     private:
-        auto m_GetValueFromDataReferenceFromCurrent(std::vector<Inspection::TypeDefinition::DataReference::Part> const & Parts, Inspection::Value * Current) -> Inspection::Value *;
         std::list<Inspection::ExecutionContext::Element> m_Stack;
         Inspection::TypeRepository & m_TypeRepository;
     };
