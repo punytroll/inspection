@@ -21,10 +21,10 @@
 #include <xml_puny_dom/xml_puny_dom.h>
 
 #include <assertion.h>
+#include <execution_context.h>
 #include <result.h>
 #include <value.h>
 
-#include "../execution_context.h"
 #include "data_reference.h"
 
 auto Inspection::TypeDefinition::DataReference::GetAny(Inspection::ExecutionContext & ExecutionContext) const -> std::any

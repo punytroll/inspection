@@ -44,7 +44,7 @@ namespace Inspection
             virtual ~ApplyEnumeration() = default;
             auto Apply(Inspection::ExecutionContext & ExecutionContext, Inspection::Value * Target) const -> bool override;
         private:
-            ApplyEnumeration() = default;
+            ApplyEnumeration();
             ApplyEnumeration(Inspection::TypeDefinition::ApplyEnumeration const & ApplyEnumeration) = delete;
             ApplyEnumeration(Inspection::TypeDefinition::ApplyEnumeration && ApplyEnumeration) = delete;
             auto operator=(Inspection::TypeDefinition::ApplyEnumeration const & ApplyEnumeration) -> Inspection::TypeDefinition::ApplyEnumeration & = delete;

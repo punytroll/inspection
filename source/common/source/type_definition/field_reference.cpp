@@ -21,10 +21,10 @@
 #include <xml_puny_dom/xml_puny_dom.h>
 
 #include <assertion.h>
+#include <execution_context.h>
 #include <result.h>
 #include <value.h>
 
-#include "../execution_context.h"
 #include "../internal_output_operators.h"
 #include "field_reference.h"
 

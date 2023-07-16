@@ -19,10 +19,10 @@
 #include <xml_puny_dom/xml_puny_dom.h>
 
 #include <assertion.h>
+#include <execution_context.h>
 #include <reader.h>
 #include <result.h>
 
-#include "../execution_context.h"
 #include "expression.h"
 #include "part_type.h"
 #include "select.h"

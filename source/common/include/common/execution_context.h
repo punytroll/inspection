@@ -26,8 +26,6 @@
 #include <unordered_map>
 #include <vector>
 
-#include "type_definition/data_reference.h"
-
 namespace Inspection
 {
     class Length;

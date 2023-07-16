@@ -21,13 +21,14 @@
 #include <xml_puny_dom/xml_puny_dom.h>
 
 #include <assertion.h>
+#include <execution_context.h>
 #include <value.h>
 
-#include "../execution_context.h"
 #include "../internal_output_operators.h"
 #include "apply_enumeration.h"
 #include "data_type.h"
 #include "enumeration.h"
+#include "expression.h"
 #include "tag.h"
 
 static auto m_ApplyTags(Inspection::ExecutionContext & ExecutionContext, std::vector<std::unique_ptr<Inspection::TypeDefinition::Tag>> const & Tags, Inspection::Value * Target) -> void
@@ -71,6 +72,10 @@ static auto m_ApplyEnumeration(Inspection::ExecutionContext & ExecutionContext, 
     }
     
     return Result;
+}
+
+Inspection::TypeDefinition::ApplyEnumeration::ApplyEnumeration()
+{
 }
 
 auto Inspection::TypeDefinition::ApplyEnumeration::Apply(Inspection::ExecutionContext & ExecutionContext, Inspection::Value * Target) const -> bool
