@@ -34,11 +34,6 @@ namespace Inspection
     class TypeRepository;
     class Value;
     
-    namespace TypeDefinition
-    {
-        class FieldReference;
-    }
-    
     class ExecutionContext
     {
     public:
