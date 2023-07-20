@@ -66,6 +66,27 @@ Inspection::ExecutionContext::ExecutionContext(Inspection::TypeRepository & Type
 {
 }
 
+auto Inspection::ExecutionContext::GetCurrentParameters() const -> std::unordered_map<std::string, std::any> const &
+{
+    ASSERTION(m_Stack.size() > 0);
+    
+    return m_Stack.back().GetParameters();
+}
+
+auto Inspection::ExecutionContext::GetCurrentReader() -> Inspection::Reader &
+{
+    ASSERTION(m_Stack.size() > 0);
+    
+    return m_Stack.back().GetReader();
+}
+
+auto Inspection::ExecutionContext::GetCurrentResult() -> Inspection::Result &
+{
+    ASSERTION(m_Stack.size() > 0);
+    
+    return m_Stack.back().GetResult();
+}
+
 auto Inspection::ExecutionContext::Push(Inspection::Result & Result, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) -> void
 {
     m_Stack.emplace_back(Result, Reader, Parameters);

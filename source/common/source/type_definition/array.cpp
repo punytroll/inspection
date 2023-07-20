@@ -38,13 +38,11 @@ Inspection::TypeDefinition::Array::Array() :
 {
 }
 
-auto Inspection::TypeDefinition::Array::Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result>
+auto Inspection::TypeDefinition::Array::Get(Inspection::ExecutionContext & ExecutionContext) const -> void
 {
-    auto Result = std::make_unique<Inspection::Result>();
     auto Continue = true;
     
-    ExecutionContext.Push(*Result, Reader, Parameters);
-    Result->GetValue()->AddTag("array");
+    ExecutionContext.GetCurrentResult().GetValue()->AddTag("array");
     switch(m_IterateType)
     {
     case Inspection::TypeDefinition::Array::IterateType::AtLeastOneUntilFailureOrLength:
@@ -65,9 +63,9 @@ auto Inspection::TypeDefinition::Array::Get(Inspection::ExecutionContext & Execu
             
             auto ElementIndexInArray = static_cast<std::uint64_t>(0);
             
-            while((Continue == true) && (Reader.HasRemaining() == true))
+            while((Continue == true) && (ExecutionContext.GetCurrentReader().HasRemaining() == true))
             {
-                auto ElementReader = Inspection::Reader{Reader};
+                auto ElementReader = Inspection::Reader{ExecutionContext.GetCurrentReader()};
                 
                 ElementParameters["ElementIndexInArray"] = ElementIndexInArray;
                 
@@ -79,38 +77,38 @@ auto Inspection::TypeDefinition::Array::Get(Inspection::ExecutionContext & Execu
                     ElementResult->GetValue()->AddTag("element index in array", ElementIndexInArray++);
                     if(m_ElementName.has_value() == true)
                     {
-                        Result->GetValue()->AppendField(m_ElementName.value(), ElementResult->ExtractValue());
+                        ExecutionContext.GetCurrentResult().GetValue()->AppendField(m_ElementName.value(), ElementResult->ExtractValue());
                     }
                     else
                     {
-                        Result->GetValue()->AppendField(ElementResult->ExtractValue());
+                        ExecutionContext.GetCurrentResult().GetValue()->AppendField(ElementResult->ExtractValue());
                     }
-                    Reader.AdvancePosition(ElementReader.GetConsumedLength());
+                    ExecutionContext.GetCurrentReader().AdvancePosition(ElementReader.GetConsumedLength());
                 }
                 else
                 {
                     break;
                 }
             }
-            if(Reader.IsAtEnd() == true)
+            if(ExecutionContext.GetCurrentReader().IsAtEnd() == true)
             {
-                Result->GetValue()->AddTag("ended by length"s);
+                ExecutionContext.GetCurrentResult().GetValue()->AddTag("ended by length"s);
             }
             else
             {
-                Result->GetValue()->AddTag("ended by failure"s);
+                ExecutionContext.GetCurrentResult().GetValue()->AddTag("ended by failure"s);
             }
             if(ElementIndexInArray > 0)
             {
-                Result->GetValue()->AddTag("at least one element"s);
+                ExecutionContext.GetCurrentResult().GetValue()->AddTag("at least one element"s);
                 Continue = true;
             }
             else
             {
-                Result->GetValue()->AddTag("error", "At least one element was expected."s);
+                ExecutionContext.GetCurrentResult().GetValue()->AddTag("error", "At least one element was expected."s);
                 Continue = false;
             }
-            Result->GetValue()->AddTag("number of elements", ElementIndexInArray);
+            ExecutionContext.GetCurrentResult().GetValue()->AddTag("number of elements", ElementIndexInArray);
             
             break;
         }
@@ -149,9 +147,9 @@ auto Inspection::TypeDefinition::Array::Get(Inspection::ExecutionContext & Execu
             {
                 auto & Properties = ElementProperties[ElementPropertiesIndex];
                 
-                ASSERTION(Reader.GetReadPositionInInput() == Properties.first);
+                ASSERTION(ExecutionContext.GetCurrentReader().GetReadPositionInInput() == Properties.first);
                 
-                auto ElementReader = Inspection::Reader{Reader, Properties.second};
+                auto ElementReader = Inspection::Reader{ExecutionContext.GetCurrentReader(), Properties.second};
                 auto ElementResult = ElementType->Get(ExecutionContext, ElementReader, ElementParameters);
                 
                 Continue = ElementResult->GetSuccess();
@@ -165,24 +163,24 @@ auto Inspection::TypeDefinition::Array::Get(Inspection::ExecutionContext & Execu
                     }
                     if(m_ElementName.has_value() == true)
                     {
-                        Result->GetValue()->AppendField(m_ElementName.value(), ElementResult->ExtractValue());
+                        ExecutionContext.GetCurrentResult().GetValue()->AppendField(m_ElementName.value(), ElementResult->ExtractValue());
                     }
                     else
                     {
-                        Result->GetValue()->AppendField(ElementResult->ExtractValue());
+                        ExecutionContext.GetCurrentResult().GetValue()->AppendField(ElementResult->ExtractValue());
                     }
-                    Reader.AdvancePosition(ElementReader.GetConsumedLength());
+                    ExecutionContext.GetCurrentReader().AdvancePosition(ElementReader.GetConsumedLength());
                     ++NumberOfAppendedElements;
                     if(ElementReader.HasRemaining() == true)
                     {
                         auto OtherDataLength = Properties.second - ElementReader.GetConsumedLength();
                         
-                        AppendOtherData(Result->GetValue(), OtherDataLength);
-                        Reader.AdvancePosition(OtherDataLength);
+                        AppendOtherData(ExecutionContext.GetCurrentResult().GetValue(), OtherDataLength);
+                        ExecutionContext.GetCurrentReader().AdvancePosition(OtherDataLength);
                     }
                 }
             }
-            Result->GetValue()->AddTag("number of elements", NumberOfAppendedElements);
+            ExecutionContext.GetCurrentResult().GetValue()->AddTag("number of elements", NumberOfAppendedElements);
             
             break;
         }
@@ -213,7 +211,7 @@ auto Inspection::TypeDefinition::Array::Get(Inspection::ExecutionContext & Execu
             {
                 if(ElementIndexInArray < NumberOfElements)
                 {
-                    auto ElementReader = Inspection::Reader{Reader};
+                    auto ElementReader = Inspection::Reader{ExecutionContext.GetCurrentReader()};
                     
                     ElementParameters["ElementIndexInArray"] = ElementIndexInArray;
                     
@@ -223,28 +221,28 @@ auto Inspection::TypeDefinition::Array::Get(Inspection::ExecutionContext & Execu
                     ElementResult->GetValue()->AddTag("element index in array", ElementIndexInArray++);
                     if(m_ElementName.has_value() == true)
                     {
-                        Result->GetValue()->AppendField(m_ElementName.value(), ElementResult->ExtractValue());
+                        ExecutionContext.GetCurrentResult().GetValue()->AppendField(m_ElementName.value(), ElementResult->ExtractValue());
                     }
                     else
                     {
-                        Result->GetValue()->AppendField(ElementResult->ExtractValue());
+                        ExecutionContext.GetCurrentResult().GetValue()->AppendField(ElementResult->ExtractValue());
                     }
-                    Reader.AdvancePosition(ElementReader.GetConsumedLength());
+                    ExecutionContext.GetCurrentReader().AdvancePosition(ElementReader.GetConsumedLength());
                     if(Continue == false)
                     {
-                        Result->GetValue()->AddTag("ended by failure"s);
+                        ExecutionContext.GetCurrentResult().GetValue()->AddTag("ended by failure"s);
                         
                         break;
                     }
                 }
                 else
                 {
-                    Result->GetValue()->AddTag("ended by number of elements"s);
+                    ExecutionContext.GetCurrentResult().GetValue()->AddTag("ended by number of elements"s);
                     
                     break;
                 }
             }
-            Result->GetValue()->AddTag("number of elements", ElementIndexInArray);
+            ExecutionContext.GetCurrentResult().GetValue()->AddTag("number of elements", ElementIndexInArray);
             
             break;
         }
@@ -266,9 +264,9 @@ auto Inspection::TypeDefinition::Array::Get(Inspection::ExecutionContext & Execu
             
             auto ElementIndexInArray = static_cast<std::uint64_t>(0);
             
-            while((Continue == true) && (Reader.HasRemaining() == true))
+            while((Continue == true) && (ExecutionContext.GetCurrentReader().HasRemaining() == true))
             {
-                auto ElementReader = Inspection::Reader{Reader};
+                auto ElementReader = Inspection::Reader{ExecutionContext.GetCurrentReader()};
                 
                 ElementParameters["ElementIndexInArray"] = ElementIndexInArray;
                 
@@ -280,13 +278,13 @@ auto Inspection::TypeDefinition::Array::Get(Inspection::ExecutionContext & Execu
                     ElementResult->GetValue()->AddTag("element index in array", ElementIndexInArray++);
                     if(m_ElementName.has_value() == true)
                     {
-                        Result->GetValue()->AppendField(m_ElementName.value(), ElementResult->ExtractValue());
+                        ExecutionContext.GetCurrentResult().GetValue()->AppendField(m_ElementName.value(), ElementResult->ExtractValue());
                     }
                     else
                     {
-                        Result->GetValue()->AppendField(ElementResult->ExtractValue());
+                        ExecutionContext.GetCurrentResult().GetValue()->AppendField(ElementResult->ExtractValue());
                     }
-                    Reader.AdvancePosition(ElementReader.GetConsumedLength());
+                    ExecutionContext.GetCurrentReader().AdvancePosition(ElementReader.GetConsumedLength());
                 }
                 else
                 {
@@ -295,15 +293,15 @@ auto Inspection::TypeDefinition::Array::Get(Inspection::ExecutionContext & Execu
                     break;
                 }
             }
-            if(Reader.IsAtEnd() == true)
+            if(ExecutionContext.GetCurrentReader().IsAtEnd() == true)
             {
-                Result->GetValue()->AddTag("ended by length"s);
+                ExecutionContext.GetCurrentResult().GetValue()->AddTag("ended by length"s);
             }
             else
             {
-                Result->GetValue()->AddTag("ended by failure"s);
+                ExecutionContext.GetCurrentResult().GetValue()->AddTag("ended by failure"s);
             }
-            Result->GetValue()->AddTag("number of elements", ElementIndexInArray);
+            ExecutionContext.GetCurrentResult().GetValue()->AddTag("number of elements", ElementIndexInArray);
             
             break;
         }
@@ -325,9 +323,9 @@ auto Inspection::TypeDefinition::Array::Get(Inspection::ExecutionContext & Execu
             
             auto ElementIndexInArray = static_cast<std::uint64_t>(0);
             
-            while((Continue == true) && (Reader.HasRemaining() == true))
+            while((Continue == true) && (ExecutionContext.GetCurrentReader().HasRemaining() == true))
             {
-                auto ElementReader = Inspection::Reader{Reader};
+                auto ElementReader = Inspection::Reader{ExecutionContext.GetCurrentReader()};
                 
                 ElementParameters["ElementIndexInArray"] = ElementIndexInArray;
                 
@@ -337,30 +335,38 @@ auto Inspection::TypeDefinition::Array::Get(Inspection::ExecutionContext & Execu
                 ElementResult->GetValue()->AddTag("element index in array", ElementIndexInArray++);
                 if(m_ElementName.has_value() == true)
                 {
-                    Result->GetValue()->AppendField(m_ElementName.value(), ElementResult->ExtractValue());
+                    ExecutionContext.GetCurrentResult().GetValue()->AppendField(m_ElementName.value(), ElementResult->ExtractValue());
                 }
                 else
                 {
-                    Result->GetValue()->AppendField(ElementResult->ExtractValue());
+                    ExecutionContext.GetCurrentResult().GetValue()->AppendField(ElementResult->ExtractValue());
                 }
-                Reader.AdvancePosition(ElementReader.GetConsumedLength());
+                ExecutionContext.GetCurrentReader().AdvancePosition(ElementReader.GetConsumedLength());
             }
-            if(Reader.IsAtEnd() == true)
+            if(ExecutionContext.GetCurrentReader().IsAtEnd() == true)
             {
-                Result->GetValue()->AddTag("ended by length"s);
+                ExecutionContext.GetCurrentResult().GetValue()->AddTag("ended by length"s);
             }
             else
             {
-                Result->GetValue()->AddTag("ended by failure"s);
+                ExecutionContext.GetCurrentResult().GetValue()->AddTag("ended by failure"s);
             }
-            Result->GetValue()->AddTag("number of elements", ElementIndexInArray);
+            ExecutionContext.GetCurrentResult().GetValue()->AddTag("number of elements", ElementIndexInArray);
             
             break;
         }
     }
-    ExecutionContext.Pop();
     // finalization
-    Result->SetSuccess(Continue);
+    ExecutionContext.GetCurrentResult().SetSuccess(Continue);
+}
+
+auto Inspection::TypeDefinition::Array::Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result>
+{
+    auto Result = std::make_unique<Inspection::Result>();
+    
+    ExecutionContext.Push(*Result, Reader, Parameters);
+    Get(ExecutionContext);
+    ExecutionContext.Pop();
     
     return Result;
 }

@@ -45,6 +45,45 @@ Inspection::TypeDefinition::Type::~Type()
 {
 }
 
+auto Inspection::TypeDefinition::Type::Get(Inspection::ExecutionContext & ExecutionContext) const -> void
+{
+    auto Continue = true;
+    
+    if(m_HardcodedGetter != nullptr)
+    {
+        auto HardcodedResult = m_HardcodedGetter(ExecutionContext.GetCurrentReader(), ExecutionContext.GetCurrentParameters());
+        
+        Continue = HardcodedResult->GetSuccess();
+        ExecutionContext.GetCurrentResult().GetValue()->Extend(HardcodedResult->ExtractValue());
+    }
+    else if(m_Part != nullptr)
+    {
+        auto PartReader = std::unique_ptr<Inspection::Reader>{};
+        
+        if(m_Part->HasLength() == true)
+        {
+            PartReader = std::make_unique<Inspection::Reader>(ExecutionContext.GetCurrentReader(), std::any_cast<Inspection::Length const &>(m_Part->GetLengthAny(ExecutionContext)));
+        }
+        else
+        {
+            PartReader = std::make_unique<Inspection::Reader>(ExecutionContext.GetCurrentReader());
+        }
+        
+        auto PartParameters = m_Part->GetParameters(ExecutionContext);
+        auto PartResult = m_Part->Get(ExecutionContext, *PartReader, PartParameters);
+        
+        Continue = PartResult->GetSuccess();
+        m_AddPartResult(ExecutionContext.GetCurrentResult(), *m_Part, PartResult.get());
+        ExecutionContext.GetCurrentReader().AdvancePosition(PartReader->GetConsumedLength());
+    }
+    else
+    {
+        UNEXPECTED_CASE("m_HardcodedGetter and m_Part are both null");
+    }
+    // finalization
+    ExecutionContext.GetCurrentResult().SetSuccess(Continue);
+}
+
 auto Inspection::TypeDefinition::Type::Get(Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result>
 {
     auto ExecutionContext = Inspection::ExecutionContext{Inspection::g_TypeRepository};
@@ -58,47 +97,10 @@ auto Inspection::TypeDefinition::Type::Get(Inspection::Reader & Reader, std::uno
 auto Inspection::TypeDefinition::Type::Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result>
 {
     auto Result = std::make_unique<Inspection::Result>();
-    auto Continue = true;
     
-    // reading
-    if(Continue == true)
-    {
-        ExecutionContext.Push(*Result, Reader, Parameters);
-        if(m_HardcodedGetter != nullptr)
-        {
-            auto HardcodedResult = m_HardcodedGetter(Reader, Parameters);
-            
-            Continue = HardcodedResult->GetSuccess();
-            Result->GetValue()->Extend(HardcodedResult->ExtractValue());
-        }
-        else if(m_Part != nullptr)
-        {
-            auto PartReader = std::unique_ptr<Inspection::Reader>{};
-            
-            if(m_Part->HasLength() == true)
-            {
-                PartReader = std::make_unique<Inspection::Reader>(Reader, std::any_cast<Inspection::Length const &>(m_Part->GetLengthAny(ExecutionContext)));
-            }
-            else
-            {
-                PartReader = std::make_unique<Inspection::Reader>(Reader);
-            }
-            
-            auto PartParameters = m_Part->GetParameters(ExecutionContext);
-            auto PartResult = m_Part->Get(ExecutionContext, *PartReader, PartParameters);
-            
-            Continue = PartResult->GetSuccess();
-            m_AddPartResult(Result.get(), *m_Part, PartResult.get());
-            Reader.AdvancePosition(PartReader->GetConsumedLength());
-        }
-        else
-        {
-            UNEXPECTED_CASE("m_HardcodedGetter and m_Part are both null");
-        }
-        ExecutionContext.Pop();
-    }
-    // finalization
-    Result->SetSuccess(Continue);
+    ExecutionContext.Push(*Result, Reader, Parameters);
+    Get(ExecutionContext);
+    ExecutionContext.Pop();
     
     return Result;
 }

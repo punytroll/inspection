@@ -32,13 +32,9 @@ Inspection::TypeDefinition::Select::Select() :
 {
 }
 
-auto Inspection::TypeDefinition::Select::Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result>
+auto Inspection::TypeDefinition::Select::Get(Inspection::ExecutionContext & ExecutionContext) const -> void
 {
-    auto Result = std::make_unique<Inspection::Result>();
     auto Continue = true;
-    
-    ExecutionContext.Push(*Result, Reader, Parameters);
-    
     auto FoundCase = false;
     
     for(auto CaseIterator = std::begin(m_Cases); CaseIterator != std::end(m_Cases); ++CaseIterator)
@@ -56,19 +52,19 @@ auto Inspection::TypeDefinition::Select::Get(Inspection::ExecutionContext & Exec
                 
                 if(Case.Part->HasLength() == true)
                 {
-                    PartReader = std::make_unique<Inspection::Reader>(Reader, std::any_cast<Inspection::Length const &>(Case.Part->GetLengthAny(ExecutionContext)));
+                    PartReader = std::make_unique<Inspection::Reader>(ExecutionContext.GetCurrentReader(), std::any_cast<Inspection::Length const &>(Case.Part->GetLengthAny(ExecutionContext)));
                 }
                 else
                 {
-                    PartReader = std::make_unique<Inspection::Reader>(Reader);
+                    PartReader = std::make_unique<Inspection::Reader>(ExecutionContext.GetCurrentReader());
                 }
                 
                 auto PartParameters = Case.Part->GetParameters(ExecutionContext);
                 auto PartResult = Case.Part->Get(ExecutionContext, *PartReader, PartParameters);
                 
                 Continue = PartResult->GetSuccess();
-                m_AddPartResult(Result.get(), *(Case.Part), PartResult.get());
-                Reader.AdvancePosition(PartReader->GetConsumedLength());
+                m_AddPartResult(ExecutionContext.GetCurrentResult(), *(Case.Part), PartResult.get());
+                ExecutionContext.GetCurrentReader().AdvancePosition(PartReader->GetConsumedLength());
             }
             
             break;
@@ -83,23 +79,31 @@ auto Inspection::TypeDefinition::Select::Get(Inspection::ExecutionContext & Exec
         
         if(m_ElsePart->HasLength() == true)
         {
-            PartReader = std::make_unique<Inspection::Reader>(Reader, std::any_cast<Inspection::Length const &>(m_ElsePart->GetLengthAny(ExecutionContext)));
+            PartReader = std::make_unique<Inspection::Reader>(ExecutionContext.GetCurrentReader(), std::any_cast<Inspection::Length const &>(m_ElsePart->GetLengthAny(ExecutionContext)));
         }
         else
         {
-            PartReader = std::make_unique<Inspection::Reader>(Reader);
+            PartReader = std::make_unique<Inspection::Reader>(ExecutionContext.GetCurrentReader());
         }
         
         auto PartParameters = m_ElsePart->GetParameters(ExecutionContext);
         auto PartResult = m_ElsePart->Get(ExecutionContext, *PartReader, PartParameters);
         
         Continue = PartResult->GetSuccess();
-        m_AddPartResult(Result.get(), *m_ElsePart, PartResult.get());
-        Reader.AdvancePosition(PartReader->GetConsumedLength());
+        m_AddPartResult(ExecutionContext.GetCurrentResult(), *m_ElsePart, PartResult.get());
+        ExecutionContext.GetCurrentReader().AdvancePosition(PartReader->GetConsumedLength());
     }
-    ExecutionContext.Pop();
     // finalization
-    Result->SetSuccess(Continue);
+    ExecutionContext.GetCurrentResult().SetSuccess(Continue);
+}
+
+auto Inspection::TypeDefinition::Select::Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result>
+{
+    auto Result = std::make_unique<Inspection::Result>();
+    
+    ExecutionContext.Push(*Result, Reader, Parameters);
+    Get(ExecutionContext);
+    ExecutionContext.Pop();
     
     return Result;
 }

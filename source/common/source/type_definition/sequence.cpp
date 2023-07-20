@@ -30,12 +30,10 @@ Inspection::TypeDefinition::Sequence::Sequence() :
 {
 }
 
-auto Inspection::TypeDefinition::Sequence::Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result>
+auto Inspection::TypeDefinition::Sequence::Get(Inspection::ExecutionContext & ExecutionContext) const -> void
 {
-    auto Result = std::make_unique<Inspection::Result>();
     auto Continue = true;
     
-    ExecutionContext.Push(*Result, Reader, Parameters);
     for(auto PartIterator = std::begin(GetParts()); ((Continue == true) && (PartIterator != std::end(GetParts()))); ++PartIterator)
     {
         auto const & Part = *PartIterator;
@@ -43,28 +41,36 @@ auto Inspection::TypeDefinition::Sequence::Get(Inspection::ExecutionContext & Ex
         
         if(Part->HasLength() == true)
         {
-            PartReader = std::make_unique<Inspection::Reader>(Reader, std::any_cast<Inspection::Length const &>(Part->GetLengthAny(ExecutionContext)));
+            PartReader = std::make_unique<Inspection::Reader>(ExecutionContext.GetCurrentReader(), std::any_cast<Inspection::Length const &>(Part->GetLengthAny(ExecutionContext)));
         }
         else
         {
-            PartReader = std::make_unique<Inspection::Reader>(Reader);
+            PartReader = std::make_unique<Inspection::Reader>(ExecutionContext.GetCurrentReader());
         }
         
         auto PartParameters = Part->GetParameters(ExecutionContext);
         auto PartResult = Part->Get(ExecutionContext, *PartReader, PartParameters);
         
         Continue = PartResult->GetSuccess();
-        m_AddPartResult(Result.get(), *Part, PartResult.get());
-        Reader.AdvancePosition(PartReader->GetConsumedLength());
+        m_AddPartResult(ExecutionContext.GetCurrentResult(), *Part, PartResult.get());
+        ExecutionContext.GetCurrentReader().AdvancePosition(PartReader->GetConsumedLength());
     }
     // interpretation
     if(Continue == true)
     {
-        Continue = ApplyInterpretations(ExecutionContext, Result->GetValue());
+        Continue = ApplyInterpretations(ExecutionContext, ExecutionContext.GetCurrentResult().GetValue());
     }
-    ExecutionContext.Pop();
     // finalization
-    Result->SetSuccess(Continue);
+    ExecutionContext.GetCurrentResult().SetSuccess(Continue);
+}
+
+auto Inspection::TypeDefinition::Sequence::Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result>
+{
+    auto Result = std::make_unique<Inspection::Result>();
+    
+    ExecutionContext.Push(*Result, Reader, Parameters);
+    Get(ExecutionContext);
+    ExecutionContext.Pop();
     
     return Result;
 }

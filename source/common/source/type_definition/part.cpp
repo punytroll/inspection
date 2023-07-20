@@ -164,7 +164,7 @@ auto Inspection::TypeDefinition::Part::Load(XML::Element const * Element) -> std
     return Result;
 }
 
-auto Inspection::TypeDefinition::Part::m_AddPartResult(Inspection::Result * Result, Inspection::TypeDefinition::Part const & Part, Inspection::Result * PartResult) const -> void
+auto Inspection::TypeDefinition::Part::m_AddPartResult(Inspection::Result & Result, Inspection::TypeDefinition::Part const & Part, Inspection::Result * PartResult) const -> void
 {
     switch(Part.GetPartType())
     {
@@ -174,7 +174,7 @@ auto Inspection::TypeDefinition::Part::m_AddPartResult(Inspection::Result * Resu
     case Inspection::TypeDefinition::PartType::Sequence:
         {
             ASSERTION(Part.HasFieldName() == false);
-            Result->GetValue()->Extend(PartResult->ExtractValue());
+            Result.GetValue()->Extend(PartResult->ExtractValue());
             
             break;
         }
@@ -182,7 +182,7 @@ auto Inspection::TypeDefinition::Part::m_AddPartResult(Inspection::Result * Resu
     case Inspection::TypeDefinition::PartType::Field:
         {
             ASSERTION(Part.HasFieldName() == true);
-            Result->GetValue()->AppendField(Part.GetFieldName(), PartResult->ExtractValue());
+            Result.GetValue()->AppendField(Part.GetFieldName(), PartResult->ExtractValue());
             
             break;
         }

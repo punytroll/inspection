@@ -33,19 +33,17 @@ Inspection::TypeDefinition::Field::Field() :
 {
 }
 
-auto Inspection::TypeDefinition::Field::Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result>
+auto Inspection::TypeDefinition::Field::Get(Inspection::ExecutionContext & ExecutionContext) const -> void
 {
-    auto Result = std::make_unique<Inspection::Result>();
     auto Continue = true;
     
-    ExecutionContext.Push(*Result, Reader, Parameters);
     if(HasTypeReference() == true)
     {
         auto const & FieldType = GetTypeFromTypeReference(ExecutionContext);
-        auto FieldResult = FieldType.Get(ExecutionContext, Reader, ExecutionContext.GetAllParameters());
+        auto FieldResult = FieldType.Get(ExecutionContext, ExecutionContext.GetCurrentReader(), ExecutionContext.GetAllParameters());
         
         Continue = FieldResult->GetSuccess();
-        Result->GetValue()->Extend(FieldResult->ExtractValue());
+        ExecutionContext.GetCurrentResult().GetValue()->Extend(FieldResult->ExtractValue());
     }
     else
     {
@@ -56,28 +54,35 @@ auto Inspection::TypeDefinition::Field::Get(Inspection::ExecutionContext & Execu
         
         if(Part->HasLength() == true)
         {
-            PartReader = std::make_unique<Inspection::Reader>(Reader, std::any_cast<Inspection::Length const &>(Part->GetLengthAny(ExecutionContext)));
+            PartReader = std::make_unique<Inspection::Reader>(ExecutionContext.GetCurrentReader(), std::any_cast<Inspection::Length const &>(Part->GetLengthAny(ExecutionContext)));
         }
         else
         {
-            PartReader = std::make_unique<Inspection::Reader>(Reader);
+            PartReader = std::make_unique<Inspection::Reader>(ExecutionContext.GetCurrentReader());
         }
         
         auto PartParameters = Part->GetParameters(ExecutionContext);
         auto PartResult = Part->Get(ExecutionContext, *PartReader, PartParameters);
         
         Continue = PartResult->GetSuccess();
-        Result->GetValue()->Extend(PartResult->ExtractValue());
-        Reader.AdvancePosition(PartReader->GetConsumedLength());
+        ExecutionContext.GetCurrentResult().GetValue()->Extend(PartResult->ExtractValue());
+        ExecutionContext.GetCurrentReader().AdvancePosition(PartReader->GetConsumedLength());
     }
     // interpretation
     if(Continue == true)
     {
-        Continue = ApplyInterpretations(ExecutionContext, Result->GetValue());
+        Continue = ApplyInterpretations(ExecutionContext, ExecutionContext.GetCurrentResult().GetValue());
     }
+    ExecutionContext.GetCurrentResult().SetSuccess(Continue);
+}
+
+auto Inspection::TypeDefinition::Field::Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result>
+{
+    auto Result = std::make_unique<Inspection::Result>();
+    
+    ExecutionContext.Push(*Result, Reader, Parameters);
+    Get(ExecutionContext);
     ExecutionContext.Pop();
-    // finalization
-    Result->SetSuccess(Continue);
     
     return Result;
 }

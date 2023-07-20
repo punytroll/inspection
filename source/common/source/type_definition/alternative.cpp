@@ -30,23 +30,21 @@ Inspection::TypeDefinition::Alternative::Alternative(void) :
 {
 }
 
-auto Inspection::TypeDefinition::Alternative::Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result>
+auto Inspection::TypeDefinition::Alternative::Get(Inspection::ExecutionContext & ExecutionContext) const -> void
 {
-    auto Result = std::make_unique<Inspection::Result>();
     auto FoundAlternative = false;
     
-    ExecutionContext.Push(*Result, Reader, Parameters);
     for(auto const & Part  : GetParts())
     {
         auto PartReader = std::unique_ptr<Inspection::Reader>{};
         
         if(Part->HasLength() == true)
         {
-            PartReader = std::make_unique<Inspection::Reader>(Reader, std::any_cast<Inspection::Length const &>(Part->GetLengthAny(ExecutionContext)));
+            PartReader = std::make_unique<Inspection::Reader>(ExecutionContext.GetCurrentReader(), std::any_cast<Inspection::Length const &>(Part->GetLengthAny(ExecutionContext)));
         }
         else
         {
-            PartReader = std::make_unique<Inspection::Reader>(Reader);
+            PartReader = std::make_unique<Inspection::Reader>(ExecutionContext.GetCurrentReader());
         }
         
         auto PartParameters = Part->GetParameters(ExecutionContext);
@@ -55,15 +53,23 @@ auto Inspection::TypeDefinition::Alternative::Get(Inspection::ExecutionContext &
         FoundAlternative = PartResult->GetSuccess();
         if(FoundAlternative == true)
         {
-            m_AddPartResult(Result.get(), *Part, PartResult.get());
-            Reader.AdvancePosition(PartReader->GetConsumedLength());
+            m_AddPartResult(ExecutionContext.GetCurrentResult(), *Part, PartResult.get());
+            ExecutionContext.GetCurrentReader().AdvancePosition(PartReader->GetConsumedLength());
             
             break;
         }
     }
-    ExecutionContext.Pop();
     // finalization
-    Result->SetSuccess(FoundAlternative);
+    ExecutionContext.GetCurrentResult().SetSuccess(FoundAlternative);
+}
+
+auto Inspection::TypeDefinition::Alternative::Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result>
+{
+    auto Result = std::make_unique<Inspection::Result>();
+    
+    ExecutionContext.Push(*Result, Reader, Parameters);
+    Get(ExecutionContext);
+    ExecutionContext.Pop();
     
     return Result;
 }
