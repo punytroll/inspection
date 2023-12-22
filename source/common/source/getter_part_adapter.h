@@ -1,4 +1,5 @@
 /**
+ * inspection
  * Copyright (C) 2023  Hagen Möbius
  * 
  * This program is free software; you can redistribute it and/or
@@ -16,29 +17,31 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 **/
 
-#ifndef INSPECTION__SOURCE__COMMON__INCLUDE__COMMON__TYPE_H
-#define INSPECTION__SOURCE__COMMON__INCLUDE__COMMON__TYPE_H
+#ifndef INSPECTION__SOURCE__COMMON__SOURCE__GETTER_PART_ADAPTER_H
+#define INSPECTION__SOURCE__COMMON__SOURCE__GETTER_PART_ADAPTER_H
 
-#include <any>
-#include <memory>
-#include <string>
-#include <unordered_map>
-#include <vector>
+#include <i_getter_adapter.h>
+
+#include "type_definition/part.h"
 
 namespace Inspection
 {
     class ExecutionContext;
-    class Reader;
-    class Result;
     
-    class Type
+    class GetterPartAdapter : public Inspection::IGetterAdapter
     {
     public:
-        virtual ~Type() = default;
-        virtual auto Get(Inspection::ExecutionContext & ExecutionContext) const -> void = 0;
-        virtual auto Get(Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result> = 0;
-        virtual auto Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result> = 0;
-        virtual auto GetPathParts() const -> std::vector<std::string> const & = 0;
+        GetterPartAdapter(Inspection::TypeDefinition::Part const & Part) :
+            m_Part{Part}
+        {
+        }
+        
+        auto operator()(Inspection::ExecutionContext & ExecutionContext) const -> void override
+        {
+            m_Part.Get(ExecutionContext);
+        }
+    private:
+        Inspection::TypeDefinition::Part const & m_Part;
     };
 }
 

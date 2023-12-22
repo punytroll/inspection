@@ -22,6 +22,7 @@
 #include <reader.h>
 #include <result.h>
 
+#include "../getter_part_adapter.h"
 #include "part_type.h"
 #include "sequence.h"
 
@@ -49,7 +50,7 @@ auto Inspection::TypeDefinition::Sequence::Get(Inspection::ExecutionContext & Ex
         }
         
         auto PartParameters = Part->GetParameters(ExecutionContext);
-        auto PartResult = Part->Get(ExecutionContext, *PartReader, PartParameters);
+        auto PartResult = ExecutionContext.Call(Inspection::GetterPartAdapter{*Part}, *PartReader, PartParameters);
         
         Continue = PartResult->GetSuccess();
         m_AddPartResult(ExecutionContext.GetCurrentResult(), *Part, PartResult.get());
@@ -62,17 +63,6 @@ auto Inspection::TypeDefinition::Sequence::Get(Inspection::ExecutionContext & Ex
     }
     // finalization
     ExecutionContext.GetCurrentResult().SetSuccess(Continue);
-}
-
-auto Inspection::TypeDefinition::Sequence::Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result>
-{
-    auto Result = std::make_unique<Inspection::Result>();
-    
-    ExecutionContext.Push(*Result, Reader, Parameters);
-    Get(ExecutionContext);
-    ExecutionContext.Pop();
-    
-    return Result;
 }
 
 auto Inspection::TypeDefinition::Sequence::Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::Sequence>

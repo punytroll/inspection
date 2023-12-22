@@ -56,7 +56,6 @@ namespace Inspection
             virtual ~Part();
             auto ApplyInterpretations(Inspection::ExecutionContext & ExecutionContext, Inspection::Value * Target) const -> bool;
             virtual auto Get(Inspection::ExecutionContext & ExecutionContext) const -> void = 0;
-            virtual auto Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result> = 0;
             auto GetFieldName() const -> std::string const &;
             auto GetLengthAny(Inspection::ExecutionContext & ExecutionContext) const -> std::any;
             auto GetParameters(Inspection::ExecutionContext & ExecutionContext) const -> std::unordered_map<std::string, std::any>;

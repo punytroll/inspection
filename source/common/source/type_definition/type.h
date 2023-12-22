@@ -60,7 +60,8 @@ namespace Inspection
             auto GetPathParts() const -> std::vector<std::string> const & override;
         private:
             Type(std::vector<std::string> const & PathParts);
-            std::function<std::unique_ptr<Inspection::Result> (Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters)> m_HardcodedGetter;
+            std::function<std::unique_ptr<Inspection::Result> (Inspection::Reader &, std::unordered_map<std::string, std::any> const &)> m_HardcodedGetter;
+            void (* m_HardcodedFunctionGetter)(Inspection::ExecutionContext &);
             std::unique_ptr<Inspection::TypeDefinition::Part> m_Part;
             std::vector<std::string> m_PathParts;
         };

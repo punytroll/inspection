@@ -1,4 +1,5 @@
 /**
+ * inspection
  * Copyright (C) 2023  Hagen Möbius
  * 
  * This program is free software; you can redistribute it and/or
@@ -16,29 +17,29 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 **/
 
-#ifndef INSPECTION__SOURCE__COMMON__INCLUDE__COMMON__TYPE_H
-#define INSPECTION__SOURCE__COMMON__INCLUDE__COMMON__TYPE_H
+#ifndef INSPECTION__SOURCE__COMMON__INCLUDE__COMMON__GETTER_FUNCTOR_ADAPTER_H
+#define INSPECTION__SOURCE__COMMON__INCLUDE__COMMON__GETTER_FUNCTOR_ADAPTER_H
 
-#include <any>
-#include <memory>
-#include <string>
-#include <unordered_map>
-#include <vector>
+#include "i_getter_adapter.h"
 
 namespace Inspection
 {
     class ExecutionContext;
-    class Reader;
-    class Result;
     
-    class Type
+    class GetterFunctorAdapter : public Inspection::IGetterAdapter
     {
     public:
-        virtual ~Type() = default;
-        virtual auto Get(Inspection::ExecutionContext & ExecutionContext) const -> void = 0;
-        virtual auto Get(Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result> = 0;
-        virtual auto Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result> = 0;
-        virtual auto GetPathParts() const -> std::vector<std::string> const & = 0;
+        GetterFunctorAdapter(std::function<void (Inspection::ExecutionContext &)> GetterFunctor) :
+            m_GetterFunctor{GetterFunctor}
+        {
+        }
+        
+        auto operator()(Inspection::ExecutionContext & ExecutionContext) const -> void override
+        {
+            m_GetterFunctor(ExecutionContext);
+        }
+    private:
+        std::function<void (Inspection::ExecutionContext &)> m_GetterFunctor;
     };
 }
 

@@ -22,6 +22,7 @@
 #include <length.h>
 #include <result.h>
 
+#include "../getter_part_adapter.h"
 #include "alternative.h"
 #include "part_type.h"
 
@@ -48,7 +49,7 @@ auto Inspection::TypeDefinition::Alternative::Get(Inspection::ExecutionContext &
         }
         
         auto PartParameters = Part->GetParameters(ExecutionContext);
-        auto PartResult = Part->Get(ExecutionContext, *PartReader, PartParameters);
+        auto PartResult = ExecutionContext.Call(Inspection::GetterPartAdapter{*Part}, *PartReader, PartParameters);
         
         FoundAlternative = PartResult->GetSuccess();
         if(FoundAlternative == true)
@@ -61,17 +62,6 @@ auto Inspection::TypeDefinition::Alternative::Get(Inspection::ExecutionContext &
     }
     // finalization
     ExecutionContext.GetCurrentResult().SetSuccess(FoundAlternative);
-}
-
-auto Inspection::TypeDefinition::Alternative::Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result>
-{
-    auto Result = std::make_unique<Inspection::Result>();
-    
-    ExecutionContext.Push(*Result, Reader, Parameters);
-    Get(ExecutionContext);
-    ExecutionContext.Pop();
-    
-    return Result;
 }
 
 auto Inspection::TypeDefinition::Alternative::Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::Alternative>

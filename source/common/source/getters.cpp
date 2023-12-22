@@ -9,6 +9,7 @@
 
 #include "assertion.h"
 #include "buffer.h"
+#include "execution_context.h"
 #include "getters.h"
 #include "guid.h"
 #include "helper.h"
@@ -626,25 +627,24 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ASCII_String_AlphaNumericOrS
     return Result;
 }
 
-std::unique_ptr<Inspection::Result> Inspection::Get_ASCII_String_Printable_EndedByLength(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
+auto Inspection::Get_ASCII_String_Printable_EndedByLength(Inspection::ExecutionContext & ExecutionContext) -> void
 {
-    auto Result = std::make_unique<Inspection::Result>();
     auto Continue = true;
     
-    Result->GetValue()->AddTag("string"s);
-    Result->GetValue()->AddTag("character set", "ASCII"s);
-    Result->GetValue()->AddTag("encoding", "ASCII"s);
-    Result->GetValue()->AddTag("printable"s);
+    ExecutionContext.GetCurrentResult().GetValue()->AddTag("string"s);
+    ExecutionContext.GetCurrentResult().GetValue()->AddTag("character set", "ASCII"s);
+    ExecutionContext.GetCurrentResult().GetValue()->AddTag("encoding", "ASCII"s);
+    ExecutionContext.GetCurrentResult().GetValue()->AddTag("printable"s);
     // reading
     if(Continue == true)
     {
-        std::stringstream Value;
-        auto NumberOfCharacters{0ul};
-        ReadResult ReadResult;
+        auto Value = std::ostringstream{};
+        auto NumberOfCharacters = 0ul;
+        auto ReadResult = Inspection::ReadResult{};
         
-        while((Continue == true) && (Reader.HasRemaining() == true))
+        while((Continue == true) && (ExecutionContext.GetCurrentReader().HasRemaining() == true))
         {
-            if((Continue = Reader.Read8Bits(ReadResult)) == true)
+            if((Continue = ExecutionContext.GetCurrentReader().Read8Bits(ReadResult)) == true)
             {
                 if(Is_ASCII_Character_Printable(ReadResult.Data) == true)
                 {
@@ -653,28 +653,26 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ASCII_String_Printable_Ended
                 }
                 else
                 {
-                    Result->GetValue()->AddTag("ended by error"s);
-                    Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not a printable ASCII character.");
+                    ExecutionContext.GetCurrentResult().GetValue()->AddTag("ended by error"s);
+                    ExecutionContext.GetCurrentResult().GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not a printable ASCII character.");
                     Continue = false;
                 }
             }
             else
             {
-                Result->GetValue()->AddTag("ended by error"s);
-                AppendReadErrorTag(Result->GetValue(), ReadResult);
+                ExecutionContext.GetCurrentResult().GetValue()->AddTag("ended by error"s);
+                AppendReadErrorTag(ExecutionContext.GetCurrentResult().GetValue(), ReadResult);
             }
         }
-        if(Reader.IsAtEnd() == true)
+        if(ExecutionContext.GetCurrentReader().IsAtEnd() == true)
         {
-            Result->GetValue()->AddTag("ended by length"s);
+            ExecutionContext.GetCurrentResult().GetValue()->AddTag("ended by length"s);
         }
-        Result->GetValue()->AddTag(to_string_cast(NumberOfCharacters) + " characters");
-        Result->GetValue()->SetData(Value.str());
+        ExecutionContext.GetCurrentResult().GetValue()->AddTag(to_string_cast(NumberOfCharacters) + " characters");
+        ExecutionContext.GetCurrentResult().GetValue()->SetData(Value.str());
     }
     // finalization
-    Result->SetSuccess(Continue);
-    
-    return Result;
+    ExecutionContext.GetCurrentResult().SetSuccess(Continue);
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ASCII_String_Printable_EndedByTermination(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)

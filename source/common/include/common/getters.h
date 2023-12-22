@@ -14,6 +14,7 @@ extern bool g_AppendFLACStream_Subframe_Residual_Rice_Partition_Samples;
 
 namespace Inspection
 {
+    class ExecutionContext;
     class Reader;
     
     std::unique_ptr<Inspection::Result> Get_Apple_AppleDouble_File(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
@@ -26,7 +27,7 @@ namespace Inspection
     std::unique_ptr<Inspection::Result> Get_ASCII_String_Alphabetic_EndedByLength(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
     std::unique_ptr<Inspection::Result> Get_ASCII_String_AlphaNumeric_EndedByLength(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
     std::unique_ptr<Inspection::Result> Get_ASCII_String_AlphaNumericOrSpace_EndedByLength(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
-    std::unique_ptr<Inspection::Result> Get_ASCII_String_Printable_EndedByLength(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
+    auto Get_ASCII_String_Printable_EndedByLength(Inspection::ExecutionContext & ExecutionContext) -> void;
     std::unique_ptr<Inspection::Result> Get_ASCII_String_Printable_EndedByTermination(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
     std::unique_ptr<Inspection::Result> Get_ASF_ExtendedContentDescription_ContentDescriptor_Data(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
     std::unique_ptr<Inspection::Result> Get_ASF_ExtendedStreamPropertiesObject_Flags(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);

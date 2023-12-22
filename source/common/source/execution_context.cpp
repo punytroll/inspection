@@ -23,6 +23,8 @@
 
 #include <assertion.h>
 #include <execution_context.h>
+#include <getter_functor_adapter.h>
+#include <i_getter_adapter.h>
 #include <length.h>
 #include <result.h>
 #include <type.h>
@@ -66,6 +68,24 @@ Inspection::ExecutionContext::ExecutionContext(Inspection::TypeRepository & Type
 {
 }
 
+auto Inspection::ExecutionContext::Call(std::function<void (Inspection::ExecutionContext &)> GetterFunctor, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) -> std::unique_ptr<Inspection::Result>
+{
+    auto ExecutionContext = Inspection::ExecutionContext{Inspection::g_TypeRepository};
+    
+    return ExecutionContext.Call(Inspection::GetterFunctorAdapter{GetterFunctor}, Reader, Parameters);
+}
+
+auto Inspection::ExecutionContext::Call(Inspection::IGetterAdapter const & GetterAdapter, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) -> std::unique_ptr<Inspection::Result>
+{
+    auto Result = std::make_unique<Inspection::Result>();
+    
+    m_Stack.emplace_back(*Result, Reader, Parameters);
+    GetterAdapter(*this);
+    m_Stack.pop_back();
+    
+    return Result;
+}
+
 auto Inspection::ExecutionContext::GetCurrentParameters() const -> std::unordered_map<std::string, std::any> const &
 {
     ASSERTION(m_Stack.size() > 0);
@@ -85,16 +105,6 @@ auto Inspection::ExecutionContext::GetCurrentResult() -> Inspection::Result &
     ASSERTION(m_Stack.size() > 0);
     
     return m_Stack.back().GetResult();
-}
-
-auto Inspection::ExecutionContext::Push(Inspection::Result & Result, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) -> void
-{
-    m_Stack.emplace_back(Result, Reader, Parameters);
-}
-
-auto Inspection::ExecutionContext::Pop() -> void
-{
-    m_Stack.pop_back();
 }
 
 auto Inspection::ExecutionContext::GetParameterAny(std::string const & ParameterName) -> std::any const &

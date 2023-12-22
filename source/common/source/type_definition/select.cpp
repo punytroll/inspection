@@ -23,6 +23,7 @@
 #include <reader.h>
 #include <result.h>
 
+#include "../getter_part_adapter.h"
 #include "expression.h"
 #include "part_type.h"
 #include "select.h"
@@ -60,7 +61,7 @@ auto Inspection::TypeDefinition::Select::Get(Inspection::ExecutionContext & Exec
                 }
                 
                 auto PartParameters = Case.Part->GetParameters(ExecutionContext);
-                auto PartResult = Case.Part->Get(ExecutionContext, *PartReader, PartParameters);
+                auto PartResult = ExecutionContext.Call(Inspection::GetterPartAdapter{*(Case.Part)}, *PartReader, PartParameters);
                 
                 Continue = PartResult->GetSuccess();
                 m_AddPartResult(ExecutionContext.GetCurrentResult(), *(Case.Part), PartResult.get());
@@ -87,7 +88,7 @@ auto Inspection::TypeDefinition::Select::Get(Inspection::ExecutionContext & Exec
         }
         
         auto PartParameters = m_ElsePart->GetParameters(ExecutionContext);
-        auto PartResult = m_ElsePart->Get(ExecutionContext, *PartReader, PartParameters);
+        auto PartResult = ExecutionContext.Call(Inspection::GetterPartAdapter{*m_ElsePart}, *PartReader, PartParameters);
         
         Continue = PartResult->GetSuccess();
         m_AddPartResult(ExecutionContext.GetCurrentResult(), *m_ElsePart, PartResult.get());
@@ -95,17 +96,6 @@ auto Inspection::TypeDefinition::Select::Get(Inspection::ExecutionContext & Exec
     }
     // finalization
     ExecutionContext.GetCurrentResult().SetSuccess(Continue);
-}
-
-auto Inspection::TypeDefinition::Select::Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result>
-{
-    auto Result = std::make_unique<Inspection::Result>();
-    
-    ExecutionContext.Push(*Result, Reader, Parameters);
-    Get(ExecutionContext);
-    ExecutionContext.Pop();
-    
-    return Result;
 }
 
 auto Inspection::TypeDefinition::Select::Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::Select>

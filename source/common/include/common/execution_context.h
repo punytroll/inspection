@@ -21,13 +21,17 @@
 #define COMMON_EXECUTION_CONTEXT_H
 
 #include <any>
+#include <cstdint>
+#include <functional>
 #include <list>
+#include <memory>
 #include <string>
 #include <unordered_map>
 #include <vector>
 
 namespace Inspection
 {
+    class IGetterAdapter;
     class Length;
     class Reader;
     class Result;
@@ -52,9 +56,10 @@ namespace Inspection
             Inspection::Result & m_Result;
         };
     public:
+        static auto Call(std::function<void (Inspection::ExecutionContext &)> GetterFunction, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) -> std::unique_ptr<Inspection::Result>;
+        
         ExecutionContext(Inspection::TypeRepository & TypeRepository);
-        auto Push(Inspection::Result & Result, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) -> void;
-        auto Pop() -> void;
+        auto Call(Inspection::IGetterAdapter const & GetterAdapter, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) -> std::unique_ptr<Inspection::Result>;
         auto GetCurrentParameters() const -> std::unordered_map<std::string, std::any> const &;
         auto GetCurrentReader() -> Inspection::Reader &;
         auto GetCurrentResult() -> Inspection::Result &;

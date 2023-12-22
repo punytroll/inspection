@@ -20,10 +20,13 @@
 
 #include <assertion.h>
 #include <execution_context.h>
+#include <getter_functor_adapter.h>
+#include <getter_type_adapter.h>
 #include <getters.h>
 #include <result.h>
 #include <type_repository.h>
 
+#include "../getter_part_adapter.h"
 #include "../internal_output_operators.h"
 #include "../xml_helper.h"
 #include "data_type.h"
@@ -37,6 +40,7 @@ using namespace std::string_literals;
 
 Inspection::TypeDefinition::Type::Type(std::vector<std::string> const & PathParts) :
     Inspection::TypeDefinition::Part{Inspection::TypeDefinition::PartType::Type},
+    m_HardcodedFunctionGetter{nullptr},
     m_PathParts{PathParts}
 {
 }
@@ -56,6 +60,26 @@ auto Inspection::TypeDefinition::Type::Get(Inspection::ExecutionContext & Execut
         Continue = HardcodedResult->GetSuccess();
         ExecutionContext.GetCurrentResult().GetValue()->Extend(HardcodedResult->ExtractValue());
     }
+    else if(m_HardcodedFunctionGetter != nullptr)
+    {
+        auto PartReader = std::unique_ptr<Inspection::Reader>{};
+        
+        if(HasLength() == true)
+        {
+            PartReader = std::make_unique<Inspection::Reader>(ExecutionContext.GetCurrentReader(), std::any_cast<Inspection::Length const &>(GetLengthAny(ExecutionContext)));
+        }
+        else
+        {
+            PartReader = std::make_unique<Inspection::Reader>(ExecutionContext.GetCurrentReader());
+        }
+        
+        auto PartParameters = GetParameters(ExecutionContext);
+        auto PartResult = ExecutionContext.Call(Inspection::GetterFunctorAdapter{m_HardcodedFunctionGetter}, *PartReader, PartParameters);
+        
+        Continue = PartResult->GetSuccess();
+        ExecutionContext.GetCurrentResult().GetValue()->Extend(PartResult->ExtractValue());
+        ExecutionContext.GetCurrentReader().AdvancePosition(PartReader->GetConsumedLength());
+    }
     else if(m_Part != nullptr)
     {
         auto PartReader = std::unique_ptr<Inspection::Reader>{};
@@ -70,7 +94,7 @@ auto Inspection::TypeDefinition::Type::Get(Inspection::ExecutionContext & Execut
         }
         
         auto PartParameters = m_Part->GetParameters(ExecutionContext);
-        auto PartResult = m_Part->Get(ExecutionContext, *PartReader, PartParameters);
+        auto PartResult = ExecutionContext.Call(Inspection::GetterPartAdapter{*m_Part}, *PartReader, PartParameters);
         
         Continue = PartResult->GetSuccess();
         m_AddPartResult(ExecutionContext.GetCurrentResult(), *m_Part, PartResult.get());
@@ -96,13 +120,7 @@ auto Inspection::TypeDefinition::Type::Get(Inspection::Reader & Reader, std::uno
 
 auto Inspection::TypeDefinition::Type::Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result>
 {
-    auto Result = std::make_unique<Inspection::Result>();
-    
-    ExecutionContext.Push(*Result, Reader, Parameters);
-    Get(ExecutionContext);
-    ExecutionContext.Pop();
-    
-    return Result;
+    return ExecutionContext.Call(Inspection::GetterTypeAdapter{*this}, Reader, Parameters);
 }
 
 auto Inspection::TypeDefinition::Type::GetAny(Inspection::ExecutionContext & ExecutionContext) const -> std::any
@@ -154,7 +172,7 @@ auto Inspection::TypeDefinition::Type::Load(XML::Element const * Element, std::v
             }
             else if(HardcodedText->GetText() == "Get_ASCII_String_Printable_EndedByLength")
             {
-                Result->m_HardcodedGetter = Inspection::Get_ASCII_String_Printable_EndedByLength;
+                Result->m_HardcodedFunctionGetter = Inspection::Get_ASCII_String_Printable_EndedByLength;
             }
             else if(HardcodedText->GetText() == "Get_ASCII_String_Printable_EndedByTermination")
             {

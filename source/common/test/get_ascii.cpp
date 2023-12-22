@@ -1,8 +1,10 @@
 #include <cassert>
 
 #include <common/buffer.h>
+#include <common/execution_context.h>
 #include <common/getters.h>
 #include <common/reader.h>
+#include <common/type_repository.h>
 
 #include "tests.h"
 
@@ -169,14 +171,14 @@ auto Inspection::Test::Get_ASCII_String_Printable_EndedByLength() -> void
     
     {
         auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Inspection::Length{5, 0}};
-        auto Result = Inspection::Get_ASCII_String_Printable_EndedByLength(Reader, {});
+        auto Result = Inspection::ExecutionContext::Call(Inspection::Get_ASCII_String_Printable_EndedByLength, Reader, {});
         
         assert(Result->GetSuccess() == true);
         assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "abcde");
     }
     {
         auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Inspection::Length{4, 4}};
-        auto Result = Inspection::Get_ASCII_String_Printable_EndedByLength(Reader, {});
+        auto Result = Inspection::ExecutionContext::Call(Inspection::Get_ASCII_String_Printable_EndedByLength, Reader, {});
         
         assert(Result->GetSuccess() == false);
         assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "abcd");

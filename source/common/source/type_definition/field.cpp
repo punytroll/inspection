@@ -19,11 +19,13 @@
 #include <xml_puny_dom/xml_puny_dom.h>
 
 #include <execution_context.h>
+#include <getter_type_adapter.h>
 #include <length.h>
 #include <reader.h>
 #include <result.h>
 #include <value.h>
 
+#include "../getter_part_adapter.h"
 #include "field.h"
 #include "part_type.h"
 #include "type.h"
@@ -40,7 +42,7 @@ auto Inspection::TypeDefinition::Field::Get(Inspection::ExecutionContext & Execu
     if(HasTypeReference() == true)
     {
         auto const & FieldType = GetTypeFromTypeReference(ExecutionContext);
-        auto FieldResult = FieldType.Get(ExecutionContext, ExecutionContext.GetCurrentReader(), ExecutionContext.GetAllParameters());
+        auto FieldResult = ExecutionContext.Call(Inspection::GetterTypeAdapter{FieldType}, ExecutionContext.GetCurrentReader(), ExecutionContext.GetAllParameters());
         
         Continue = FieldResult->GetSuccess();
         ExecutionContext.GetCurrentResult().GetValue()->Extend(FieldResult->ExtractValue());
@@ -62,7 +64,7 @@ auto Inspection::TypeDefinition::Field::Get(Inspection::ExecutionContext & Execu
         }
         
         auto PartParameters = Part->GetParameters(ExecutionContext);
-        auto PartResult = Part->Get(ExecutionContext, *PartReader, PartParameters);
+        auto PartResult = ExecutionContext.Call(Inspection::GetterPartAdapter{*Part}, *PartReader, PartParameters);
         
         Continue = PartResult->GetSuccess();
         ExecutionContext.GetCurrentResult().GetValue()->Extend(PartResult->ExtractValue());
@@ -74,17 +76,6 @@ auto Inspection::TypeDefinition::Field::Get(Inspection::ExecutionContext & Execu
         Continue = ApplyInterpretations(ExecutionContext, ExecutionContext.GetCurrentResult().GetValue());
     }
     ExecutionContext.GetCurrentResult().SetSuccess(Continue);
-}
-
-auto Inspection::TypeDefinition::Field::Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result>
-{
-    auto Result = std::make_unique<Inspection::Result>();
-    
-    ExecutionContext.Push(*Result, Reader, Parameters);
-    Get(ExecutionContext);
-    ExecutionContext.Pop();
-    
-    return Result;
 }
 
 auto Inspection::TypeDefinition::Field::Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::Field>
