@@ -20,6 +20,7 @@
 #ifndef COMMON_EXECUTION_CONTEXT_H
 #define COMMON_EXECUTION_CONTEXT_H
 
+#include <cstdint>
 #include <any>
 #include <list>
 #include <string>
