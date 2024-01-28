@@ -1,0 +1,751 @@
+<type>
+	<sequence>
+		<field name="Header">
+			<sequence>
+				<field name="BitsPerPixel">
+					<type-reference>
+						<part>Number</part>
+						<part>Integer</part>
+						<part>Unsigned</part>
+						<part>8Bit</part>
+					</type-reference>
+				</field>
+				<field name="ColorSpace">
+					<type-reference>
+						<part>Number</part>
+						<part>Integer</part>
+						<part>Unsigned</part>
+						<part>8Bit</part>
+					</type-reference>
+					<apply-enumeration>
+						<enumeration base-data-type="unsigned integer 8bit">
+							<element base-value="0" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>sGray</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="1" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>sRGB</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="2" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>CieLab</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="3" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>AdobeRGB</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="4" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Gray32</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="5" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>RGB</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="6" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>CMYK</string>
+									</value>
+								</tag>
+							</element>
+						</enumeration>
+					</apply-enumeration>
+				</field>
+				<field name="Duplex">
+					<type-reference>
+						<part>Number</part>
+						<part>Integer</part>
+						<part>Unsigned</part>
+						<part>8Bit</part>
+					</type-reference>
+					<apply-enumeration>
+						<enumeration base-data-type="unsigned integer 8bit">
+							<element base-value="1" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>No</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="2" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>ShortSide</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="3" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>LongSide</string>
+									</value>
+								</tag>
+							</element>
+						</enumeration>
+					</apply-enumeration>
+				</field>
+				<field name="Quality">
+					<type-reference>
+						<part>Number</part>
+						<part>Integer</part>
+						<part>Unsigned</part>
+						<part>8Bit</part>
+					</type-reference>
+					<apply-enumeration>
+						<enumeration base-data-type="unsigned integer 8bit">
+							<element base-value="0" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Default</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="3" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Draft</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="4" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Normal</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="5" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>High</string>
+									</value>
+								</tag>
+							</element>
+						</enumeration>
+					</apply-enumeration>
+				</field>
+				<field name="MediaType">
+					<type-reference>
+						<part>Number</part>
+						<part>Integer</part>
+						<part>Unsigned</part>
+						<part>8Bit</part>
+					</type-reference>
+					<apply-enumeration>
+						<enumeration base-data-type="unsigned integer 8bit">
+							<element base-value="0" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Automatic</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="1" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Stationery</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="2" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Transparency</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="3" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Envelope</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="4" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Cardstock</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="5" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Labels</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="6" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>StationeryLetterhead</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="7" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Disc</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="8" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>PhotographicMatte</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="9" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>PhotographicSatin</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="10" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>PhotographicSemiGloss</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="11" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>PhotographicGlossy</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="12" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>PhotographicHighGloss</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="13" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>OtherMediaType</string>
+									</value>
+								</tag>
+							</element>
+						</enumeration>
+					</apply-enumeration>
+				</field>
+				<field name="MediaPosition">
+					<type-reference>
+						<part>Number</part>
+						<part>Integer</part>
+						<part>Unsigned</part>
+						<part>8Bit</part>
+					</type-reference>
+					<apply-enumeration>
+						<enumeration base-data-type="unsigned integer 8bit">
+							<element base-value="0" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Automatic</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="1" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Main</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="2" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Alternate</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="3" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>LargeCapacity</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="4" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Manual</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="5" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Envelope</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="6" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Disc</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="7" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Photo</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="8" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Hagaki</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="9" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>MainRoll</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="10" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>AlternateRoll</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="11" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Top</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="12" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Middle</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="13" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Bottom</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="14" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Side</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="15" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Left</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="16" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Right</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="17" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Center</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="18" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Rear</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="19" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>ByPassTray</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="20" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Tray1</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="21" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Tray2</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="22" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Tray3</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="23" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Tray4</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="24" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Tray5</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="25" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Tray6</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="26" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Tray7</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="27" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Tray8</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="28" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Tray9</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="29" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Tray10</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="30" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Tray11</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="31" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Tray12</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="32" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Tray13</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="33" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Tray14</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="34" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Tray15</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="35" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Tray16</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="36" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Tray17</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="37" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Tray18</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="38" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Tray19</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="39" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Tray20</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="40" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Roll1</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="41" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Roll2</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="42" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Roll3</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="43" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Roll4</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="44" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Roll5</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="45" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Roll6</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="46" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Roll7</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="47" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Roll8</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="48" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Roll9</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="49" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Roll10</string>
+									</value>
+								</tag>
+							</element>
+						</enumeration>
+					</apply-enumeration>
+				</field>
+				<field name="Padding">
+					<type-reference>
+						<part>Data</part>
+						<part>Unset_EndedByLength</part>
+					</type-reference>
+					<length>
+						<bytes>
+							<unsigned-integer-64bit>2</unsigned-integer-64bit>
+						</bytes>
+						<bits>
+							<unsigned-integer-64bit>0</unsigned-integer-64bit>
+						</bits>
+					</length>
+				</field>
+				<field name="Padding">
+					<type-reference>
+						<part>Data</part>
+						<part>Unset_EndedByLength</part>
+					</type-reference>
+					<length>
+						<bytes>
+							<unsigned-integer-64bit>4</unsigned-integer-64bit>
+						</bytes>
+						<bits>
+							<unsigned-integer-64bit>0</unsigned-integer-64bit>
+						</bits>
+					</length>
+				</field>
+				<field name="Width">
+					<type-reference>
+						<part>Number</part>
+						<part>Integer</part>
+						<part>Unsigned</part>
+						<part>32Bit_BigEndian</part>
+					</type-reference>
+				</field>
+				<field name="Height">
+					<type-reference>
+						<part>Number</part>
+						<part>Integer</part>
+						<part>Unsigned</part>
+						<part>32Bit_BigEndian</part>
+					</type-reference>
+				</field>
+				<field name="HWResolution">
+					<type-reference>
+						<part>Number</part>
+						<part>Integer</part>
+						<part>Unsigned</part>
+						<part>32Bit_BigEndian</part>
+					</type-reference>
+				</field>
+				<field name="Padding">
+					<type-reference>
+						<part>Data</part>
+						<part>Unset_EndedByLength</part>
+					</type-reference>
+					<length>
+						<bytes>
+							<unsigned-integer-64bit>4</unsigned-integer-64bit>
+						</bytes>
+						<bits>
+							<unsigned-integer-64bit>0</unsigned-integer-64bit>
+						</bits>
+					</length>
+				</field>
+				<field name="Padding">
+					<type-reference>
+						<part>Data</part>
+						<part>Unset_EndedByLength</part>
+					</type-reference>
+					<length>
+						<bytes>
+							<unsigned-integer-64bit>4</unsigned-integer-64bit>
+						</bytes>
+						<bits>
+							<unsigned-integer-64bit>0</unsigned-integer-64bit>
+						</bits>
+					</length>
+				</field>
+			</sequence>
+		</field>
+		<select>
+			<case>
+				<when>
+					<and>
+						<equals>
+							<data-reference root="type">
+								<field>Header</field>
+								<field>BitsPerPixel</field>
+							</data-reference>
+							<unsigned-integer-8bit>8</unsigned-integer-8bit>
+						</equals>
+						<equals>
+							<data-reference root="type">
+								<field>Header</field>
+								<field>ColorSpace</field>
+								<tag>interpretation</tag>
+							</data-reference>
+							<string>sGray</string>
+						</equals>
+					</and>
+				</when>
+				<field name="Bitmap">
+					<type-reference>
+						<part>CUPS</part>
+						<part>v2_RasterData</part>
+					</type-reference>
+					<parameters>
+						<parameter name="PixelType">
+							<type-reference>
+								<part>Color</part>
+								<part>Grayscale_8Bit</part>
+							</type-reference>
+						</parameter>
+						<parameter name="Height">
+							<data-reference root="type">
+								<field>Header</field>
+								<field>Height</field>
+							</data-reference>
+						</parameter>
+						<parameter name="Width">
+							<data-reference root="type">
+								<field>Header</field>
+								<field>Width</field>
+							</data-reference>
+						</parameter>
+					</parameters>
+				</field>
+			</case>
+		</select>
+	</sequence>
+</type>

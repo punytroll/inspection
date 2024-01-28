@@ -1,0 +1,34 @@
+<type>
+	<forward>
+		<type-reference>
+			<part>Number</part>
+			<part>Integer</part>
+			<part>Unsigned</part>
+			<part>8Bit</part>
+		</type-reference>
+		<tag name="color">
+		</tag>
+		<tag name="grayscale">
+		</tag>
+		<apply-enumeration>
+			<enumeration base-data-type="unsigned integer 8bit">
+				<element base-value="0" valid="true">
+					<tag name="interpretation">
+						<value>
+							<string>Black</string>
+						</value>
+					</tag>
+				</element>
+				<element base-value="255" valid="true">
+					<tag name="interpretation">
+						<value>
+							<string>White</string>
+						</value>
+					</tag>
+				</element>
+				<fallback-element valid="true">
+				</fallback-element>
+			</enumeration>
+		</apply-enumeration>
+	</forward>
+</type>

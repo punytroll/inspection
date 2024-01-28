@@ -181,8 +181,14 @@ auto Inspection::TypeDefinition::Part::m_AddPartResult(Inspection::Result & Resu
     case Inspection::TypeDefinition::PartType::Array:
     case Inspection::TypeDefinition::PartType::Field:
         {
-            ASSERTION(Part.HasFieldName() == true);
-            Result.GetValue()->AppendField(Part.GetFieldName(), PartResult->ExtractValue());
+            if(Part.HasFieldName() == true)
+            {
+                Result.GetValue()->AppendField(Part.GetFieldName(), PartResult->ExtractValue());
+            }
+            else
+            {
+                Result.GetValue()->Extend(PartResult->ExtractValue());
+            }
             
             break;
         }

@@ -204,6 +204,10 @@ auto Inspection::TypeDefinition::Type::Load(XML::Element const * Element, std::v
             {
                 Result->m_HardcodedGetter = Inspection::Get_Boolean_1Bit;
             }
+            else if(HardcodedText->GetText() == "Get_Boolean_32Bit_BigEndian")
+            {
+                Result->m_HardcodedGetter = Inspection::Get_Boolean_32Bit_BigEndian;
+            }
             else if(HardcodedText->GetText() == "Get_Buffer_UnsignedInteger_8Bit_EndedByLength")
             {
                 Result->m_HardcodedGetter = Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength;
@@ -211,6 +215,10 @@ auto Inspection::TypeDefinition::Type::Load(XML::Element const * Element, std::v
             else if(HardcodedText->GetText() == "Get_Buffer_UnsignedInteger_8Bit_Zeroed_EndedByLength")
             {
                 Result->m_HardcodedGetter = Inspection::Get_Buffer_UnsignedInteger_8Bit_Zeroed_EndedByLength;
+            }
+            else if(HardcodedText->GetText() == "Get_CUPS_v2_RasterData")
+            {
+                Result->m_HardcodedGetter = Inspection::Get_CUPS_v2_RasterData;
             }
             else if(HardcodedText->GetText() == "Get_Data_Set_EndedByLength")
             {
@@ -439,6 +447,18 @@ auto Inspection::TypeDefinition::Type::Load(XML::Element const * Element, std::v
             else if(HardcodedText->GetText() == "Get_String_ASCII_ByTemplate")
             {
                 Result->m_HardcodedGetter = Inspection::Get_String_ASCII_ByTemplate;
+            }
+            else if(HardcodedText->GetText() == "Get_String_ASCII_ByTemplate_EndedByTermination")
+            {
+                Result->m_HardcodedGetter = Inspection::Get_String_ASCII_ByTemplate_EndedByTermination;
+            }
+            else if(HardcodedText->GetText() == "Get_String_ASCII_ByTemplate_EndedByTerminationUntilLength")
+            {
+                Result->m_HardcodedGetter = Inspection::Get_String_ASCII_ByTemplate_EndedByTerminationUntilLength;
+            }
+            else if(HardcodedText->GetText() == "Get_String_ASCII_Printable_EndedByTerminationUntilLength")
+            {
+                Result->m_HardcodedGetter = Inspection::Get_String_ASCII_Printable_EndedByTerminationUntilLength;
             }
             else if(HardcodedText->GetText() == "Get_UnsignedInteger_1Bit")
             {

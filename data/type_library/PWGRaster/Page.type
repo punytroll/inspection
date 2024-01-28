@@ -1,0 +1,1953 @@
+<type>
+	<sequence>
+		<field name="Header">
+			<sequence>
+				<field name="MediaClass">
+					<type-reference>
+						<part>String</part>
+						<part>ASCII</part>
+						<part>ByTemplate_EndedByTerminationUntilLength</part>
+					</type-reference>
+					<parameters>
+						<parameter name="Template">
+							<string>PwgRaster</string>
+						</parameter>
+					</parameters>
+					<length>
+						<bytes>
+							<unsigned-integer-64bit>64</unsigned-integer-64bit>
+						</bytes>
+						<bits>
+							<unsigned-integer-64bit>0</unsigned-integer-64bit>
+						</bits>
+					</length>
+				</field>
+				<field name="MediaColor">
+					<type-reference>
+						<part>String</part>
+						<part>ASCII</part>
+						<part>Printable_EndedByTerminationUntilLength</part>
+					</type-reference>
+					<length>
+						<bytes>
+							<unsigned-integer-64bit>64</unsigned-integer-64bit>
+						</bytes>
+						<bits>
+							<unsigned-integer-64bit>0</unsigned-integer-64bit>
+						</bits>
+					</length>
+				</field>
+				<field name="MediaType">
+					<type-reference>
+						<part>String</part>
+						<part>ASCII</part>
+						<part>Printable_EndedByTerminationUntilLength</part>
+					</type-reference>
+					<length>
+						<bytes>
+							<unsigned-integer-64bit>64</unsigned-integer-64bit>
+						</bytes>
+						<bits>
+							<unsigned-integer-64bit>0</unsigned-integer-64bit>
+						</bits>
+					</length>
+				</field>
+				<field name="PrintContentOptimize">
+					<type-reference>
+						<part>String</part>
+						<part>ASCII</part>
+						<part>Printable_EndedByTerminationUntilLength</part>
+					</type-reference>
+					<length>
+						<bytes>
+							<unsigned-integer-64bit>64</unsigned-integer-64bit>
+						</bytes>
+						<bits>
+							<unsigned-integer-64bit>0</unsigned-integer-64bit>
+						</bits>
+					</length>
+				</field>
+				<field name="Reserved">
+					<type-reference>
+						<part>Data</part>
+						<part>Unset_EndedByLength</part>
+					</type-reference>
+					<length>
+						<bytes>
+							<unsigned-integer-64bit>12</unsigned-integer-64bit>
+						</bytes>
+						<bits>
+							<unsigned-integer-64bit>0</unsigned-integer-64bit>
+						</bits>
+					</length>
+				</field>
+				<field name="CutMedia">
+					<type-reference>
+						<part>Number</part>
+						<part>Integer</part>
+						<part>Unsigned</part>
+						<part>32Bit_BigEndian</part>
+					</type-reference>
+					<apply-enumeration>
+						<enumeration base-data-type="unsigned integer 32bit">
+							<element base-value="0" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Never</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Never apply feature.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="1" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>AfterDocument</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Apply feature after current document/file.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="2" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>AfterJob</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Apply feature after current job.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="3" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>AfterSet</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Apply feature after current set/copy.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="4" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>AfterPage</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Apply feature after current page.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<fallback-element valid="false">
+								<tag name="interpretation">
+									<value>
+										<nothing/>
+									</value>
+								</tag>
+							</fallback-element>
+						</enumeration>
+					</apply-enumeration>
+				</field>
+				<field name="Duplex">
+					<type-reference>
+						<part>Boolean</part>
+						<part>32Bit_BigEndian</part>
+					</type-reference>
+					<apply-enumeration>
+						<enumeration base-data-type="boolean">
+							<element base-value="false" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Print single-sided.</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="true" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Print double-sided.</string>
+									</value>
+								</tag>
+							</element>
+						</enumeration>
+					</apply-enumeration>
+				</field>
+				<field name="HWResolution">
+					<sequence>
+						<field name="CrossFeedResolution">
+							<type-reference>
+								<part>Number</part>
+								<part>Integer</part>
+								<part>Unsigned</part>
+								<part>32Bit_BigEndian</part>
+							</type-reference>
+							<tag name="unit">
+								<value>
+									<string>dots per inch</string>
+								</value>
+							</tag>
+						</field>
+						<field name="FeedResolution">
+							<type-reference>
+								<part>Number</part>
+								<part>Integer</part>
+								<part>Unsigned</part>
+								<part>32Bit_BigEndian</part>
+							</type-reference>
+							<tag name="unit">
+								<value>
+									<string>dots per inch</string>
+								</value>
+							</tag>
+						</field>
+					</sequence>
+				</field>
+				<alternative>
+					<field name="Reserved">
+						<type-reference>
+							<part>Data</part>
+							<part>Unset_EndedByLength</part>
+						</type-reference>
+						<length>
+							<bytes>
+								<unsigned-integer-64bit>16</unsigned-integer-64bit>
+							</bytes>
+							<bits>
+								<unsigned-integer-64bit>0</unsigned-integer-64bit>
+							</bits>
+						</length>
+					</field>
+					<field name="ImageBoundingBox">
+						<sequence>
+							<field name="Left">
+								<type-reference>
+									<part>Number</part>
+									<part>Integer</part>
+									<part>Unsigned</part>
+									<part>32Bit_BigEndian</part>
+								</type-reference>
+								<tag name="unit">
+									<value>
+										<string>points</string>
+									</value>
+								</tag>
+							</field>
+							<field name="Bottom">
+								<type-reference>
+									<part>Number</part>
+									<part>Integer</part>
+									<part>Unsigned</part>
+									<part>32Bit_BigEndian</part>
+								</type-reference>
+								<tag name="unit">
+									<value>
+										<string>points</string>
+									</value>
+								</tag>
+							</field>
+							<field name="Right">
+								<type-reference>
+									<part>Number</part>
+									<part>Integer</part>
+									<part>Unsigned</part>
+									<part>32Bit_BigEndian</part>
+								</type-reference>
+								<tag name="unit">
+									<value>
+										<string>points</string>
+									</value>
+								</tag>
+							</field>
+							<field name="Top">
+								<type-reference>
+									<part>Number</part>
+									<part>Integer</part>
+									<part>Unsigned</part>
+									<part>32Bit_BigEndian</part>
+								</type-reference>
+								<tag name="unit">
+									<value>
+										<string>points</string>
+									</value>
+								</tag>
+							</field>
+						</sequence>
+						<tag name="warning">
+							<value>
+								<string>This is not according to the PWG Raster standard, which states, that this field is Reserved and thus all data should be zeroed.</string>
+							</value>
+						</tag>
+						<tag name="standard">
+							<value>
+								<string>Taken from the CUPS standard instead.</string>
+							</value>
+						</tag>
+					</field>
+				</alternative>
+				<field name="InsertSheet">
+					<type-reference>
+						<part>Boolean</part>
+						<part>32Bit_BigEndian</part>
+					</type-reference>
+					<apply-enumeration>
+						<enumeration base-data-type="boolean">
+							<element base-value="false" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Do not insert separator sheets.</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="true" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Insert separator sheets.</string>
+									</value>
+								</tag>
+							</element>
+						</enumeration>
+					</apply-enumeration>
+				</field>
+				<field name="Jog">
+					<type-reference>
+						<part>Number</part>
+						<part>Integer</part>
+						<part>Unsigned</part>
+						<part>32Bit_BigEndian</part>
+					</type-reference>
+					<apply-enumeration>
+						<enumeration base-data-type="unsigned integer 32bit">
+							<element base-value="0" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Never</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Never apply feature.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="1" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>AfterDocument</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Apply feature after current document/file.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="2" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>AfterJob</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Apply feature after current job.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="3" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>AfterSet</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Apply feature after current set/copy.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="4" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>AfterPage</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Apply feature after current page.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<fallback-element valid="false">
+								<tag name="interpretation">
+									<value>
+										<nothing/>
+									</value>
+								</tag>
+							</fallback-element>
+						</enumeration>
+					</apply-enumeration>
+				</field>
+				<field name="LeadingEdge">
+					<type-reference>
+						<part>Number</part>
+						<part>Integer</part>
+						<part>Unsigned</part>
+						<part>32Bit_BigEndian</part>
+					</type-reference>
+					<apply-enumeration>
+						<enumeration base-data-type="unsigned integer 32bit">
+							<element base-value="0" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>ShortEdgeFirst</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>The short edge of the media is first.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="1" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>LongEdgeFirst</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>The long edge of the media is first.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<fallback-element valid="false">
+								<tag name="interpretation">
+									<value>
+										<nothing/>
+									</value>
+								</tag>
+							</fallback-element>
+						</enumeration>
+					</apply-enumeration>
+				</field>
+				<field name="Reserved">
+					<type-reference>
+						<part>Data</part>
+						<part>Unset_EndedByLength</part>
+					</type-reference>
+					<length>
+						<bytes>
+							<unsigned-integer-64bit>12</unsigned-integer-64bit>
+						</bytes>
+						<bits>
+							<unsigned-integer-64bit>0</unsigned-integer-64bit>
+						</bits>
+					</length>
+				</field>
+				<field name="MediaPosition">
+					<type-reference>
+						<part>Number</part>
+						<part>Integer</part>
+						<part>Unsigned</part>
+						<part>32Bit_BigEndian</part>
+					</type-reference>
+					<apply-enumeration>
+						<enumeration base-data-type="unsigned integer 32bit">
+							<element base-value="0" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Auto</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Default or automatically selected source.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="1" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Main</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>The primary or main source.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="2" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Alternate</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>The secondary or alternate source.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="3" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>LargeCapacity</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>The large capacity source.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="4" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Manual</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>The manual feed source.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="5" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Envelope</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>The envelope feed source.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="6" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Disc</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>The CD/DVD/Bluray disc source.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="7" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Photo</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>The photo media source.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="8" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Hagaki</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>The Hagaki media source.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="9" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>MainRoll</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>The primary or main roll.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="10" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>AlternateRoll</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>The secondary or alternate roll.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="11" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Top</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>The topmost source.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="12" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Middle</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>The middle source.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="13" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Bottom</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>The bottommost source.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="14" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Side</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>The side source.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="15" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Left</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>The leftmost source.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="16" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Right</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>The rightmost source.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="17" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Center</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>The center source.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="18" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Rear</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>The rear source.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="19" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>ByPassTray</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>The by-pass or multi-purpose source.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="20" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Tray1</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Tray 1.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="21" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Tray2</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Tray 2.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="22" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Tray3</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Tray 3.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="23" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Tray4</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Tray 4.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="24" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Tray5</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Tray 5.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="25" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Tray6</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Tray 6.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="26" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Tray7</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Tray 7.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="27" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Tray8</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Tray 8.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="28" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Tray9</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Tray 9.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="29" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Tray10</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Tray 10.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="30" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Tray11</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Tray 11.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="31" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Tray12</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Tray 12.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="32" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Tray13</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Tray 13.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="33" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Tray14</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Tray 14.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="34" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Tray15</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Tray 15.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="35" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Tray16</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Tray 16.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="36" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Tray17</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Tray 17.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="37" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Tray18</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Tray 18.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="38" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Tray19</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Tray 19.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="39" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Tray20</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Tray 20.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="40" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Roll1</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Roll 1.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="41" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Roll2</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Roll 2.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="42" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Roll3</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Roll 3.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="43" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Roll4</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Roll 4.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="44" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Roll5</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Roll 5.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="45" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Roll6</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Roll 6.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="46" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Roll7</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Roll 7.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="47" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Roll8</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Roll 8.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="48" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Roll9</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Roll 9.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="49" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Roll10</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Roll 10.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<fallback-element valid="false">
+								<tag name="interpretation">
+									<value>
+										<nothing/>
+									</value>
+								</tag>
+							</fallback-element>
+						</enumeration>
+					</apply-enumeration>
+				</field>
+				<field name="MediaWeightMetric">
+					<type-reference>
+						<part>Number</part>
+						<part>Integer</part>
+						<part>Unsigned</part>
+						<part>32Bit_BigEndian</part>
+					</type-reference>
+				</field>
+				<field name="Reserved">
+					<type-reference>
+						<part>Data</part>
+						<part>Unset_EndedByLength</part>
+					</type-reference>
+					<length>
+						<bytes>
+							<unsigned-integer-64bit>8</unsigned-integer-64bit>
+						</bytes>
+						<bits>
+							<unsigned-integer-64bit>0</unsigned-integer-64bit>
+						</bits>
+					</length>
+				</field>
+				<field name="NumCopies">
+					<type-reference>
+						<part>Number</part>
+						<part>Integer</part>
+						<part>Unsigned</part>
+						<part>32Bit_BigEndian</part>
+					</type-reference>
+				</field>
+				<field name="Orientation">
+					<type-reference>
+						<part>Number</part>
+						<part>Integer</part>
+						<part>Unsigned</part>
+						<part>32Bit_BigEndian</part>
+					</type-reference>
+					<apply-enumeration>
+						<enumeration base-data-type="unsigned integer 32bit">
+							<element base-value="0" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Portrait</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Not rotated.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="1" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Landscape</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Rotated 90 degrees counter-clockwise.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="2" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>ReversePortrait</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Rotated 180 degrees.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="3" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>ReverseLandscape</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Rotated 90 degrees clockwise.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<fallback-element valid="false">
+								<tag name="interpretation">
+									<value>
+										<nothing/>
+									</value>
+								</tag>
+							</fallback-element>
+						</enumeration>
+					</apply-enumeration>
+				</field>
+				<field name="Reserved">
+					<type-reference>
+						<part>Data</part>
+						<part>Unset_EndedByLength</part>
+					</type-reference>
+					<length>
+						<bytes>
+							<unsigned-integer-64bit>4</unsigned-integer-64bit>
+						</bytes>
+						<bits>
+							<unsigned-integer-64bit>0</unsigned-integer-64bit>
+						</bits>
+					</length>
+				</field>
+				<field name="PageSize">
+					<sequence>
+						<field name="Width">
+							<type-reference>
+								<part>Number</part>
+								<part>Integer</part>
+								<part>Unsigned</part>
+								<part>32Bit_BigEndian</part>
+							</type-reference>
+							<tag name="unit">
+								<value>
+									<string>points</string>
+								</value>
+							</tag>
+						</field>
+						<field name="Length">
+							<type-reference>
+								<part>Number</part>
+								<part>Integer</part>
+								<part>Unsigned</part>
+								<part>32Bit_BigEndian</part>
+							</type-reference>
+							<tag name="unit">
+								<value>
+									<string>points</string>
+								</value>
+							</tag>
+						</field>
+					</sequence>
+				</field>
+				<field name="Reserved">
+					<type-reference>
+						<part>Data</part>
+						<part>Unset_EndedByLength</part>
+					</type-reference>
+					<length>
+						<bytes>
+							<unsigned-integer-64bit>8</unsigned-integer-64bit>
+						</bytes>
+						<bits>
+							<unsigned-integer-64bit>0</unsigned-integer-64bit>
+						</bits>
+					</length>
+				</field>
+				<field name="Tumble">
+					<type-reference>
+						<part>Boolean</part>
+						<part>32Bit_BigEndian</part>
+					</type-reference>
+					<apply-enumeration>
+						<enumeration base-data-type="boolean">
+							<element base-value="false" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Do not rotate even pages when duplexing.</string>
+									</value>
+								</tag>
+							</element>
+							<element base-value="true" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Rotate even pages when duplexing</string>
+									</value>
+								</tag>
+							</element>
+						</enumeration>
+					</apply-enumeration>
+				</field>
+				<field name="Width">
+					<type-reference>
+						<part>Number</part>
+						<part>Integer</part>
+						<part>Unsigned</part>
+						<part>32Bit_BigEndian</part>
+					</type-reference>
+				</field>
+				<field name="Height">
+					<type-reference>
+						<part>Number</part>
+						<part>Integer</part>
+						<part>Unsigned</part>
+						<part>32Bit_BigEndian</part>
+					</type-reference>
+				</field>
+				<field name="Reserved">
+					<type-reference>
+						<part>Data</part>
+						<part>Unset_EndedByLength</part>
+					</type-reference>
+					<length>
+						<bytes>
+							<unsigned-integer-64bit>4</unsigned-integer-64bit>
+						</bytes>
+						<bits>
+							<unsigned-integer-64bit>0</unsigned-integer-64bit>
+						</bits>
+					</length>
+				</field>
+				<field name="BitsPerColor">
+					<type-reference>
+						<part>Number</part>
+						<part>Integer</part>
+						<part>Unsigned</part>
+						<part>32Bit_BigEndian</part>
+					</type-reference>
+				</field>
+				<field name="BitsPerPixel">
+					<type-reference>
+						<part>Number</part>
+						<part>Integer</part>
+						<part>Unsigned</part>
+						<part>32Bit_BigEndian</part>
+					</type-reference>
+				</field>
+				<field name="BytesPerLine">
+					<type-reference>
+						<part>Number</part>
+						<part>Integer</part>
+						<part>Unsigned</part>
+						<part>32Bit_BigEndian</part>
+					</type-reference>
+				</field>
+				<field name="ColorOrder">
+					<type-reference>
+						<part>Number</part>
+						<part>Integer</part>
+						<part>Unsigned</part>
+						<part>32Bit_BigEndian</part>
+					</type-reference>
+					<apply-enumeration>
+						<enumeration base-data-type="unsigned integer 32bit">
+							<element base-value="0" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Chunky</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Chunky pixels, e.g. CMYK CMYK CMYK ...</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<fallback-element valid="false">
+								<tag name="interpretation">
+									<value>
+										<nothing/>
+									</value>
+								</tag>
+							</fallback-element>
+						</enumeration>
+					</apply-enumeration>
+				</field>
+				<field name="ColorSpace">
+					<type-reference>
+						<part>Number</part>
+						<part>Integer</part>
+						<part>Unsigned</part>
+						<part>32Bit_BigEndian</part>
+					</type-reference>
+					<apply-enumeration>
+						<enumeration base-data-type="unsigned integer 32bit">
+							<element base-value="1" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Rgb</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Device RGB (red, green, blue)</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="3" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>black</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Device black.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="6" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Cmyk</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Device CMYK (cyan, magenta, yellow, black)</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="18" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Sgray</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>sRGB grayscale.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="19" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Srgb</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>sRGB color.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="20" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>AsobeRgb</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Adobe RGB color.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="48" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Device1</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Device color, 1 colorant.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="49" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Device2</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Device color, 2 colorant.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="50" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Device3</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Device color, 3 colorant.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="51" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Device4</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Device color, 4 colorant.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="52" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Device5</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Device color, 5 colorant.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="53" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Device6</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Device color, 6 colorant.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="54" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Device7</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Device color, 7 colorant.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="55" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Device8</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Device color, 8 colorant.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="56" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Device9</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Device color, 9 colorant.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="57" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Device10</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Device color, 10 colorant.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="58" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Device11</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Device color, 11 colorant.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="59" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Device12</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Device color, 12 colorant.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="60" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Device13</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Device color, 13 colorant.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="61" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Device14</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Device color, 14 colorant.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="62" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Device15</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Device color, 15 colorant.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<fallback-element valid="false">
+								<tag name="interpretation">
+									<value>
+										<nothing/>
+									</value>
+								</tag>
+							</fallback-element>
+						</enumeration>
+					</apply-enumeration>
+				</field>
+				<field name="Reserved">
+					<type-reference>
+						<part>Data</part>
+						<part>Unset_EndedByLength</part>
+					</type-reference>
+					<length>
+						<bytes>
+							<unsigned-integer-64bit>16</unsigned-integer-64bit>
+						</bytes>
+						<bits>
+							<unsigned-integer-64bit>0</unsigned-integer-64bit>
+						</bits>
+					</length>
+				</field>
+				<field name="NumColors">
+					<type-reference>
+						<part>Number</part>
+						<part>Integer</part>
+						<part>Unsigned</part>
+						<part>32Bit_BigEndian</part>
+					</type-reference>
+				</field>
+				<field name="Reserved">
+					<type-reference>
+						<part>Data</part>
+						<part>Unset_EndedByLength</part>
+					</type-reference>
+					<length>
+						<bytes>
+							<unsigned-integer-64bit>28</unsigned-integer-64bit>
+						</bytes>
+						<bits>
+							<unsigned-integer-64bit>0</unsigned-integer-64bit>
+						</bits>
+					</length>
+				</field>
+				<field name="TotalPageCount">
+					<type-reference>
+						<part>Number</part>
+						<part>Integer</part>
+						<part>Unsigned</part>
+						<part>32Bit_BigEndian</part>
+					</type-reference>
+				</field>
+				<field name="CrossFeedTransform">
+					<type-reference>
+						<part>Number</part>
+						<part>Integer</part>
+						<part>Unsigned</part>
+						<part>32Bit_BigEndian</part>
+					</type-reference>
+				</field>
+				<field name="FeedTransform">
+					<type-reference>
+						<part>Number</part>
+						<part>Integer</part>
+						<part>Unsigned</part>
+						<part>32Bit_BigEndian</part>
+					</type-reference>
+				</field>
+				<field name="ImageBoxLeft">
+					<type-reference>
+						<part>Number</part>
+						<part>Integer</part>
+						<part>Unsigned</part>
+						<part>32Bit_BigEndian</part>
+					</type-reference>
+				</field>
+				<field name="ImageBoxTop">
+					<type-reference>
+						<part>Number</part>
+						<part>Integer</part>
+						<part>Unsigned</part>
+						<part>32Bit_BigEndian</part>
+					</type-reference>
+				</field>
+				<field name="ImageBoxRight">
+					<type-reference>
+						<part>Number</part>
+						<part>Integer</part>
+						<part>Unsigned</part>
+						<part>32Bit_BigEndian</part>
+					</type-reference>
+				</field>
+				<field name="ImageBoxBottom">
+					<type-reference>
+						<part>Number</part>
+						<part>Integer</part>
+						<part>Unsigned</part>
+						<part>32Bit_BigEndian</part>
+					</type-reference>
+				</field>
+				<field name="AlternatePrimary">
+					<tag name="type">
+						<value>
+							<string>sRGB</string>
+						</value>
+					</tag>
+					<sequence>
+						<field name="">
+							<type-reference>
+								<part>Number</part>
+								<part>Integer</part>
+								<part>Unsigned</part>
+								<part>8Bit</part>
+							</type-reference>
+						</field>
+						<field name="Red">
+							<type-reference>
+								<part>Number</part>
+								<part>Integer</part>
+								<part>Unsigned</part>
+								<part>8Bit</part>
+							</type-reference>
+						</field>
+						<field name="Green">
+							<type-reference>
+								<part>Number</part>
+								<part>Integer</part>
+								<part>Unsigned</part>
+								<part>8Bit</part>
+							</type-reference>
+						</field>
+						<field name="Blue">
+							<type-reference>
+								<part>Number</part>
+								<part>Integer</part>
+								<part>Unsigned</part>
+								<part>8Bit</part>
+							</type-reference>
+						</field>
+					</sequence>
+				</field>
+				<field name="PrintQuality">
+					<type-reference>
+						<part>Number</part>
+						<part>Integer</part>
+						<part>Unsigned</part>
+						<part>32Bit_BigEndian</part>
+					</type-reference>
+					<apply-enumeration>
+						<enumeration base-data-type="unsigned integer 32bit">
+							<element base-value="0" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Default</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>The default print quality.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="3" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Draft</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Draft/fast print quality.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="4" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>Normal</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Normal print quality.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element base-value="5" valid="true">
+								<tag name="interpretation">
+									<value>
+										<string>High</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>High/best/photo print quality.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<fallback-element valid="false">
+								<tag name="interpretation">
+									<value>
+										<nothing/>
+									</value>
+								</tag>
+							</fallback-element>
+						</enumeration>
+					</apply-enumeration>
+				</field>
+				<field name="Reserved">
+					<type-reference>
+						<part>Data</part>
+						<part>Unset_EndedByLength</part>
+					</type-reference>
+					<length>
+						<bytes>
+							<unsigned-integer-64bit>20</unsigned-integer-64bit>
+						</bytes>
+						<bits>
+							<unsigned-integer-64bit>0</unsigned-integer-64bit>
+						</bits>
+					</length>
+				</field>
+				<field name="VendorIdentifier">
+					<type-reference>
+						<part>Number</part>
+						<part>Integer</part>
+						<part>Unsigned</part>
+						<part>32Bit_BigEndian</part>
+					</type-reference>
+				</field>
+				<field name="VendorLength">
+					<type-reference>
+						<part>Number</part>
+						<part>Integer</part>
+						<part>Unsigned</part>
+						<part>32Bit_BigEndian</part>
+					</type-reference>
+				</field>
+				<field name="VendorData">
+					<type-reference>
+						<part>Buffer</part>
+						<part>UnsignedInteger_8Bit_EndedByLength</part>
+					</type-reference>
+					<length>
+						<bytes>
+							<unsigned-integer-64bit>1088</unsigned-integer-64bit>
+						</bytes>
+						<bits>
+							<unsigned-integer-64bit>0</unsigned-integer-64bit>
+						</bits>
+					</length>
+				</field>
+				<field name="Reserved">
+					<type-reference>
+						<part>Data</part>
+						<part>Unset_EndedByLength</part>
+					</type-reference>
+					<length>
+						<bytes>
+							<unsigned-integer-64bit>64</unsigned-integer-64bit>
+						</bytes>
+						<bits>
+							<unsigned-integer-64bit>0</unsigned-integer-64bit>
+						</bits>
+					</length>
+				</field>
+				<field name="RenderingIntent">
+					<type-reference>
+						<part>String</part>
+						<part>ASCII</part>
+						<part>Printable_EndedByTerminationUntilLength</part>
+					</type-reference>
+					<length>
+						<bytes>
+							<unsigned-integer-64bit>64</unsigned-integer-64bit>
+						</bytes>
+						<bits>
+							<unsigned-integer-64bit>0</unsigned-integer-64bit>
+						</bits>
+					</length>
+				</field>
+				<field name="PageSizeName">
+					<type-reference>
+						<part>String</part>
+						<part>ASCII</part>
+						<part>Printable_EndedByTerminationUntilLength</part>
+					</type-reference>
+					<length>
+						<bytes>
+							<unsigned-integer-64bit>64</unsigned-integer-64bit>
+						</bytes>
+						<bits>
+							<unsigned-integer-64bit>0</unsigned-integer-64bit>
+						</bits>
+					</length>
+				</field>
+			</sequence>
+		</field>
+		<select>
+			<case>
+				<when>
+					<and>
+						<equals>
+							<data-reference root="type">
+								<field>Header</field>
+								<field>BitsPerPixel</field>
+							</data-reference>
+							<unsigned-integer-32bit>8</unsigned-integer-32bit>
+						</equals>
+						<equals>
+							<data-reference root="type">
+								<field>Header</field>
+								<field>ColorSpace</field>
+								<tag>interpretation</tag>
+							</data-reference>
+							<string>Sgray</string>
+						</equals>
+					</and>
+				</when>
+				<field name="Bitmap">
+					<type-reference>
+						<part>CUPS</part>
+						<part>v2_RasterData</part>
+					</type-reference>
+					<parameters>
+						<parameter name="PixelType">
+							<type-reference>
+								<part>Color</part>
+								<part>Grayscale_8Bit</part>
+							</type-reference>
+						</parameter>
+						<parameter name="Height">
+							<data-reference root="type">
+								<field>Header</field>
+								<field>Height</field>
+							</data-reference>
+						</parameter>
+						<parameter name="Width">
+							<data-reference root="type">
+								<field>Header</field>
+								<field>Width</field>
+							</data-reference>
+						</parameter>
+					</parameters>
+				</field>
+			</case>
+		</select>
+	</sequence>
+</type>

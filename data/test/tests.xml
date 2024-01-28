@@ -1,5 +1,2894 @@
 <tests>
 	<test>
+		<description>PWG raster page 0 Bitmap Line 1 Data Run 2 Value is grayscale.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Data/field:Run:2/field:Value/has-tag:grayscale</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 Bitmap Line 1 Data Run 2 Value is color.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Data/field:Run:2/field:Value/has-tag:color</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 Bitmap Line 1 Data Run 2 Value is 8bit.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Data/field:Run:2/field:Value/has-tag:8bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 Bitmap Line 1 Data Run 2 has Value 244.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Data/field:Run:2/field:Value/data</argument>
+		</execute>
+		<expected-output>244</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 Bitmap Line 1 Data Run 2 Repetition 0 means 1 repetitions.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Data/field:Run:2/field:Repetition/tag:repetitions/data</argument>
+		</execute>
+		<expected-output>1</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 Bitmap Line 1 Data Run 2 Repetition 0 means repeat item.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Data/field:Run:2/field:Repetition/tag:interpretation/data</argument>
+		</execute>
+		<expected-output>repeat item</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 Bitmap Line 1 Data Run 2 has Repetition 0.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Data/field:Run:2/field:Repetition/data</argument>
+		</execute>
+		<expected-output>0</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 Bitmap Line 1 Data Run 2 ends at item index 15.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Data/field:Run:2/tag:ending at item index/data</argument>
+		</execute>
+		<expected-output>15</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 Bitmap Line 1 Data Run 2 starts at item index 15.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Data/field:Run:2/tag:starting at item index/data</argument>
+		</execute>
+		<expected-output>15</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 Bitmap Line 1 Data Run 2 has 1 item.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Data/field:Run:2/tag:number of items/data</argument>
+		</execute>
+		<expected-output>1</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 Bitmap Line 1 Data Run 1 Value is grayscale.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Data/field:Run:1/field:Value/has-tag:grayscale</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 Bitmap Line 1 Data Run 1 Value is color.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Data/field:Run:1/field:Value/has-tag:color</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 Bitmap Line 1 Data Run 1 Value is 8bit.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Data/field:Run:1/field:Value/has-tag:8bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 Bitmap Line 1 Data Run 1 has White Value.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Data/field:Run:1/field:Value/tag:interpretation/data</argument>
+		</execute>
+		<expected-output>White</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 Bitmap Line 1 Data Run 1 has Value 255.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Data/field:Run:1/field:Value/data</argument>
+		</execute>
+		<expected-output>255</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 Bitmap Line 1 Data Run 1 Repetition 7 means 8 repetitions.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Data/field:Run:1/field:Repetition/tag:repetitions/data</argument>
+		</execute>
+		<expected-output>8</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 Bitmap Line 1 Data Run 1 Repetition 7 means repeat item.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Data/field:Run:1/field:Repetition/tag:interpretation/data</argument>
+		</execute>
+		<expected-output>repeat item</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 Bitmap Line 1 Data Run 1 has Repetition 7.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Data/field:Run:1/field:Repetition/data</argument>
+		</execute>
+		<expected-output>7</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 Bitmap Line 1 Data Run 1 ends at item index 14.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Data/field:Run:1/tag:ending at item index/data</argument>
+		</execute>
+		<expected-output>14</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 Bitmap Line 1 Data Run 1 starts at item index 7.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Data/field:Run:1/tag:starting at item index/data</argument>
+		</execute>
+		<expected-output>7</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 Bitmap Line 1 Data Run 1 has 8 items.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Data/field:Run:1/tag:number of items/data</argument>
+		</execute>
+		<expected-output>8</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 Bitmap Line 1 Data Run 0 Value 6 is 254.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Data/field:Run:0/field:Values/field::6/data</argument>
+		</execute>
+		<expected-output>254</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 Bitmap Line 1 Data Run 0 Value 5 is 252.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Data/field:Run:0/field:Values/field::5/data</argument>
+		</execute>
+		<expected-output>252</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 Bitmap Line 1 Data Run 0 Value 4 is 255.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Data/field:Run:0/field:Values/field::4/data</argument>
+		</execute>
+		<expected-output>255</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 Bitmap Line 1 Data Run 0 Value 3 is 251.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Data/field:Run:0/field:Values/field::3/data</argument>
+		</execute>
+		<expected-output>251</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 Bitmap Line 1 Data Run 0 Value 2 is 254.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Data/field:Run:0/field:Values/field::2/data</argument>
+		</execute>
+		<expected-output>254</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 Bitmap Line 1 Data Run 0 Value 1 is 244.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Data/field:Run:0/field:Values/field::1/data</argument>
+		</execute>
+		<expected-output>244</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 Bitmap Line 1 Data Run 0 Value 0 is index 0 in array.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Data/field:Run:0/field:Values/field::0/tag:element index in array/data</argument>
+		</execute>
+		<expected-output>0</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 Bitmap Line 1 Data Run 0 Value 0 is grayscale.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Data/field:Run:0/field:Values/field::0/has-tag:grayscale</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 Bitmap Line 1 Data Run 0 Value 0 is color.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Data/field:Run:0/field:Values/field::0/has-tag:color</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 Bitmap Line 1 Data Run 0 Value 0 is 8bit.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Data/field:Run:0/field:Values/field::0/has-tag:8bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 Bitmap Line 1 Data Run 0 Value 0 is White.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Data/field:Run:0/field:Values/field::0/tag:interpretation/data</argument>
+		</execute>
+		<expected-output>White</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 Bitmap Line 1 Data Run 0 Value 0 is 255</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Data/field:Run:0/field:Values/field::0/data</argument>
+		</execute>
+		<expected-output>255</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 Bitmap Line 1 Data Run 0 Values contains 7 elements.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Data/field:Run:0/field:Values/tag:number of elements/data</argument>
+		</execute>
+		<expected-output>7</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 Bitmap Line 1 Data Run 0 Values is array.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Data/field:Run:0/field:Values/has-tag:array</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 Bitmap Line 1 Data Run 0 Repetition is 8bit.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Data/field:Run:0/field:Repetition/has-tag:8bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 Bitmap Line 1 Data Run 0 Repetition 250 means 7 items.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Data/field:Run:0/field:Repetition/tag:number of items/data</argument>
+		</execute>
+		<expected-output>7</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 Bitmap Line 1 Data Run 0 Repetition 250 means individual items.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Data/field:Run:0/field:Repetition/tag:interpretation/data</argument>
+		</execute>
+		<expected-output>individual items</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 Bitmap Line 1 Data Run 0 has Repetition 250.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Data/field:Run:0/field:Repetition/data</argument>
+		</execute>
+		<expected-output>250</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 Bitmap Line 1 Data Run 0 ends at item index 0.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Data/field:Run:0/tag:ending at item index/data</argument>
+		</execute>
+		<expected-output>6</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 Bitmap Line 1 Data Run 0 starts at item index 0.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Data/field:Run:0/tag:starting at item index/data</argument>
+		</execute>
+		<expected-output>0</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 Bitmap Line 1 Data Run 0 has 7 items.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Data/field:Run:0/tag:number of items/data</argument>
+		</execute>
+		<expected-output>7</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 Bitmap Line 1 Data has 3 elements.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Data/tag:number of elements/data</argument>
+		</execute>
+		<expected-output>3</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 Bitmap Line 1 Data has 16 items.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Data/tag:number of items/data</argument>
+		</execute>
+		<expected-output>16</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 Bitmap Line 1 Data is packbits.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Data/has-tag:packbits</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 Bitmap Line 1 Data is array.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Data/has-tag:array</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 Bitmap Line 1 Repetition is 8bit.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Repetition/has-tag:8bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 Bitmap Line 1 Repetition 0 means 1 repetition.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Repetition/tag:repetitions/data</argument>
+		</execute>
+		<expected-output>1</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 Bitmap Line 1 has Repetition 0.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Repetition/data</argument>
+		</execute>
+		<expected-output>0</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 Bitmap Line 1 is index 1 in array.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/tag:element index in array/data</argument>
+		</execute>
+		<expected-output>1</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 Bitmap Line 1 ends with line index 1.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/tag:ending with line index/data</argument>
+		</execute>
+		<expected-output>1</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 Bitmap Line 1 starts with line index 1.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/tag:starting with line index/data</argument>
+		</execute>
+		<expected-output>1</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 Bitmap Line 1 has 16 items.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/tag:number of items/data</argument>
+		</execute>
+		<expected-output>16</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 Bitmap Line 1 is bitmap line.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/has-tag:bitmap line</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 Bitmap has Line 1.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Bitmap/has-field:Line:1</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 Bitmap has 16 items per line.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Bitmap/tag:number of items per line/data</argument>
+		</execute>
+		<expected-output>16</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 Bitmap has 23 elements.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Bitmap/tag:number of elements/data</argument>
+		</execute>
+		<expected-output>23</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 Bitmap has 23 lines.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Bitmap/tag:number of lines/data</argument>
+		</execute>
+		<expected-output>23</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 Bitmap is array.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Bitmap/has-tag:array</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 has Bitmap.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/has-field:Bitmap</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header PageSizeName has 48 terminations.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:PageSizeName/has-tag:48 terminations until length</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header PageSizeName was ended by termination.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:PageSizeName/has-tag:ended by termination</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header PageSizeName has 16 characters.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:PageSizeName/has-tag:16 characters</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header PageSizeName has value.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:PageSizeName/data</argument>
+		</execute>
+		<expected-output>iso_a4_210x297mm</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header PageSizeName is a string.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:PageSizeName/has-tag:string</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header RenderingIntent has 64 terminations.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:RenderingIntent/has-tag:64 terminations until length</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header RenderingIntent was ended by termination.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:RenderingIntent/has-tag:ended by termination</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header RenderingIntent is empty.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:RenderingIntent/has-tag:empty</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header RenderingIntent has empty value.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:RenderingIntent/data</argument>
+		</execute>
+		<expected-output></expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header RenderingIntent is a string.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:RenderingIntent/has-tag:string</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header Reserved 9 has length 64.0.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:Reserved:9/tag:length/data</argument>
+		</execute>
+		<expected-output>64.0</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header Reserved 9 is unset data.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:Reserved:9/has-tag:unset data</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header VendorData has length 1088.0.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:VendorData/tag:length/data</argument>
+		</execute>
+		<expected-output>1088.0</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header VendorData is buffer of 8bit values.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:VendorData/has-tag:8bit values</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header VendorData is buffer of unsigned values.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:VendorData/has-tag:unsigned</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header VendorData is buffer of integer values.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:VendorData/has-tag:integer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header VendorData is buffer.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:VendorData/has-tag:buffer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header VendorLength is 32bit.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:VendorLength/has-tag:32bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header VendorLength is 0.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:VendorLength/data</argument>
+		</execute>
+		<expected-output>0</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header VendorIdentifier is 32bit.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:VendorIdentifier/has-tag:32bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header VendorIdentifier is 0.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:VendorIdentifier/data</argument>
+		</execute>
+		<expected-output>0</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header Reserved 8 has length 20.0.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:Reserved:8/tag:length/data</argument>
+		</execute>
+		<expected-output>20.0</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header Reserved 8 is unset data.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:Reserved:8/has-tag:unset data</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header PrintQuality interpretation has description.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:PrintQuality/tag:interpretation/tag:description/data</argument>
+		</execute>
+		<expected-output>The default print quality.</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header PrintQuality has interpretation.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:PrintQuality/tag:interpretation/data</argument>
+		</execute>
+		<expected-output>Default</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header PrintQuality is 32bit.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:PrintQuality/has-tag:32bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header PrintQuality is 0.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:PrintQuality/data</argument>
+		</execute>
+		<expected-output>0</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header AlternatePrimary Blue is 8bit.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:AlternatePrimary/field:Blue/has-tag:8bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header AlternatePrimary has Blue.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:AlternatePrimary/field:Blue/data</argument>
+		</execute>
+		<expected-output>255</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header AlternatePrimary Green is 8bit.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:AlternatePrimary/field:Green/has-tag:8bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header AlternatePrimary has Green.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:AlternatePrimary/field:Green/data</argument>
+		</execute>
+		<expected-output>255</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header AlternatePrimary Red is 8bit.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:AlternatePrimary/field:Red/has-tag:8bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header AlternatePrimary has Red.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:AlternatePrimary/field:Red/data</argument>
+		</execute>
+		<expected-output>255</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header AlternatePrimary unnamed first field is 8bit.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:AlternatePrimary/field::0/has-tag:8bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header AlternatePrimary has unnamed first field.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:AlternatePrimary/field::0/data</argument>
+		</execute>
+		<expected-output>0</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header has AlternatePrimary has type.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:AlternatePrimary/tag:type/data</argument>
+		</execute>
+		<expected-output>sRGB</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header has AlternatePrimary.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/has-field:AlternatePrimary</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header ImageBoxBottom is 32bit.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:ImageBoxBottom/has-tag:32bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header ImageBoxBottom is 0.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:ImageBoxBottom/data</argument>
+		</execute>
+		<expected-output>0</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header ImageBoxRight is 32bit.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:ImageBoxRight/has-tag:32bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header ImageBoxRight is 0.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:ImageBoxRight/data</argument>
+		</execute>
+		<expected-output>0</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header ImageBoxTop is 32bit.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:ImageBoxTop/has-tag:32bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header ImageBoxTop is 0.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:ImageBoxTop/data</argument>
+		</execute>
+		<expected-output>0</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header ImageBoxLeft is 32bit.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:ImageBoxLeft/has-tag:32bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header ImageBoxLeft is 0.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:ImageBoxLeft/data</argument>
+		</execute>
+		<expected-output>0</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header FeedTransform is 32bit.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:FeedTransform/has-tag:32bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header FeedTransform is 1.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:FeedTransform/data</argument>
+		</execute>
+		<expected-output>1</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header CrossFeedTransform is 32bit.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:CrossFeedTransform/has-tag:32bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header CrossFeedTransform is 1.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:CrossFeedTransform/data</argument>
+		</execute>
+		<expected-output>1</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header TotalPageCount is 32bit.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:TotalPageCount/has-tag:32bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header TotalPageCount is 1.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:TotalPageCount/data</argument>
+		</execute>
+		<expected-output>1</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header Reserved 7 has length 28.0.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:Reserved:7/tag:length/data</argument>
+		</execute>
+		<expected-output>28.0</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header Reserved 7 is unset data.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:Reserved:7/has-tag:unset data</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header NumColors is 32bit.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:NumColors/has-tag:32bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header NumColors is 1.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:NumColors/data</argument>
+		</execute>
+		<expected-output>1</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header Reserved 6 has length 16.0.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:Reserved:6/tag:length/data</argument>
+		</execute>
+		<expected-output>16.0</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header Reserved 6 is unset data.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:Reserved:6/has-tag:unset data</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header ColorSpace interpretation has description.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:ColorSpace/tag:interpretation/tag:description/data</argument>
+		</execute>
+		<expected-output>sRGB grayscale.</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header ColorSpace has interpretation.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:ColorSpace/tag:interpretation/data</argument>
+		</execute>
+		<expected-output>Sgray</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header ColorSpace is 32bit.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:ColorSpace/has-tag:32bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header ColorSpace is 0.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:ColorSpace/data</argument>
+		</execute>
+		<expected-output>18</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header ColorOrder interpretation has description.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:ColorOrder/tag:interpretation/tag:description/data</argument>
+		</execute>
+		<expected-output>Chunky pixels, e.g. CMYK CMYK CMYK ...</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header ColorOrder has interpretation.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:ColorOrder/tag:interpretation/data</argument>
+		</execute>
+		<expected-output>Chunky</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header ColorOrder is 32bit.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:ColorOrder/has-tag:32bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header ColorOrder is 0.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:ColorOrder/data</argument>
+		</execute>
+		<expected-output>0</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header BytesPerLine is 32bit.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:BytesPerLine/has-tag:32bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header BytesPerLine is 16.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:BytesPerLine/data</argument>
+		</execute>
+		<expected-output>16</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header BitsPerPixel is 32bit.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:BitsPerPixel/has-tag:32bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header BitsPerPixel is 8.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:BitsPerPixel/data</argument>
+		</execute>
+		<expected-output>8</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header BitsPerColor is 32bit.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:BitsPerColor/has-tag:32bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header BitsPerColor is 8.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:BitsPerColor/data</argument>
+		</execute>
+		<expected-output>8</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header Reserved 5 has length 4.0.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:Reserved:5/tag:length/data</argument>
+		</execute>
+		<expected-output>4.0</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header Reserved 5 is unset data.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:Reserved:5/has-tag:unset data</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header Height is 32bit.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:Height/has-tag:32bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header Height is 0.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:Height/data</argument>
+		</execute>
+		<expected-output>23</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header Width is 32bit.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:Width/has-tag:32bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header Width is 0.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:Width/data</argument>
+		</execute>
+		<expected-output>16</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header Tumble has interpretation.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:Tumble/tag:interpretation/data</argument>
+		</execute>
+		<expected-output>Do not rotate even pages when duplexing.</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header Tumble is 32bit.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:Tumble/has-tag:32bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header Tumble is boolean.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:Tumble/has-tag:boolean</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header Tumble is false.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:Tumble/data</argument>
+		</execute>
+		<expected-output>false</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header Reserved 4 has length 8.0.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:Reserved:4/tag:length/data</argument>
+		</execute>
+		<expected-output>8.0</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header Reserved 4 is unset data.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:Reserved:4/has-tag:unset data</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header PageSize Length has tag unit.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:PageSize/field:Length/tag:unit/data</argument>
+		</execute>
+		<expected-output>points</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header PageSize Length is 32bit.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:PageSize/field:Length/has-tag:32bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header PageSize has Length.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:PageSize/field:Length/data</argument>
+		</execute>
+		<expected-output>841</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header PageSize Width has tag unit.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:PageSize/field:Width/tag:unit/data</argument>
+		</execute>
+		<expected-output>points</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header PageSize Width is 32bit.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:PageSize/field:Width/has-tag:32bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header PageSize has Width.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:PageSize/field:Width/data</argument>
+		</execute>
+		<expected-output>595</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header has PageSize.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/has-field:PageSize</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header Reserved 3 has length 4.0.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:Reserved:3/tag:length/data</argument>
+		</execute>
+		<expected-output>4.0</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header Reserved 3 is unset data.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:Reserved:3/has-tag:unset data</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header Orientation interpretation has description.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:Orientation/tag:interpretation/tag:description/data</argument>
+		</execute>
+		<expected-output>Not rotated.</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header Orientation has interpretation.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:Orientation/tag:interpretation/data</argument>
+		</execute>
+		<expected-output>Portrait</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header Orientation is 32bit.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:Orientation/has-tag:32bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header Orientation is 0.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:Orientation/data</argument>
+		</execute>
+		<expected-output>0</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header NumCopies is 32bit.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:NumCopies/has-tag:32bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header NumCopies is 0.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:NumCopies/data</argument>
+		</execute>
+		<expected-output>0</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header Reserved 2 has length 8.0.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:Reserved:2/tag:length/data</argument>
+		</execute>
+		<expected-output>8.0</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header Reserved 2 is unset data.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:Reserved:2/has-tag:unset data</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header MediaWeightMetric is 32bit.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:MediaWeightMetric/has-tag:32bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header MediaWeightMetric is 0.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:MediaWeightMetric/data</argument>
+		</execute>
+		<expected-output>0</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header MediaPosition interpretation has description.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:MediaPosition/tag:interpretation/tag:description/data</argument>
+		</execute>
+		<expected-output>Default or automatically selected source.</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header MediaPosition has interpretation.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:MediaPosition/tag:interpretation/data</argument>
+		</execute>
+		<expected-output>Auto</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header MediaPosition is 32bit.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:MediaPosition/has-tag:32bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header MediaPosition is 0.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:MediaPosition/data</argument>
+		</execute>
+		<expected-output>0</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header Reserved 1 has length 12.0.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:Reserved:1/tag:length/data</argument>
+		</execute>
+		<expected-output>12.0</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header Reserved 1 is unset data.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:Reserved:1/has-tag:unset data</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header LeadingEdge interpretation has description.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:LeadingEdge/tag:interpretation/tag:description/data</argument>
+		</execute>
+		<expected-output>The short edge of the media is first.</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header LeadingEdge has interpretation.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:LeadingEdge/tag:interpretation/data</argument>
+		</execute>
+		<expected-output>ShortEdgeFirst</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header LeadingEdge is 32bit.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:LeadingEdge/has-tag:32bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header LeadingEdge is 0.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:LeadingEdge/data</argument>
+		</execute>
+		<expected-output>0</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header Jog interpretation has description.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:Jog/tag:interpretation/tag:description/data</argument>
+		</execute>
+		<expected-output>Never apply feature.</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header Jog has interpretation.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:Jog/tag:interpretation/data</argument>
+		</execute>
+		<expected-output>Never</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header Jog is 32bit.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:Jog/has-tag:32bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header Jog is 0.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:Jog/data</argument>
+		</execute>
+		<expected-output>0</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header InsertSheet has interpretation.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:InsertSheet/tag:interpretation/data</argument>
+		</execute>
+		<expected-output>Do not insert separator sheets.</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header InsertSheet is 32bit.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:InsertSheet/has-tag:32bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header InsertSheet is boolean.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:InsertSheet/has-tag:boolean</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header InsertSheet is false.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:InsertSheet/data</argument>
+		</execute>
+		<expected-output>false</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header HWResolution FeedResolution is 32bit.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:HWResolution/field:FeedResolution/has-tag:32bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header HWResolution has FeedResolution.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:HWResolution/field:FeedResolution/data</argument>
+		</execute>
+		<expected-output>2</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header HWResolution CrossFeedResolution is 32bit.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:HWResolution/field:CrossFeedResolution/has-tag:32bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header HWResolution has CrossFeedResolution.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:HWResolution/field:CrossFeedResolution/data</argument>
+		</execute>
+		<expected-output>2</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header has HWResolution.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/has-field:HWResolution</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header Duplex has interpretation.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:Duplex/tag:interpretation/data</argument>
+		</execute>
+		<expected-output>Print single-sided.</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header Duplex is 32bit.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:Duplex/has-tag:32bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header Duplex is boolean.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:Duplex/has-tag:boolean</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header Duplex is false.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:Duplex/data</argument>
+		</execute>
+		<expected-output>false</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header CutMedia has interpretation description.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:CutMedia/tag:interpretation/tag:description/data</argument>
+		</execute>
+		<expected-output>Never apply feature.</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header CutMedia has interpretation.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:CutMedia/tag:interpretation/data</argument>
+		</execute>
+		<expected-output>Never</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header CutMedia is 32bit.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:CutMedia/has-tag:32bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header CutMedia is 0.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:CutMedia/data</argument>
+		</execute>
+		<expected-output>0</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header Reserved 0 has length 12.0.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:Reserved:0/tag:length/data</argument>
+		</execute>
+		<expected-output>12.0</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header Reserved 0 is unset data.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:Reserved:0/has-tag:unset data</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header print content optimize has 64 terminations.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:PrintContentOptimize/has-tag:64 terminations until length</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header print content optimize is empty.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:PrintContentOptimize/has-tag:empty</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header print content optimize was ended by termination.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:PrintContentOptimize/has-tag:ended by termination</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header print content optimize is stationery.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:PrintContentOptimize/data</argument>
+		</execute>
+		<expected-output></expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header print content optimize is a string.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:PrintContentOptimize/has-tag:string</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header media type has 54 terminations.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:MediaType/has-tag:54 terminations until length</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header media type has 10 characters.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:MediaType/has-tag:10 characters</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header media type was ended by termination.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:MediaType/has-tag:ended by termination</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header media type is stationery.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:MediaType/data</argument>
+		</execute>
+		<expected-output>stationery</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header media type is a string.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:MediaType/has-tag:string</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header media color has 59 terminations.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:MediaColor/has-tag:59 terminations until length</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header media color has 5 characters.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:MediaColor/has-tag:5 characters</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header media color was ended by termination.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:MediaColor/has-tag:ended by termination</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header media color is white.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:MediaColor/data</argument>
+		</execute>
+		<expected-output>white</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header media color is a string.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:MediaColor/has-tag:string</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header media class has 55 terminations.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:MediaClass/has-tag:55 terminations until length</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header media class has 9 characters.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:MediaClass/has-tag:9 characters</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header media class was ended by termination.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:MediaClass/has-tag:ended by termination</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header media class was matched to template.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:MediaClass/tag:template/data</argument>
+		</execute>
+		<expected-output>PwgRaster</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header media class is PwgRaster.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:MediaClass/data</argument>
+		</execute>
+		<expected-output>PwgRaster</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 header media class is a string.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/field:Header/field:MediaClass/has-tag:string</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 has a header field.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/has-field:Header</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 is element 0 in index.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/field:Page:0/tag:element index in array/data</argument>
+		</execute>
+		<expected-output>0</expected-output>
+	</test>
+	<test>
+		<description>PWG raster page 0 exists.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/has-field:Page:0</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster pages has one element.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/tag:number of elements/data</argument>
+		</execute>
+		<expected-output>1</expected-output>
+	</test>
+	<test>
+		<description>PWG raster pages is ended by length.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/has-tag:ended by length</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster pages is an array.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:Pages/has-tag:array</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster synchronization word is 4 characters long.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:SynchronizationWord/has-tag:4 characters</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>PWG raster synchronization word is defined by template.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:SynchronizationWord/tag:template/data</argument>
+		</execute>
+		<expected-output>RaS2</expected-output>
+	</test>
+	<test>
+		<description>PWG raster starts with the right synchronization word.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/088_PWG_grayscale</argument>
+			<argument>--query=/field:PWGRaster.File/field:SynchronizationWord/data</argument>
+		</execute>
+		<expected-output>RaS2</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 bitmap line 1 run 0 value 2 is index 2 in array.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Data/field:Run:0/field:Values/field::2/tag:element index in array/data</argument>
+		</execute>
+		<expected-output>2</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 bitmap line 1 run 0 value 2 is white.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Data/field:Run:0/field:Values/field::2/tag:interpretation/data</argument>
+		</execute>
+		<expected-output>White</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 bitmap line 1 run 0 value 2 is grayscale.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Data/field:Run:0/field:Values/field::2/has-tag:grayscale</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 bitmap line 1 run 0 value 2 is color.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Data/field:Run:0/field:Values/field::2/has-tag:color</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 bitmap line 1 run 0 value 2 is 8bit.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Data/field:Run:0/field:Values/field::2/has-tag:8bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 bitmap line 1 run 0 value 2 is 255.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Data/field:Run:0/field:Values/field::2/data</argument>
+		</execute>
+		<expected-output>255</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 bitmap line 1 run 0 value 1 is index 1 in array.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Data/field:Run:0/field:Values/field::1/tag:element index in array/data</argument>
+		</execute>
+		<expected-output>1</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 bitmap line 1 run 0 value 1 is grayscale.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Data/field:Run:0/field:Values/field::1/has-tag:grayscale</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 bitmap line 1 run 0 value 1 is color.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Data/field:Run:0/field:Values/field::1/has-tag:color</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 bitmap line 1 run 0 value 1 is 8bit.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Data/field:Run:0/field:Values/field::1/has-tag:8bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 bitmap line 1 run 0 value 1 is 6.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Data/field:Run:0/field:Values/field::1/data</argument>
+		</execute>
+		<expected-output>6</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 bitmap line 1 run 0 value 0 is index 0 in array.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Data/field:Run:0/field:Values/field::0/tag:element index in array/data</argument>
+		</execute>
+		<expected-output>0</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 bitmap line 1 run 0 value 0 is white.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Data/field:Run:0/field:Values/field::0/tag:interpretation/data</argument>
+		</execute>
+		<expected-output>White</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 bitmap line 1 run 0 value 0 is grayscale.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Data/field:Run:0/field:Values/field::0/has-tag:grayscale</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 bitmap line 1 run 0 value 0 is color.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Data/field:Run:0/field:Values/field::0/has-tag:color</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 bitmap line 1 run 0 value 0 is 8bit.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Data/field:Run:0/field:Values/field::0/has-tag:8bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 bitmap line 1 run 0 value 0 is 255.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Data/field:Run:0/field:Values/field::0/data</argument>
+		</execute>
+		<expected-output>255</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 bitmap line 1 run 0 has Values array with 3 element.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Data/field:Run:0/field:Values/tag:number of elements/data</argument>
+		</execute>
+		<expected-output>3</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 bitmap line 1 run 0 has Values array.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Data/field:Run:0/field:Values/has-tag:array</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 bitmap line 1 run 0 has 3 items.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Data/field:Run:0/field:Repetition/tag:number of items/data</argument>
+		</execute>
+		<expected-output>3</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 bitmap line 1 run 0 repeats individual items.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Data/field:Run:0/field:Repetition/tag:interpretation/data</argument>
+		</execute>
+		<expected-output>individual items</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 bitmap line 1 run 0 has repetition 254.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Data/field:Run:0/field:Repetition/data</argument>
+		</execute>
+		<expected-output>254</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 bitmap line 1 repeats 4 times.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Repetition/tag:repetitions/data</argument>
+		</execute>
+		<expected-output>4</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 bitmap line 1 repetition is 3.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/field:Repetition/data</argument>
+		</execute>
+		<expected-output>3</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 bitmap line 1 ends with line index 4.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/tag:ending with line index/data</argument>
+		</execute>
+		<expected-output>4</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 bitmap line 1 starts with line index 1.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:1/tag:starting with line index/data</argument>
+		</execute>
+		<expected-output>1</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 bitmap line 0 data run 0 value is white.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:0/field:Data/field:Run:0/field:Value/tag:interpretation/data</argument>
+		</execute>
+		<expected-output>White</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 bitmap line 0 data run 0 value is grayscale.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:0/field:Data/field:Run:0/field:Value/has-tag:grayscale</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 bitmap line 0 data run 0 value is color.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:0/field:Data/field:Run:0/field:Value/has-tag:color</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 bitmap line 0 data run 0 value is 8bit.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:0/field:Data/field:Run:0/field:Value/has-tag:8bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 bitmap line 0 data run 0 has value 255.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:0/field:Data/field:Run:0/field:Value/data</argument>
+		</execute>
+		<expected-output>255</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 bitmap line 0 data run 0 repetition is 8bit value.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:0/field:Data/field:Run:0/field:Repetition/has-tag:8bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 bitmap line 0 data run 0 repeats 6 times.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:0/field:Data/field:Run:0/field:Repetition/tag:repetitions/data</argument>
+		</execute>
+		<expected-output>6</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 bitmap line 0 data run 0 repetition is repeat item.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:0/field:Data/field:Run:0/field:Repetition/tag:interpretation/data</argument>
+		</execute>
+		<expected-output>repeat item</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 bitmap line 0 data run 0 has repetition 5.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:0/field:Data/field:Run:0/field:Repetition/data</argument>
+		</execute>
+		<expected-output>5</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 bitmap line 0 data run 0 ends at item index 5.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:0/field:Data/field:Run:0/tag:ending at item index/data</argument>
+		</execute>
+		<expected-output>5</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 bitmap line 0 data run 0 starts at item index 0.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:0/field:Data/field:Run:0/tag:starting at item index/data</argument>
+		</execute>
+		<expected-output>0</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 bitmap line 0 data run 0 has 6 items.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:0/field:Data/field:Run:0/tag:number of items/data</argument>
+		</execute>
+		<expected-output>6</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 bitmap line 0 data has 2 elements.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:0/field:Data/tag:number of elements/data</argument>
+		</execute>
+		<expected-output>2</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 bitmap line 0 data has 12 items.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:0/field:Data/tag:number of items/data</argument>
+		</execute>
+		<expected-output>12</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 bitmap line 0 data is an packbits.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:0/field:Data/has-tag:packbits</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 bitmap line 0 data is an array.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:0/field:Data/has-tag:array</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 bitmap line 0 repetition is an 8bit value.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:0/field:Repetition/has-tag:8bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 bitmap line 0 is repeated 1 times.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:0/field:Repetition/tag:repetitions/data</argument>
+		</execute>
+		<expected-output>1</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 bitmap line 0 has repetition 0.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:0/field:Repetition/data</argument>
+		</execute>
+		<expected-output>0</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 bitmap line 0 has 12 items per line.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:0/tag:number of items/data</argument>
+		</execute>
+		<expected-output>12</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 bitmap line 0 ends with line index 0.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:0/tag:ending with line index/data</argument>
+		</execute>
+		<expected-output>0</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 bitmap line 0 starts with line index 0.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:0/tag:starting with line index/data</argument>
+		</execute>
+		<expected-output>0</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 bitmap line 0 has element index 0 in its array.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:0/tag:element index in array/data</argument>
+		</execute>
+		<expected-output>0</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 bitmap line 0 is a bitmap line.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Bitmap/field:Line:0/has-tag:bitmap line</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 bitmap has 12 items per line.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Bitmap/tag:number of items per line/data</argument>
+		</execute>
+		<expected-output>12</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 bitmap encodes 17 lines.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Bitmap/tag:number of lines/data</argument>
+		</execute>
+		<expected-output>17</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 bitmap has 12 elements.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Bitmap/tag:number of elements/data</argument>
+		</execute>
+		<expected-output>12</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 bitmap is an array.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Bitmap/has-tag:array</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 has a bitmap.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/has-field:Bitmap</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 header has the fourth padding of length 4 bytes.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Header/field:Padding:3/tag:length/data</argument>
+		</execute>
+		<expected-output>4.0</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 header has the fourth padding all zeroes.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Header/field:Padding:3/has-tag:unset data</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 header has the third padding of length 4 bytes.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Header/field:Padding:2/tag:length/data</argument>
+		</execute>
+		<expected-output>4.0</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 header has the third padding all zeroes.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Header/field:Padding:2/has-tag:unset data</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 header HWResolution is 32bit value.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Header/field:HWResolution/has-tag:32bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 header has HWResolution 2.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Header/field:HWResolution/data</argument>
+		</execute>
+		<expected-output>2</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 header Height is 32bit value.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Header/field:Height/has-tag:32bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 header has Height 17.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Header/field:Height/data</argument>
+		</execute>
+		<expected-output>17</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 header Width is 32bit value.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Header/field:Width/has-tag:32bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 header has Width 12.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Header/field:Width/data</argument>
+		</execute>
+		<expected-output>12</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 header has the second padding of length 4 bytes.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Header/field:Padding:1/tag:length/data</argument>
+		</execute>
+		<expected-output>4.0</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 header has the second padding all zeroes.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Header/field:Padding:1/has-tag:unset data</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 header has the first padding of length 2 bytes.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Header/field:Padding:0/tag:length/data</argument>
+		</execute>
+		<expected-output>2.0</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 header has the first padding all zeroes.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Header/field:Padding:0/has-tag:unset data</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 header MediaPosition is 8bit value.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Header/field:MediaPosition/has-tag:8bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 header MediaPosition is "Automatic".</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Header/field:MediaPosition/tag:interpretation/data</argument>
+		</execute>
+		<expected-output>Automatic</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 header has MediaPosition 0.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Header/field:MediaPosition/data</argument>
+		</execute>
+		<expected-output>0</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 header MediaType is 8bit value.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Header/field:MediaType/has-tag:8bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 header MediaType is "Automatic".</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Header/field:MediaType/tag:interpretation/data</argument>
+		</execute>
+		<expected-output>Automatic</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 header has MediaType 0.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Header/field:MediaType/data</argument>
+		</execute>
+		<expected-output>0</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 header Quality is 8bit value.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Header/field:Quality/has-tag:8bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 header Quality is "Default".</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Header/field:Quality/tag:interpretation/data</argument>
+		</execute>
+		<expected-output>Default</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 header has Quality 0.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Header/field:Quality/data</argument>
+		</execute>
+		<expected-output>0</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 header Duplex is 8bit value.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Header/field:Duplex/has-tag:8bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 header Duplex is "NoDuplex".</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Header/field:Duplex/tag:interpretation/data</argument>
+		</execute>
+		<expected-output>No</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 header has Duplex 1.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Header/field:Duplex/data</argument>
+		</execute>
+		<expected-output>1</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 header ColorSpace is 8bit value.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Header/field:ColorSpace/has-tag:8bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 header ColorSpace is "sGray".</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Header/field:ColorSpace/tag:interpretation/data</argument>
+		</execute>
+		<expected-output>sGray</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 header has ColorSpace 0.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Header/field:ColorSpace/data</argument>
+		</execute>
+		<expected-output>0</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 header BitsPerPixel is 8 bit value.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Header/field:BitsPerPixel/has-tag:8bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 header has 8 BitsPerPixel.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/field:Header/field:BitsPerPixel/data</argument>
+		</execute>
+		<expected-output>8</expected-output>
+	</test>
+	<test>
+		<description>URF raster page 0 has a header.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/field:Page:0/has-field:Header</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>URF raster page has a page 0.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/has-field:Page:0</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>URF raster pages array has one element.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/tag:number of elements/data</argument>
+		</execute>
+		<expected-output>1</expected-output>
+	</test>
+	<test>
+		<description>URF raster pages is ended by length.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/has-tag:ended by length</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>URF raster pages is an array.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:Pages/has-tag:array</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>URF raster has pages.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/has-field:Pages</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>URF raster number of pages is 32 bit.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:NumberOfPages/has-tag:32bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>URF raster contains one page.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:NumberOfPages/data</argument>
+		</execute>
+		<expected-output>1</expected-output>
+	</test>
+	<test>
+		<description>URF raster "UNIRAST" ended by termination.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:MagicWord/has-tag:ended by template + termination</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>URF raster starts with "UNIRAST".</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/087_URF_grayscale</argument>
+			<argument>--query=/field:URFRaster.File/field:MagicWord/data</argument>
+		</execute>
+		<expected-output>UNIRAST</expected-output>
+	</test>
+	<test>
 		<description>The WavPack.Block header has the correct flags.</description>
 		<execute>
 			<program>generalinspector</program>

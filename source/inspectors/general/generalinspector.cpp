@@ -48,6 +48,8 @@ void AppendUnkownContinuation(Inspection::Value * Value, Inspection::Reader & Re
 //     - WavPackBlocks                                                                           //
 //     - WavPackBlocks APEv2Tag                                                                  //
 //     - RIFFFile                                                                                //
+//     - PWGRaster/File                                                                          //
+//     - URFRaster/File                                                                          //
 //                                                                                               //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -546,7 +548,47 @@ namespace Inspection
                                                 }
                                                 else
                                                 {
-                                                    AppendUnkownContinuation(Result->GetValue(), MSBFReader);
+                                                    auto PartReader = Inspection::Reader{MSBFReader};
+                                                    auto PartType = Inspection::g_TypeRepository.GetType({"PWGRaster", "File"});
+                                                    auto PartResult = PartType->Get(PartReader, {});
+                                                    
+                                                    if(PartResult->GetSuccess() == true)
+                                                    {
+                                                        Result->GetValue()->AppendField(Inspection::JoinWithSeparator(PartType->GetPathParts(), "."), PartResult->ExtractValue());
+                                                        MSBFReader.AdvancePosition(PartReader.GetConsumedLength());
+                                                        if(MSBFReader.IsAtEnd() == true)
+                                                        {
+                                                            Result->SetSuccess(true);
+                                                        }
+                                                        else
+                                                        {
+                                                            AppendUnkownContinuation(Result->GetValue(), MSBFReader);
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        auto PartReader = Inspection::Reader{MSBFReader};
+                                                        auto PartType = Inspection::g_TypeRepository.GetType({"URFRaster", "File"});
+                                                        auto PartResult = PartType->Get(PartReader, {});
+                                                        
+                                                        if(PartResult->GetSuccess() == true)
+                                                        {
+                                                            Result->GetValue()->AppendField(Inspection::JoinWithSeparator(PartType->GetPathParts(), "."), PartResult->ExtractValue());
+                                                            MSBFReader.AdvancePosition(PartReader.GetConsumedLength());
+                                                            if(MSBFReader.IsAtEnd() == true)
+                                                            {
+                                                                Result->SetSuccess(true);
+                                                            }
+                                                            else
+                                                            {
+                                                                AppendUnkownContinuation(Result->GetValue(), MSBFReader);
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            AppendUnkownContinuation(Result->GetValue(), MSBFReader);
+                                                        }
+                                                    }
                                                 }
                                             }
                                         }

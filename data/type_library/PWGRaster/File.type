@@ -1,0 +1,26 @@
+<type>
+	<sequence>
+		<field name="SynchronizationWord">
+			<type-reference>
+				<part>String</part>
+				<part>ASCII</part>
+				<part>ByTemplate</part>
+			</type-reference>
+			<parameters>
+				<parameter name="Template">
+					<string>RaS2</string>
+				</parameter>
+			</parameters>
+		</field>
+		<array name="Pages">
+			<iterate type="until-length"/>
+			<element-name>Page</element-name>
+			<element-type>
+				<type-reference>
+					<part>PWGRaster</part>
+					<part>Page</part>
+				</type-reference>
+			</element-type>
+		</array>
+	</sequence>
+</type>

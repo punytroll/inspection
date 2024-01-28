@@ -91,8 +91,10 @@ auto Inspection::TypeDefinition::Field::Load(XML::Element const * Element) -> st
 {
     auto Result = std::unique_ptr<Inspection::TypeDefinition::Field>{new Inspection::TypeDefinition::Field{}};
     
-    ASSERTION(Element->HasAttribute("name") == true);
-    Result->m_FieldName = Element->GetAttribute("name");
+    if(Element->HasAttribute("name") == true)
+    {
+        Result->m_FieldName = Element->GetAttribute("name");
+    }
     
     return Result;
 }
