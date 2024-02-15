@@ -61,7 +61,10 @@ static auto m_ApplyEnumeration(Inspection::ExecutionContext & ExecutionContext, 
         if(Enumeration.GetFallbackElement().has_value() == true)
         {
             ::m_ApplyTags(ExecutionContext, Enumeration.GetFallbackElement()->Tags, Target);
-            Target->AddTag("error", "Could find no enumeration element for the base value \"" + BaseValueString + "\".");
+            if(Enumeration.GetFallbackElement()->Valid == false)
+            {
+                Target->AddTag("error", "Could find no enumeration element for the base value \"" + BaseValueString + "\".");
+            }
             Result = Enumeration.GetFallbackElement()->Valid;
         }
         else
