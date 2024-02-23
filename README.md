@@ -49,6 +49,13 @@ The _generalinspector_ has two powerful options to help investigate a file:
 
 With this option, you can force the _generalinspector_ to interpret the file as a specific sequence of types as taken from the type library.
 
+This is *the* option to choose, when the _generalinspector_ fails to read a file that is supposed to be supported.
+In most cases, this is due to the fact that support for this format is not complete and your file contains something that is not yet supported.
+In that case, the _generalinspector_ fails parsing the file utilising the expected format, falls back onto other formats but fails there as well.
+Finally, no format seems to be the right one and the _generalinspector_ finishes without meaningful output.
+
+However, if you use the `--types=<type>,...` option, and fix the _generalinspector_ on the type you know the file to be, parsing will go as far as it can and then stop, hopefully providing some hint as to why parsing cannot continue.
+
 #### `--query=<query>`
 
 With this option, you select a certain part of the output and only display that. This allows you to drill down to the level of individual data pieces and tags, query for the existance of fields or tags and  select fields based on their properties.
