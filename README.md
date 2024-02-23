@@ -16,6 +16,8 @@ This project started out as an attempt to analyze ID3 tags in audio files. In th
 - MPEGv1 (all frame headers in a stream)
 - RIFF
 - ASF
+- PWG Raster
+- URF Raster
 - Vorbis comments and file structure
 - WavPack
 - AppleSingle
