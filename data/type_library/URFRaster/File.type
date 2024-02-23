@@ -1,0 +1,34 @@
+<type>
+	<sequence>
+		<field name="MagicWord">
+			<type-reference>
+				<part>String</part>
+				<part>ASCII</part>
+				<part>ByTemplate_EndedByTermination</part>
+			</type-reference>
+			<parameters>
+				<parameter name="Template">
+					<string>UNIRAST</string>
+				</parameter>
+			</parameters>
+		</field>
+		<field name="NumberOfPages">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>32Bit_BigEndian</part>
+			</type-reference>
+		</field>
+		<array name="Pages">
+			<iterate type="until-length"/>
+			<element-name>Page</element-name>
+			<element-type>
+				<type-reference>
+					<part>URFRaster</part>
+					<part>Page</part>
+				</type-reference>
+			</element-type>
+		</array>
+	</sequence>
+</type>

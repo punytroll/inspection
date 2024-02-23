@@ -290,13 +290,65 @@ void Inspection::Inspector::_QueryWriter(Inspection::Value * Value, const std::s
         }
         else if(QueryPartSpecifications[0] == "has-field")
         {
-            if(Value->HasField(QueryPartSpecifications[1]) == true)
+            if(QueryPartSpecifications.size() == 2)
             {
-                std::cout << "true";
+                if(Value->HasField(QueryPartSpecifications[1]) == true)
+                {
+                    std::cout << "true";
+                }
+                else
+                {
+                    std::cout << "false";
+                }
             }
-            else
+            else if(QueryPartSpecifications.size() == 3)
             {
-                std::cout << "false";
+                auto MatchingField = static_cast<Inspection::Value *>(nullptr);
+                
+                if((QueryPartSpecifications[2][0] == '[') && (QueryPartSpecifications[2][QueryPartSpecifications[2].size() - 1] == ']'))
+                {
+                    auto TestQuery = QueryPartSpecifications[2].substr(1, QueryPartSpecifications[2].size() - 2);
+                    
+                    for(auto & Field : Value->GetFields())
+                    {
+                        if((Field->GetName() == QueryPartSpecifications[1]) && (Inspection::EvaluateTestQuery(Field.get(), TestQuery) == true))
+                        {
+                            MatchingField = Field.get();
+                            
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    auto WantedIndex = from_string_cast<std::uint64_t>(QueryPartSpecifications[2]);
+                    auto Index = static_cast<std::uint64_t>(0);
+                    
+                    for(auto & Field : Value->GetFields())
+                    {
+                        if(Field->GetName() == QueryPartSpecifications[1])
+                        {
+                            if(WantedIndex == Index)
+                            {
+                                MatchingField = Field.get();
+                                
+                                break;
+                            }
+                            else
+                            {
+                                ++Index;
+                            }
+                        }
+                    }
+                }
+                if(MatchingField != nullptr)
+                {
+                    std::cout << "true";
+                }
+                else
+                {
+                    std::cout << "false";
+                }
             }
         }
         else if(QueryPartSpecifications[0] == "has-data")

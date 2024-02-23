@@ -44,8 +44,11 @@ namespace Inspection
     std::unique_ptr<Inspection::Result> Get_BitSet_16Bit_LittleEndian_LeastSignificantBitFirstPerByte(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
     std::unique_ptr<Inspection::Result> Get_BitSet_32Bit_LittleEndian_LeastSignificantBitFirstPerByte(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
     std::unique_ptr<Inspection::Result> Get_Boolean_1Bit(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
+    auto Get_Boolean_32Bit_BigEndian(Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) -> std::unique_ptr<Inspection::Result>;
     std::unique_ptr<Inspection::Result> Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
     std::unique_ptr<Inspection::Result> Get_Buffer_UnsignedInteger_8Bit_Zeroed_EndedByLength(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
+    auto Get_CUPS_v2_RasterData(Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) -> std::unique_ptr<Inspection::Result>;
+    auto Get_CUPS_v2_RasterData_Line(Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) -> std::unique_ptr<Inspection::Result>;
     std::unique_ptr<Inspection::Result> Get_Data_Set_EndedByLength(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
     std::unique_ptr<Inspection::Result> Get_Data_SetOrUnset_EndedByLength(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
     std::unique_ptr<Inspection::Result> Get_Data_Unset_Until16BitAlignment(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
@@ -157,6 +160,8 @@ namespace Inspection
     std::unique_ptr<Inspection::Result> Get_Ogg_Vorbis_CommentHeader_WithoutFramingFlag(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
     std::unique_ptr<Inspection::Result> Get_Ogg_Vorbis_HeaderPacket(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
     std::unique_ptr<Inspection::Result> Get_Ogg_Vorbis_IdentificationHeader(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
+    auto Get_PackBits(Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) -> std::unique_ptr<Inspection::Result>;
+    auto Get_PackBits_Run(Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) -> std::unique_ptr<Inspection::Result>;
     std::unique_ptr<Inspection::Result> Get_RIFF_Chunk(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
     std::unique_ptr<Inspection::Result> Get_RIFF_ChunkData_fmt_(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
     std::unique_ptr<Inspection::Result> Get_RIFF_ChunkData_fmt__FormatSpecificFields_Extensible_ChannelMask(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
@@ -187,6 +192,9 @@ namespace Inspection
     std::unique_ptr<Inspection::Result> Get_SignedInteger_32Bit_LittleEndian(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
     std::unique_ptr<Inspection::Result> Get_SignedInteger_32Bit_RiceEncoded(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
     std::unique_ptr<Inspection::Result> Get_String_ASCII_ByTemplate(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
+    auto Get_String_ASCII_ByTemplate_EndedByTermination(Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) -> std::unique_ptr<Inspection::Result>;
+    auto Get_String_ASCII_ByTemplate_EndedByTerminationUntilLength(Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) -> std::unique_ptr<Inspection::Result>;
+    auto Get_String_ASCII_Printable_EndedByTerminationUntilLength(Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameter) -> std::unique_ptr<Inspection::Result>;
     std::unique_ptr<Inspection::Result> Get_UnsignedInteger_BigEndian(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
     std::unique_ptr<Inspection::Result> Get_UnsignedInteger_0Bit(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
     std::unique_ptr<Inspection::Result> Get_UnsignedInteger_1Bit(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);

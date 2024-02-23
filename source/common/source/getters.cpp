@@ -2049,6 +2049,74 @@ std::unique_ptr<Inspection::Result> Inspection::Get_Boolean_1Bit(Inspection::Rea
     return Result;
 }
 
+auto Inspection::Get_Boolean_32Bit_BigEndian(Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) -> std::unique_ptr<Inspection::Result>
+{
+    auto Result = std::make_unique<Inspection::Result>();
+    auto Continue = true;
+    
+    Result->GetValue()->AddTag("boolean"s);
+    Result->GetValue()->AddTag("32bit"s);
+    // reading
+    if(Continue == true)
+    {
+        auto ReadResult1 = Inspection::ReadResult{};
+        
+        if((Continue = Reader.Read8Bits(ReadResult1)) == true)
+        {
+            auto ReadResult2 = Inspection::ReadResult{};
+            
+            if((Continue = Reader.Read8Bits(ReadResult2)) == true)
+            {
+                auto ReadResult3 = Inspection::ReadResult{};
+                
+                if((Continue = Reader.Read8Bits(ReadResult3)) == true)
+                {
+                    auto ReadResult4 = Inspection::ReadResult{};
+                    
+                    if((Continue = Reader.Read8Bits(ReadResult4)) == true)
+                    {
+                        auto Value = static_cast<std::uint32_t>((static_cast<std::uint32_t>(ReadResult1.Data) << 24) | (static_cast<std::uint32_t>(ReadResult2.Data) << 16) | (static_cast<std::uint32_t>(ReadResult3.Data) << 8) | (static_cast<std::uint32_t>(ReadResult4.Data)));
+                        
+                        if(Value == 0x00000000)
+                        {
+                            Result->GetValue()->SetData(false);
+                        }
+                        else if(Value == 0x00000001)
+                        {
+                            Result->GetValue()->SetData(true);
+                        }
+                        else
+                        {
+                            Result->GetValue()->AddTag("error", "The 32bit value " + std::to_string(Value) + " was not recognized.");
+                            Continue = false;
+                        }
+                    }
+                    else
+                    {
+                        AppendReadErrorTag(Result->GetValue(), ReadResult4);
+                    }
+                }
+                else
+                {
+                    AppendReadErrorTag(Result->GetValue(), ReadResult3);
+                }
+            }
+            else
+            {
+                AppendReadErrorTag(Result->GetValue(), ReadResult2);
+            }
+        }
+        else
+        {
+            AppendReadErrorTag(Result->GetValue(), ReadResult1);
+        }
+    }
+    // finalization
+    Result->SetSuccess(Continue);
+    
+    return Result;
+}
+
 std::unique_ptr<Inspection::Result> Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
     auto Result = std::make_unique<Inspection::Result>();
@@ -2122,6 +2190,114 @@ std::unique_ptr<Inspection::Result> Inspection::Get_Buffer_UnsignedInteger_8Bit_
         }
         Result->GetValue()->SetData(Value);
         AppendLengthTag(Result->GetValue(), Reader.GetConsumedLength());
+    }
+    // finalization
+    Result->SetSuccess(Continue);
+    
+    return Result;
+}
+
+auto Inspection::Get_CUPS_v2_RasterData(Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) -> std::unique_ptr<Inspection::Result>
+{
+    auto Result = std::make_unique<Inspection::Result>();
+    auto Continue = true;
+    auto PixelType = std::any_cast<Inspection::Type const *>(Parameters.at("PixelType"));
+    auto Height = static_cast<std::uint64_t>(std::any_cast<std::uint32_t>(Parameters.at("Height")));
+    auto Width = static_cast<std::uint64_t>(std::any_cast<std::uint32_t>(Parameters.at("Width")));
+    
+    Result->GetValue()->AddTag("array"s);
+    Result->GetValue()->AddTag("number of lines", Height);
+    Result->GetValue()->AddTag("number of items per line", Width);
+    // reading
+    if(Continue == true)
+    {
+        auto NumberOfElements = 0ul;
+        auto CurrentLineIndex = 0ul;
+        
+        while(Continue == true)
+        {
+            // reading
+            if(Continue == true)
+            {
+                auto PartReader = Inspection::Reader{Reader};
+                auto PartResult = Inspection::Get_CUPS_v2_RasterData_Line(PartReader, {{"PixelType", PixelType}, {"NumberOfItems", Width}});
+                
+                Continue = PartResult->GetSuccess();
+                
+                auto PartField = Result->GetValue()->AppendField("Line", PartResult->ExtractValue());
+                
+                Reader.AdvancePosition(PartReader.GetConsumedLength());
+                // interpretation
+                if(Continue == true)
+                {
+                    PartField->AddTag("starting with line index", CurrentLineIndex);
+                    CurrentLineIndex += std::any_cast<std::uint16_t>(PartField->GetField("Repetition")->GetTag("repetitions")->GetData());
+                    PartField->AddTag("ending with line index", CurrentLineIndex - 1);
+                }
+                PartField->AddTag("element index in array", NumberOfElements);
+                NumberOfElements += 1;
+            }
+            // verification
+            if(Continue == true)
+            {
+                if(CurrentLineIndex == Height)
+                {
+                    break;
+                }
+                else if(CurrentLineIndex > Height)
+                {
+                    auto Tag = Result->GetValue()->AddTag("error", "The data encoded more pixel lines than the bitmap height."s);
+                    
+                    Tag->AddTag("bitmap height", Height);
+                    Tag->AddTag("current line index", CurrentLineIndex);
+                }
+            }
+        }
+        Result->GetValue()->AddTag("number of elements", NumberOfElements);
+    }
+    // finalization
+    Result->SetSuccess(Continue);
+    
+    return Result;
+}
+
+auto Inspection::Get_CUPS_v2_RasterData_Line(Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) -> std::unique_ptr<Inspection::Result>
+{
+    auto Result = std::make_unique<Inspection::Result>();
+    auto Continue = true;
+    auto PixelType = std::any_cast<Inspection::Type const *>(Parameters.at("PixelType"));
+    auto NumberOfItems = std::any_cast<std::uint64_t>(Parameters.at("NumberOfItems"));
+    
+    Result->GetValue()->AddTag("bitmap line"s);
+    Result->GetValue()->AddTag("number of items", NumberOfItems);
+    // reading
+    if(Continue == true)
+    {
+        auto PartReader = Inspection::Reader{Reader};
+        auto PartResult = Inspection::Get_UnsignedInteger_8Bit(PartReader, {});
+        
+        Continue = PartResult->GetSuccess();
+        
+        auto PartField = Result->GetValue()->AppendField("Repetition", PartResult->ExtractValue());
+        
+        Reader.AdvancePosition(PartReader.GetConsumedLength());
+        // interpretation
+        if(Continue == true)
+        {
+            auto Repetition = std::any_cast<std::uint8_t>(PartField->GetData());
+            
+            PartField->AddTag("repetitions", static_cast<std::uint16_t>(Repetition + 1));
+        }
+    }
+    // reading
+    if(Continue == true)
+    {
+        auto PartReader = Inspection::Reader{Reader};
+        auto PartResult = Inspection::Get_PackBits(PartReader, {{"ItemType", PixelType}, {"NumberOfItems", NumberOfItems}});
+        
+        Continue = PartResult->GetSuccess();
+        Result->GetValue()->AppendField("Data", PartResult->ExtractValue());
+        Reader.AdvancePosition(PartReader.GetConsumedLength());
     }
     // finalization
     Result->SetSuccess(Continue);
@@ -9183,6 +9359,148 @@ std::unique_ptr<Inspection::Result> Inspection::Get_Ogg_Vorbis_IdentificationHea
     return Result;
 }
 
+auto Inspection::Get_PackBits(Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) -> std::unique_ptr<Inspection::Result>
+{
+    auto Result = std::make_unique<Inspection::Result>();
+    auto Continue = true;
+    auto ItemType = std::any_cast<Inspection::Type const *>(Parameters.at("ItemType"));
+    auto NumberOfItems = std::any_cast<std::uint64_t>(Parameters.at("NumberOfItems"));
+    
+    Result->GetValue()->AddTag("array"s);
+    Result->GetValue()->AddTag("packbits"s);
+    Result->GetValue()->AddTag("number of items", NumberOfItems);
+    
+    auto NumberOfElements = static_cast<std::uint64_t>(0);
+    auto CurrentItemIndex = static_cast<std::uint64_t>(0);
+    
+    // reading
+    while(Continue == true)
+    {
+        // reading
+        if(Continue == true)
+        {
+            auto PartReader = Inspection::Reader{Reader};
+            auto PartResult = Inspection::Get_PackBits_Run(PartReader, {{"ItemType", ItemType}});
+            
+            Continue = PartResult->GetSuccess();
+            
+            auto PartField = Result->GetValue()->AppendField("Run", PartResult->ExtractValue());
+            
+            Reader.AdvancePosition(PartReader.GetConsumedLength());
+            PartField->AddTag("starting at item index", CurrentItemIndex);
+            CurrentItemIndex += std::any_cast<std::uint64_t>(PartField->GetTag("number of items")->GetData());
+            PartField->AddTag("ending at item index", CurrentItemIndex - 1);
+            NumberOfElements += 1;
+        }
+        // verification
+        if(Continue == true)
+        {
+            if(CurrentItemIndex == NumberOfItems)
+            {
+                break;
+            }
+            else if(CurrentItemIndex > NumberOfItems)
+            {
+                auto Tag = Result->GetValue()->AddTag("error", "The data encoded more items than the requested number of items."s);
+                
+                Tag->AddTag("number of items", NumberOfItems);
+                Tag->AddTag("current item", CurrentItemIndex);
+                Continue = false;
+            }
+        }
+    }
+    Result->GetValue()->AddTag("number of elements", NumberOfElements);
+    // finalization
+    Result->SetSuccess(Continue);
+    
+    return Result;
+}
+
+auto Inspection::Get_PackBits_Run(Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) -> std::unique_ptr<Inspection::Result>
+{
+    auto Result = std::make_unique<Inspection::Result>();
+    auto Continue = true;
+    auto ItemType = std::any_cast<Inspection::Type const *>(Parameters.at("ItemType"));
+    auto CurrentItemIndex = static_cast<std::uint64_t>(0);
+    
+    // reading
+    if(Continue == true)
+    {
+        auto PartReader = Inspection::Reader{Reader};
+        auto PartResult = Inspection::Get_UnsignedInteger_8Bit(PartReader, {});
+        
+        Continue = PartResult->GetSuccess();
+        
+        auto PartField = Result->GetValue()->AppendField("Repetition", PartResult->ExtractValue());
+        
+        Reader.AdvancePosition(PartReader.GetConsumedLength());
+        // interpretation
+        if(Continue == true)
+        {
+            auto Repetition = std::any_cast<std::uint8_t>(PartField->GetData());
+            
+            if(Repetition < 128)
+            {
+                auto Repetitions = static_cast<std::uint8_t>(Repetition + 1);
+                
+                PartField->AddTag("interpretation", "repeat item"s);
+                PartField->AddTag("repetitions", Repetitions);
+                // reading
+                if(Continue == true)
+                {
+                    auto ItemReader = Inspection::Reader{Reader};
+                    auto ItemResult = ItemType->Get(ItemReader, {});
+                    
+                    Continue = ItemResult->GetSuccess();
+                    Result->GetValue()->AppendField("Value", ItemResult->ExtractValue());
+                    Reader.AdvancePosition(ItemReader.GetConsumedLength());
+                    if(Continue == true)
+                    {
+                        CurrentItemIndex += Repetitions;
+                    }
+                }
+            }
+            else
+            {
+                auto ValuesField = Result->GetValue()->AppendField("Values");
+                
+                ValuesField->AddTag("array");
+                
+                auto NumberOfIndividualItems = static_cast<std::uint8_t>(256 - Repetition + 1);
+                
+                PartField->AddTag("interpretation", "individual items"s);
+                PartField->AddTag("number of items", NumberOfIndividualItems);
+                
+                auto EndItemIndex = CurrentItemIndex + NumberOfIndividualItems;
+                
+                // reading
+                while((Continue == true) && (CurrentItemIndex < EndItemIndex))
+                {
+                    auto ItemReader = Inspection::Reader{Reader};
+                    auto ItemResult = ItemType->Get(ItemReader, {});
+                    
+                    Continue = ItemResult->GetSuccess();
+                    
+                    auto ItemField = ValuesField->AppendField(ItemResult->ExtractValue());
+                    
+                    Reader.AdvancePosition(ItemReader.GetConsumedLength());
+                    if(Continue == true)
+                    {
+                        ItemField->AddTag("element index in array", CurrentItemIndex);
+                        CurrentItemIndex += 1;
+                    }
+                }
+                ValuesField->AddTag("number of elements", CurrentItemIndex);
+            }
+        }
+    }
+    Result->GetValue()->AddTag("number of items", CurrentItemIndex);
+    // finalization
+    Result->SetSuccess(Continue);
+    
+    return Result;
+}
+
 std::unique_ptr<Inspection::Result> Inspection::Get_RIFF_Chunk(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
     auto Result = std::make_unique<Inspection::Result>();
@@ -10852,6 +11170,248 @@ std::unique_ptr<Inspection::Result> Inspection::Get_String_ASCII_ByTemplate(Insp
             Result->GetValue()->AddTag("ended by template"s);
         }
         Result->GetValue()->AddTag(to_string_cast(NumberOfCharacters) + " characters"s);
+        Result->GetValue()->SetData(Value.str());
+    }
+    // finalization
+    Result->SetSuccess(Continue);
+    
+    return Result;
+}
+
+auto Inspection::Get_String_ASCII_ByTemplate_EndedByTermination(Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) -> std::unique_ptr<Inspection::Result>
+{
+    auto Result = std::make_unique<Inspection::Result>();
+    auto const & Template = std::any_cast<std::string const &>(Parameters.at("Template"));
+    auto Continue = true;
+    
+    Result->GetValue()->AddTag("string"s);
+    Result->GetValue()->AddTag("character set", "ASCII"s);
+    Result->GetValue()->AddTag("encoding", "ASCII"s);
+    Result->GetValue()->AddTag("template", Template);
+    // reading
+    if(Continue == true)
+    {
+        auto ReadResult = Inspection::ReadResult{};
+        auto Value = std::ostringstream{};
+        auto NumberOfCharacters = 0ul;
+        
+        for(auto TemplateCharacter : Template)
+        {
+            if((Continue = Reader.Read8Bits(ReadResult)) == true)
+            {
+                if(TemplateCharacter == ReadResult.Data)
+                {
+                    NumberOfCharacters += 1;
+                    Value << ReadResult.Data;
+                }
+                else
+                {
+                    Result->GetValue()->AddTag("ended by error"s);
+                    Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character does not match the template.");
+                    Result->GetValue()->AddTag("expected character", TemplateCharacter);
+                    Result->GetValue()->AddTag("found character", static_cast<char>(ReadResult.Data));
+                    Continue = false;
+                    
+                    break;
+                }
+            }
+            else
+            {
+                Result->GetValue()->AddTag("ended by error"s);
+                AppendReadErrorTag(Result->GetValue(), ReadResult);
+                
+                break;
+            }
+        }
+        if(Continue == true)
+        {
+            if((Continue = Reader.Read8Bits(ReadResult)) == true)
+            {
+                if(ReadResult.Data == 0)
+                {
+                    Result->GetValue()->AddTag("ended by template + termination");
+                }
+                else
+                {
+                    Result->GetValue()->AddTag("ended by error"s);
+                    Result->GetValue()->AddTag("error", "The termination is missing.");
+                }
+            }
+            else
+            {
+                Result->GetValue()->AddTag("ended by error"s);
+                Result->GetValue()->AddTag("error", "The termination is missing.");
+                AppendReadErrorTag(Result->GetValue(), ReadResult);
+            }
+        }
+        Result->GetValue()->AddTag(to_string_cast(NumberOfCharacters) + " characters"s);
+        Result->GetValue()->SetData(Value.str());
+    }
+    // finalization
+    Result->SetSuccess(Continue);
+    
+    return Result;
+}
+
+auto Inspection::Get_String_ASCII_ByTemplate_EndedByTerminationUntilLength(Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) -> std::unique_ptr<Inspection::Result>
+{
+    auto Result = std::make_unique<Inspection::Result>();
+    auto const & Template = std::any_cast<std::string const &>(Parameters.at("Template"));
+    auto Continue = true;
+    
+    Result->GetValue()->AddTag("string"s);
+    Result->GetValue()->AddTag("character set", "ASCII"s);
+    Result->GetValue()->AddTag("encoding", "ASCII"s);
+    Result->GetValue()->AddTag("template", Template);
+    // reading
+    if(Continue == true)
+    {
+        auto Value = std::ostringstream{};
+        auto ReadResult = Inspection::ReadResult{};
+        auto NumberOfCharacters = 0ul;
+        auto NumberOfTerminations = 0ul;
+        
+        while((Continue == true) && (Reader.HasRemaining() == true))
+        {
+            if(Reader.Read8Bits(ReadResult) == true)
+            {
+                if(ReadResult.Data == 0x00)
+                {
+                    NumberOfTerminations += 1;
+                }
+                else if(ReadResult.Data == Template[NumberOfCharacters])
+                {
+                    if(NumberOfTerminations == 0)
+                    {
+                        NumberOfCharacters += 1;
+                        Value << static_cast<char>(ReadResult.Data);
+                    }
+                    else
+                    {
+                        Result->GetValue()->AddTag("ended by error"s);
+                        Result->GetValue()->AddTag("error", "After the first termination byte only terminations are allowed, but the " + to_string_cast(NumberOfCharacters + NumberOfTerminations + 1) + "th byte is not."s);
+                        Continue = false;
+                    }
+                }
+                else
+                {
+                    Result->GetValue()->AddTag("ended by error"s);
+                    Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCharacters + NumberOfTerminations + 1) + "th byte does not match the template and is not a termination.");
+                    Continue = false;
+                }
+            }
+            else
+            {
+                Result->GetValue()->AddTag("ended by error"s);
+                Result->GetValue()->AddTag("error", "Could not read the " + to_string_cast(NumberOfCharacters + NumberOfTerminations + 1) + "th byte from " + to_string_cast(ReadResult.InputLength) + " bytes and bits of remaining data.");
+                Continue = false;
+            }
+        }
+        if(NumberOfCharacters > 0)
+        {
+            Result->GetValue()->AddTag(to_string_cast(NumberOfCharacters) + " characters");
+        }
+        else
+        {
+            Result->GetValue()->AddTag("empty"s);
+        }
+        if(NumberOfTerminations > 0)
+        {
+            Result->GetValue()->AddTag("ended by termination"s);
+            if(Reader.IsAtEnd() == true)
+            {
+                Result->GetValue()->AddTag(to_string_cast(NumberOfTerminations) + " terminations until length");
+            }
+        }
+        else
+        {
+            Result->GetValue()->AddTag("ended by length"s);
+            Result->GetValue()->AddTag("error", "The string must be ended by at least one termination."s);
+            Continue = false;
+        }
+        Result->GetValue()->SetData(Value.str());
+    }
+    // finalization
+    Result->SetSuccess(Continue);
+    
+    return Result;
+}
+
+auto Inspection::Get_String_ASCII_Printable_EndedByTerminationUntilLength(Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameter) -> std::unique_ptr<Inspection::Result>
+{
+    auto Result = std::make_unique<Inspection::Result>();
+    auto Continue = true;
+    
+    Result->GetValue()->AddTag("string"s);
+    Result->GetValue()->AddTag("character set", "ASCII"s);
+    Result->GetValue()->AddTag("encoding", "ASCII"s);
+    Result->GetValue()->AddTag("printable");
+    // reading
+    if(Continue == true)
+    {
+        auto Value = std::ostringstream{};
+        auto ReadResult = Inspection::ReadResult{};
+        auto NumberOfCharacters = 0ul;
+        auto NumberOfTerminations = 0ul;
+        
+        while((Continue == true) && (Reader.HasRemaining() == true))
+        {
+            if(Reader.Read8Bits(ReadResult) == true)
+            {
+                if(ReadResult.Data == 0x00)
+                {
+                    NumberOfTerminations += 1;
+                }
+                else if(Inspection::Is_ASCII_Character_Printable(ReadResult.Data) == true)
+                {
+                    if(NumberOfTerminations == 0)
+                    {
+                        NumberOfCharacters += 1;
+                        Value << static_cast<char>(ReadResult.Data);
+                    }
+                    else
+                    {
+                        Result->GetValue()->AddTag("ended by error"s);
+                        Result->GetValue()->AddTag("error", "After the first termination byte only terminations are allowed, but the " + to_string_cast(NumberOfCharacters + NumberOfTerminations + 1) + "th byte is not."s);
+                        Continue = false;
+                    }
+                }
+                else
+                {
+                    Result->GetValue()->AddTag("ended by error"s);
+                    Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCharacters + NumberOfTerminations + 1) + "th byte is not an ASCII character or termination.");
+                    Continue = false;
+                }
+            }
+            else
+            {
+                Result->GetValue()->AddTag("ended by error"s);
+                Result->GetValue()->AddTag("error", "Could not read the " + to_string_cast(NumberOfCharacters + NumberOfTerminations + 1) + "th byte from " + to_string_cast(ReadResult.InputLength) + " bytes and bits of remaining data.");
+                Continue = false;
+            }
+        }
+        if(NumberOfCharacters > 0)
+        {
+            Result->GetValue()->AddTag(to_string_cast(NumberOfCharacters) + " characters");
+        }
+        else
+        {
+            Result->GetValue()->AddTag("empty"s);
+        }
+        if(NumberOfTerminations > 0)
+        {
+            Result->GetValue()->AddTag("ended by termination"s);
+            if(Reader.IsAtEnd() == true)
+            {
+                Result->GetValue()->AddTag(to_string_cast(NumberOfTerminations) + " terminations until length");
+            }
+        }
+        else
+        {
+            Result->GetValue()->AddTag("ended by length"s);
+            Result->GetValue()->AddTag("error", "The string must be ended by at least one termination."s);
+            Continue = false;
+        }
         Result->GetValue()->SetData(Value.str());
     }
     // finalization
