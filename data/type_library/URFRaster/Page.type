@@ -746,6 +746,53 @@
 					</parameters>
 				</field>
 			</case>
+			<case>
+				<when>
+					<and>
+						<equals>
+							<data-reference root="type">
+								<field>Header</field>
+								<field>BitsPerPixel</field>
+							</data-reference>
+							<unsigned-integer-8bit>24</unsigned-integer-8bit>
+						</equals>
+						<equals>
+							<data-reference root="type">
+								<field>Header</field>
+								<field>ColorSpace</field>
+								<tag>interpretation</tag>
+							</data-reference>
+							<string>AdobeRGB</string>
+						</equals>
+					</and>
+				</when>
+				<field name="Bitmap">
+					<type-reference>
+						<part>CUPS</part>
+						<part>v2_RasterData</part>
+					</type-reference>
+					<parameters>
+						<parameter name="PixelType">
+							<type-reference>
+								<part>Color</part>
+								<part>AdobeRGB_8Bit</part>
+							</type-reference>
+						</parameter>
+						<parameter name="Height">
+							<data-reference root="type">
+								<field>Header</field>
+								<field>Height</field>
+							</data-reference>
+						</parameter>
+						<parameter name="Width">
+							<data-reference root="type">
+								<field>Header</field>
+								<field>Width</field>
+							</data-reference>
+						</parameter>
+					</parameters>
+				</field>
+			</case>
 		</select>
 	</sequence>
 </type>

@@ -1,0 +1,30 @@
+<type>
+	<sequence>
+		<tag name="color"/>
+		<tag name="Adobe RGB"/>
+		<field name="Red">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>8Bit</part>
+			</type-reference>
+		</field>
+		<field name="Green">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>8Bit</part>
+			</type-reference>
+		</field>
+		<field name="Blue">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>8Bit</part>
+			</type-reference>
+		</field>
+	</sequence>
+</type>
