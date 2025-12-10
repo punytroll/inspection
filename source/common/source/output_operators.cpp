@@ -1,11 +1,10 @@
 #include <any>
 #include <bitset>
 #include <iomanip>
+#include <format>
 #include <ostream>
 #include <string>
 #include <vector>
-
-#include <string_cast/string_cast.h>
 
 #include "assertion.h"
 #include "colors.h"
@@ -135,16 +134,6 @@ static auto m_PrintValue(std::ostream & OStream, Inspection::Value const & Value
     return OStream;
 }
 
-template < >
-std::string to_string_cast<Inspection::Length>(const Inspection::Length & Value)
-{
-    auto OStream = std::ostringstream{};
-    
-    OStream << Value;
-    
-    return OStream.str();
-}
-
 auto Inspection::operator<<(std::ostream & OStream, std::any const & Any) -> std::ostream &
 {
     if(Any.has_value() == false)
@@ -250,7 +239,7 @@ auto Inspection::operator<<(std::ostream & OStream, std::any const & Any) -> std
         }
         else if(Any.type() == typeid(Inspection::Length))
         {
-            OStream << std::any_cast<Inspection::Length const &>(Any);
+            OStream << std::format("{}", std::any_cast<Inspection::Length const &>(Any));
         }
         else if(Any.type() == typeid(nullptr))
         {

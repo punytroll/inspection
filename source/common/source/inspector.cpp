@@ -2,11 +2,10 @@
 #include <sys/mman.h>
 #include <unistd.h>
 
-#include <string_cast/string_cast.h>
-
 #include "assertion.h"
 #include "buffer.h"
 #include "colors.h"
+#include "from_string.h"
 #include "inspector.h"
 #include "internal_output_operators.h"
 #include "output_operators.h"
@@ -224,14 +223,17 @@ void Inspection::Inspector::_QueryWriter(Inspection::Value * Value, const std::s
                 }
                 else
                 {
-                    auto WantedIndex{from_string_cast< std::uint64_t >(QueryPartSpecifications[2])};
-                    std::uint64_t Index{0};
+                    auto WantedIndex = Inspection::FromString<std::uint64_t>(QueryPartSpecifications[2]);
+                    
+                    ASSERTION(WantedIndex.has_value() == true);
+                    
+                    auto Index = std::uint64_t{0};
                     
                     for(auto & Field : Value->GetFields())
                     {
                         if(Field->GetName() == QueryPartSpecifications[1])
                         {
-                            if(WantedIndex == Index)
+                            if(WantedIndex.value() == Index)
                             {
                                 MatchingField = Field.get();
                                 
@@ -321,14 +323,17 @@ void Inspection::Inspector::_QueryWriter(Inspection::Value * Value, const std::s
                 }
                 else
                 {
-                    auto WantedIndex = from_string_cast<std::uint64_t>(QueryPartSpecifications[2]);
-                    auto Index = static_cast<std::uint64_t>(0);
+                    auto WantedIndex = Inspection::FromString<std::uint64_t>(QueryPartSpecifications[2]);
+                    
+                    ASSERTION(WantedIndex.has_value() == true);
+                    
+                    auto Index = std::uint64_t{0};
                     
                     for(auto & Field : Value->GetFields())
                     {
                         if(Field->GetName() == QueryPartSpecifications[1])
                         {
-                            if(WantedIndex == Index)
+                            if(WantedIndex.value() == Index)
                             {
                                 MatchingField = Field.get();
                                 

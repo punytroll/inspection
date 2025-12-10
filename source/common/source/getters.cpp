@@ -1,11 +1,10 @@
 #include <any>
 #include <bitset>
+#include <format>
 #include <functional>
 #include <optional>
 #include <sstream>
 #include <vector>
-
-#include <string_cast/string_cast.h>
 
 #include "assertion.h"
 #include "buffer.h"
@@ -15,6 +14,7 @@
 #include "id3_de_unsynchronization_eager_filter.h"
 #include "id3_helper.h"
 #include "internal_output_operators.h"
+#include "output_operators.h"
 #include "reader.h"
 #include "type.h"
 #include "type_repository.h"
@@ -501,7 +501,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ASCII_String_Alphabetic_Ende
                 else
                 {
                     Result->GetValue()->AddTag("ended by error"s);
-                    Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not an alphabetic ASCII character.");
+                    Result->GetValue()->AddTag("error", std::format("The {}th character is not an alphabetic ASCII character.", NumberOfCharacters + 1));
                     Continue = false;
                 }
             }
@@ -515,7 +515,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ASCII_String_Alphabetic_Ende
         {
             Result->GetValue()->AddTag("ended by length"s);
         }
-        Result->GetValue()->AddTag(to_string_cast(NumberOfCharacters) + " characters");
+        Result->GetValue()->AddTag(std::format("{} characters", NumberOfCharacters));
         Result->GetValue()->SetData(Value.str());
     }
     // finalization
@@ -552,7 +552,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ASCII_String_AlphaNumeric_En
                 else
                 {
                     Result->GetValue()->AddTag("ended by error"s);
-                    Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not an alphanumeric ASCII character.");
+                    Result->GetValue()->AddTag("error", std::format("The {}th character is not an alphanumeric ASCII character.", NumberOfCharacters + 1));
                     Continue = false;
                 }
             }
@@ -566,7 +566,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ASCII_String_AlphaNumeric_En
         {
             Result->GetValue()->AddTag("ended by length"s);
         }
-        Result->GetValue()->AddTag(to_string_cast(NumberOfCharacters) + " characters");
+        Result->GetValue()->AddTag(std::format("{} characters", NumberOfCharacters));
         Result->GetValue()->SetData(Value.str());
     }
     // finalization
@@ -603,7 +603,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ASCII_String_AlphaNumericOrS
                 else
                 {
                     Result->GetValue()->AddTag("ended by error"s);
-                    Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not an alphanumeric or space ASCII character.");
+                    Result->GetValue()->AddTag("error", std::format("The {}th character is not an alphanumeric or space ASCII character.", NumberOfCharacters + 1));
                     Continue = false;
                 }
             }
@@ -617,7 +617,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ASCII_String_AlphaNumericOrS
         {
             Result->GetValue()->AddTag("ended by length"s);
         }
-        Result->GetValue()->AddTag(to_string_cast(NumberOfCharacters) + " characters");
+        Result->GetValue()->AddTag(std::format("{} characters", NumberOfCharacters));
         Result->GetValue()->SetData(Value.str());
     }
     // finalization
@@ -654,7 +654,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ASCII_String_Printable_Ended
                 else
                 {
                     Result->GetValue()->AddTag("ended by error"s);
-                    Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not a printable ASCII character.");
+                    Result->GetValue()->AddTag("error", std::format("The {}th character is not a printable ASCII character.", NumberOfCharacters + 1));
                     Continue = false;
                 }
             }
@@ -668,7 +668,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ASCII_String_Printable_Ended
         {
             Result->GetValue()->AddTag("ended by length"s);
         }
-        Result->GetValue()->AddTag(to_string_cast(NumberOfCharacters) + " characters");
+        Result->GetValue()->AddTag(std::format("{} characters", NumberOfCharacters));
         Result->GetValue()->SetData(Value.str());
     }
     // finalization
@@ -700,7 +700,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ASCII_String_Printable_Ended
                 if(ReadResult.Data == 0x00)
                 {
                     Result->GetValue()->AddTag("ended by termination"s);
-                    Result->GetValue()->AddTag(to_string_cast(NumberOfCharacters) + " characters + termination");
+                    Result->GetValue()->AddTag(std::format("{} characters + termination", NumberOfCharacters));
                     
                     break;
                 }
@@ -712,7 +712,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ASCII_String_Printable_Ended
                 else
                 {
                     Result->GetValue()->AddTag("ended by error"s);
-                    Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not a printable ASCII character.");
+                    Result->GetValue()->AddTag("error", std::format("The {}th character is not a printable ASCII character.", NumberOfCharacters + 1));
                     Continue = false;
                 }
             }
@@ -724,7 +724,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ASCII_String_Printable_Ended
         }
         if(Continue == false)
         {
-            Result->GetValue()->AddTag(to_string_cast(NumberOfCharacters) + " characters");
+            Result->GetValue()->AddTag(std::format("{} characters", NumberOfCharacters));
         }
         Result->GetValue()->SetData(Value.str());
     }
@@ -2177,7 +2177,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_Buffer_UnsignedInteger_8Bit_
                 Value.push_back(ReadResult.Data);
                 if(ReadResult.Data != 0x00)
                 {
-                    Result->GetValue()->AddTag("error", "The " + to_string_cast(Value.size()) + "th 8bit value was not zeroed.");
+                    Result->GetValue()->AddTag("error", std::format("The {}th 8bit value was not zeroed.", Value.size()));
                     Continue = false;
                 }
             }
@@ -2386,7 +2386,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_Data_Unset_Until16BitAlignme
             }
             if(Continue == false)
             {
-                Result->GetValue()->AddTag("error", "Only " + to_string_cast(Reader.GetConsumedLength()) + " bytes and bits could be read as unset data.");
+                Result->GetValue()->AddTag("error", std::format("Only {} bytes and bits could be read as unset data.", Reader.GetConsumedLength()));
             }
         }
         else
@@ -2431,7 +2431,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_Data_Unset_EndedByLength(Ins
     }
     else
     {
-        Result->GetValue()->AddTag("error", "Only " + to_string_cast(Reader.GetConsumedLength() - Inspection::Length{0, 1}) + " could be read as unset data.");
+        Result->GetValue()->AddTag("error", std::format("Only {} could be read as unset data.", Reader.GetConsumedLength() - Inspection::Length{0, 1}));
     }
     // finalization
     Result->SetSuccess(Continue);
@@ -2584,7 +2584,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_FLAC_Frame_Header(Inspection
         else
         {
             // all possible values for a 4-bit value have been handled
-            IMPOSSIBLE_CODE_REACHED("BlockSize == " + to_string_cast(BlockSize));
+            IMPOSSIBLE_CODE_REACHED(std::format("BlockSize == {}", BlockSize));
         }
     }
     // reading
@@ -2660,7 +2660,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_FLAC_Frame_Header(Inspection
         }
         else
         {
-            Result->GetValue()->AddTag("error", "Unknown blocking strategy value " + to_string_cast(BlockingStrategy) + ".");
+            Result->GetValue()->AddTag("error", std::format("Unknown blocking strategy value {}.", BlockingStrategy));
             Continue = false;
         }
     }
@@ -3420,7 +3420,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_FLAC_Subframe_Type(Inspectio
                     if(Order >= 5)
                     {
                         Result->GetValue()->AddTag("reserved");
-                        Result->GetValue()->AddTag("error", "The subframe type is SUBFRAME_FIXED, and the order " + to_string_cast(Order) + " MUST NOT be used.");
+                        Result->GetValue()->AddTag("error", std::format("The subframe type is SUBFRAME_FIXED, and the order {} MUST NOT be used.", Order));
                         Continue = false;
                     }
                 }
@@ -3450,7 +3450,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_FLAC_Subframe_Type(Inspectio
         default:
             {
                 // all possible vaues of a 6-bit unary have been handled
-                IMPOSSIBLE_CODE_REACHED("SubframeType == " + to_string_cast(SubframeType));
+                IMPOSSIBLE_CODE_REACHED(std::format("SubframeType == {}", SubframeType));
             }
         }
     }
@@ -3812,7 +3812,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_2_TextStringAccordingT
         }
         else
         {
-            Result->GetValue()->AddTag("error", "Could not read text with text encoding " + to_string_cast(TextEncoding) + ".");
+            Result->GetValue()->AddTag("error", std::format("Could not read text with text encoding {}.", TextEncoding));
             Continue = false;
         }
     }
@@ -3852,7 +3852,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_2_TextStringAccordingT
         }
         else
         {
-            Result->GetValue()->AddTag("error", "Could not read text with text encoding " + to_string_cast(TextEncoding) + ".");
+            Result->GetValue()->AddTag("error", std::format("Could not read text with text encoding {}.", TextEncoding));
             Continue = false;
         }
     }
@@ -4077,7 +4077,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_3_Frame_Body_POPM(Insp
         if(Rating > 0)
         {
             Result->GetValue()->GetField("Rating")->AddTag("standard", "ID3 2.3"s);
-            Result->GetValue()->GetField("Rating")->AddTag("interpretation", to_string_cast(Rating) + " / 255");
+            Result->GetValue()->GetField("Rating")->AddTag("interpretation", std::format("{} / 255", Rating));
         }
         else
         {
@@ -4878,7 +4878,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_4_Frame_Body_POPM(Insp
         if(Rating > 0)
         {
             Result->GetValue()->GetField("Rating")->AddTag("standard", "ID3 2.4"s);
-            Result->GetValue()->GetField("Rating")->AddTag("interpretation", to_string_cast(Rating) + " / 255");
+            Result->GetValue()->GetField("Rating")->AddTag("interpretation", std::format("{} / 255", Rating));
         }
         else
         {
@@ -5438,7 +5438,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_Tag(Inspection::Reader
         else
         {
             Result->GetValue()->AddTag("version", "unknown"s);
-            Result->GetValue()->AddTag("error", "Unknown major version \"" + to_string_cast(MajorVersion) + "\".");
+            Result->GetValue()->AddTag("error", std::format("Unknown major version \"{}\".", MajorVersion));
         }
         if(PartResult != nullptr)
         {
@@ -5540,7 +5540,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_Tag_Header(Inspection:
         }
         else
         {
-            Result->GetValue()->AddTag("error", "The major version of the tag (" + to_string_cast(MajorVersion) + ") cannot be handled!"s);
+            Result->GetValue()->AddTag("error", std::format("The major version of the tag ({}) cannot be handled!", MajorVersion));
             Continue = false;
         }
     }
@@ -5616,7 +5616,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_ReplayGainAdjustment(Ins
         {
             ReplayGainAdjustment *= -1.0f;
         }
-        Result->GetValue()->AddTag("interpretation", to_string_cast(ReplayGainAdjustment) + " dB");
+        Result->GetValue()->AddTag("interpretation", std::format("{} dB", ReplayGainAdjustment));
     }
     // finalization
     Result->SetSuccess(Continue);
@@ -6170,14 +6170,14 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_8859_1_1998_String_E
                 else
                 {
                     Result->GetValue()->AddTag("ended by error"s);
-                    Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not an ISO/IEC 8859-1:1998 character.");
+                    Result->GetValue()->AddTag("error", std::format("The {}th character is not an ISO/IEC 8859-1:1998 character.", NumberOfCharacters + 1));
                     Continue = false;
                 }
             }
             else
             {
                 Result->GetValue()->AddTag("ended by error"s);
-                Result->GetValue()->AddTag("error", "Could not read the " + to_string_cast(NumberOfCharacters + 1) + "th character from " + to_string_cast(ReadResult.InputLength) + " bytes and bits of remaining data.");
+                Result->GetValue()->AddTag("error", std::format("Could not read the {}th character from {} bytes and bits of remaining data.", NumberOfCharacters + 1, ReadResult.InputLength));
                 Continue = false;
             }
         }
@@ -6185,7 +6185,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_8859_1_1998_String_E
         {
             Result->GetValue()->AddTag("empty"s);
         }
-        Result->GetValue()->AddTag(to_string_cast(NumberOfCharacters) + " characters");
+        Result->GetValue()->AddTag(std::format("{} characters", NumberOfCharacters));
         if(Reader.IsAtEnd() == true)
         {
             Result->GetValue()->AddTag("ended by length"s);
@@ -6223,7 +6223,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_8859_1_1998_String_E
                     {
                         Result->GetValue()->AddTag("empty"s);
                     }
-                    Result->GetValue()->AddTag(to_string_cast(NumberOfCharacters) + " characters + termination");
+                    Result->GetValue()->AddTag(std::format("{} characters + termination", NumberOfCharacters));
                     Result->GetValue()->AddTag("ended by termination"s);
                     
                     break;
@@ -6236,14 +6236,14 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_8859_1_1998_String_E
                 else
                 {
                     Result->GetValue()->AddTag("ended by error"s);
-                    Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not an ISO/IEC 8859-1:1998 character.");
+                    Result->GetValue()->AddTag("error", std::format("The {}th character is not an ISO/IEC 8859-1:1998 character.", NumberOfCharacters + 1));
                     Continue = false;
                 }
             }
             else
             {
                 Result->GetValue()->AddTag("ended by error"s);
-                Result->GetValue()->AddTag("error", "Could not read the " + to_string_cast(NumberOfCharacters + 1) + "th character from " + to_string_cast(ReadResult.InputLength) + " bytes and bits of remaining data.");
+                Result->GetValue()->AddTag("error", std::format("Could not read the {}th character from {} bytes and bits of remaining data.", NumberOfCharacters + 1, ReadResult.InputLength));
                 Continue = false;
             }
         }
@@ -6289,14 +6289,14 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_8859_1_1998_String_E
                 else
                 {
                     Result->GetValue()->AddTag("ended by error"s);
-                    Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not an ISO/IEC 8859-1:1998 character.");
+                    Result->GetValue()->AddTag("error", std::format("The {}th character is not an ISO/IEC 8859-1:1998 character.", NumberOfCharacters + 1));
                     Continue = false;
                 }
             }
             else
             {
                 Result->GetValue()->AddTag("ended by error"s);
-                Result->GetValue()->AddTag("error", "Could not read the " + to_string_cast(NumberOfCharacters + 1) + "th character from " + to_string_cast(ReadResult.InputLength) + " bytes and bits of remaining data.");
+                Result->GetValue()->AddTag("error", std::format("Could not read the {}th character from {} bytes and bits of remaining data.", NumberOfCharacters + 1, ReadResult.InputLength));
                 Continue = false;
             }
         }
@@ -6306,11 +6306,11 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_8859_1_1998_String_E
         }
         if(EndedByTermination == true)
         {
-            Result->GetValue()->AddTag(to_string_cast(NumberOfCharacters) + " characters + termination");
+            Result->GetValue()->AddTag(std::format("{} characters + termination", NumberOfCharacters));
         }
         else
         {
-            Result->GetValue()->AddTag(to_string_cast(NumberOfCharacters) + " characters");
+            Result->GetValue()->AddTag(std::format("{} characters", NumberOfCharacters));
         }
         if(Reader.IsAtEnd() == true)
         {
@@ -6369,27 +6369,27 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_8859_1_1998_String_E
                     else
                     {
                         Result->GetValue()->AddTag("ended by error"s);
-                        Result->GetValue()->AddTag("error", "After the first termination byte only terminations are allowed, but the " + to_string_cast(NumberOfCharacters + NumberOfTerminations + 1) + "th byte is not."s);
+                        Result->GetValue()->AddTag("error", std::format("After the first termination byte only terminations are allowed, but the {}th byte is not.", NumberOfCharacters + NumberOfTerminations + 1));
                         Continue = false;
                     }
                 }
                 else
                 {
                     Result->GetValue()->AddTag("ended by error"s);
-                    Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCharacters + NumberOfTerminations + 1) + "th byte is not an ISO/IEC 8859-1:1998 character or termination.");
+                    Result->GetValue()->AddTag("error", std::format("The {}th byte is not an ISO/IEC 8859-1:1998 character or termination.", NumberOfCharacters + NumberOfTerminations + 1));
                     Continue = false;
                 }
             }
             else
             {
                 Result->GetValue()->AddTag("ended by error"s);
-                Result->GetValue()->AddTag("error", "Could not read the " + to_string_cast(NumberOfCharacters + NumberOfTerminations + 1) + "th byte from " + to_string_cast(ReadResult.InputLength) + " bytes and bits of remaining data.");
+                Result->GetValue()->AddTag("error", std::format("Could not read the {}th byte from {} bytes and bits of remaining data.", NumberOfCharacters + NumberOfTerminations + 1, ReadResult.InputLength));
                 Continue = false;
             }
         }
         if(NumberOfCharacters > 0)
         {
-            Result->GetValue()->AddTag(to_string_cast(NumberOfCharacters) + " characters");
+            Result->GetValue()->AddTag(std::format("{} characters", NumberOfCharacters));
         }
         else
         {
@@ -6400,7 +6400,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_8859_1_1998_String_E
             Result->GetValue()->AddTag("ended by termination"s);
             if(Reader.IsAtEnd() == true)
             {
-                Result->GetValue()->AddTag(to_string_cast(NumberOfTerminations) + " terminations until length");
+                Result->GetValue()->AddTag(std::format("{} terminations until length", NumberOfTerminations));
             }
         }
         else
@@ -6451,27 +6451,27 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_8859_1_1998_String_E
                     else
                     {
                         Result->GetValue()->AddTag("ended by error"s);
-                        Result->GetValue()->AddTag("error", "After the first termination byte only terminations are allowed, but the " + to_string_cast(NumberOfCharacters + NumberOfTerminations + 1) + "th byte is not."s);
+                        Result->GetValue()->AddTag("error", std::format("After the first termination byte only terminations are allowed, but the {}th byte is not.", NumberOfCharacters + NumberOfTerminations + 1));
                         Continue = false;
                     }
                 }
                 else
                 {
                     Result->GetValue()->AddTag("ended by error"s);
-                    Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCharacters + NumberOfTerminations + 1) + "th byte is not an ISO/IEC 8859-1:1998 character or termination.");
+                    Result->GetValue()->AddTag("error", std::format("The {}th byte is not an ISO/IEC 8859-1:1998 character or termination.", NumberOfCharacters + NumberOfTerminations + 1));
                     Continue = false;
                 }
             }
             else
             {
                 Result->GetValue()->AddTag("ended by error"s);
-                Result->GetValue()->AddTag("error", "Could not read the " + to_string_cast(NumberOfCharacters + NumberOfTerminations + 1) + "th byte from " + to_string_cast(ReadResult.InputLength) + " bytes and bits of remaining data.");
+                Result->GetValue()->AddTag("error", std::format("Could not read the {}th byte from {} bytes and bits of remaining data.", NumberOfCharacters + NumberOfTerminations + 1, ReadResult.InputLength));
                 Continue = false;
             }
         }
         if(NumberOfCharacters > 0)
         {
-            Result->GetValue()->AddTag(to_string_cast(NumberOfCharacters) + " characters");
+            Result->GetValue()->AddTag(std::format("{} characters", NumberOfCharacters));
         }
         else
         {
@@ -6482,7 +6482,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_8859_1_1998_String_E
             Result->GetValue()->AddTag("ended by termination"s);
             if(Reader.IsAtEnd() == true)
             {
-                Result->GetValue()->AddTag(to_string_cast(NumberOfTerminations) + " terminations until length");
+                Result->GetValue()->AddTag(std::format("{} terminations until length", NumberOfTerminations));
             }
         }
         else
@@ -6643,14 +6643,14 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_C
             else
             {
                 Result->GetValue()->AddTag("ended by error"s);
-                Result->GetValue()->AddTag("error", "Could not read the second byte from " + to_string_cast(ReadResult2.InputLength) + " bytes and bits of remaining data.");
+                Result->GetValue()->AddTag("error", std::format("Could not read the second byte from {} bytes and bits of remaining data.", ReadResult2.InputLength));
                 Continue = false;
             }
         }
         else
         {
             Result->GetValue()->AddTag("ended by error"s);
-            Result->GetValue()->AddTag("error", "Could not read the first byte from " + to_string_cast(ReadResult1.InputLength) + " bytes and bits of remaining data.");
+            Result->GetValue()->AddTag("error", std::format("Could not read the first byte from {} bytes and bits of remaining data.", ReadResult1.InputLength));
             Continue = false;
         }
     }
@@ -6681,14 +6681,14 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_C
             else
             {
                 Result->GetValue()->AddTag("ended by error"s);
-                Result->GetValue()->AddTag("error", "Could not read the second byte from " + to_string_cast(ReadResult2.InputLength) + " bytes and bits of remaining data.");
+                Result->GetValue()->AddTag("error", std::format("Could not read the second byte from {} bytes and bits of remaining data.", ReadResult2.InputLength));
                 Continue = false;
             }
         }
         else
         {
             Result->GetValue()->AddTag("ended by error"s);
-            Result->GetValue()->AddTag("error", "Could not read the first byte from " + to_string_cast(ReadResult1.InputLength) + " bytes and bits of remaining data.");
+            Result->GetValue()->AddTag("error", std::format("Could not read the first byte from {} bytes and bits of remaining data.", ReadResult1.InputLength));
             Continue = false;
         }
     }
@@ -6728,7 +6728,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_S
                     {
                         Result->GetValue()->AddTag("empty"s);
                     }
-                    Result->GetValue()->AddTag(to_string_cast(NumberOfCodePoints) + " code points + termination");
+                    Result->GetValue()->AddTag(std::format("{} code points + termination", NumberOfCodePoints));
                     Result->GetValue()->AddTag("ended by termination"s);
                     
                     break;
@@ -6742,7 +6742,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_S
             else
             {
                 Result->GetValue()->AddTag("ended by error"s);
-                Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCodePoints + 1) + "th code point is not a valid UCS-2 code point.");
+                Result->GetValue()->AddTag("error", std::format("The {}th code point is not a valid UCS-2 code point.", NumberOfCodePoints + 1));
                 Continue = false;
             }
         }
@@ -6794,7 +6794,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_S
             else
             {
                 Result->GetValue()->AddTag("ended by error"s);
-                Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCodePoints + 1) + "th code point is not a valid UCS-2 code point.");
+                Result->GetValue()->AddTag("error", std::format("The {}th code point is not a valid UCS-2 code point.", NumberOfCodePoints + 1));
                 Continue = false;
             }
         }
@@ -6804,11 +6804,11 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_S
         }
         if(EndedByTermination == true)
         {
-            Result->GetValue()->AddTag(to_string_cast(NumberOfCodePoints) + " code points + termination");
+            Result->GetValue()->AddTag(std::format("{} code points + termination", NumberOfCodePoints));
         }
         else
         {
-            Result->GetValue()->AddTag(to_string_cast(NumberOfCodePoints) + " code points");
+            Result->GetValue()->AddTag(std::format("{} code points", NumberOfCodePoints));
         }
         if(Reader.IsAtEnd() == true)
         {
@@ -6863,7 +6863,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_S
                     {
                         Result->GetValue()->AddTag("empty"s);
                     }
-                    Result->GetValue()->AddTag(to_string_cast(NumberOfCodePoints) + " code points + termination");
+                    Result->GetValue()->AddTag(std::format("{} code points + termination", NumberOfCodePoints));
                     Result->GetValue()->AddTag("ended by termination"s);
                     
                     break;
@@ -6877,7 +6877,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_S
             else
             {
                 Result->GetValue()->AddTag("ended by error"s);
-                Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCodePoints + 1) + "th code point is not a valid UCS-2 code point.");
+                Result->GetValue()->AddTag("error", std::format("The {}th code point is not a valid UCS-2 code point.", NumberOfCodePoints + 1));
                 Continue = false;
             }
         }
@@ -6929,7 +6929,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_S
             else
             {
                 Result->GetValue()->AddTag("ended by error"s);
-                Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCodePoints + 1) + "th code point is not a valid UCS-2 code point.");
+                Result->GetValue()->AddTag("error", std::format("The {}th code point is not a valid UCS-2 code point.", NumberOfCodePoints + 1));
                 Continue = false;
             }
         }
@@ -6939,11 +6939,11 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_S
         }
         if(EndedByTermination == true)
         {
-            Result->GetValue()->AddTag(to_string_cast(NumberOfCodePoints) + " code points + termination");
+            Result->GetValue()->AddTag(std::format("{} code points + termination", NumberOfCodePoints));
         }
         else
         {
-            Result->GetValue()->AddTag(to_string_cast(NumberOfCodePoints) + " code points");
+            Result->GetValue()->AddTag(std::format("{} code points", NumberOfCodePoints));
         }
         if(Reader.IsAtEnd() == true)
         {
@@ -7098,7 +7098,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_C
                 else
                 {
                     Result->GetValue()->AddTag("ended by error"s);
-                    Result->GetValue()->AddTag("error", "Could not read the second byte of the UTF-8 codepoint from " + to_string_cast(ReadResult2.InputLength) + " bytes and bits of remaining data.");
+                    Result->GetValue()->AddTag("error", std::format("Could not read the second byte of the UTF-8 codepoint from {} bytes and bits of remaining data.", ReadResult2.InputLength));
                     Continue = false;
                 }
             }
@@ -7123,14 +7123,14 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_C
                     else
                     {
                         Result->GetValue()->AddTag("ended by error"s);
-                        Result->GetValue()->AddTag("error", "Could not read the third byte of the UTF-8 codepoint from " + to_string_cast(ReadResult3.InputLength) + " bytes and bits of remaining data.");
+                        Result->GetValue()->AddTag("error", std::format("Could not read the third byte of the UTF-8 codepoint from {} bytes and bits of remaining data.", ReadResult3.InputLength));
                         Continue = false;
                     }
                 }
                 else
                 {
                     Result->GetValue()->AddTag("ended by error"s);
-                    Result->GetValue()->AddTag("error", "Could not read the second byte of the UTF-8 codepoint from " + to_string_cast(ReadResult2.InputLength) + " bytes and bits of remaining data.");
+                    Result->GetValue()->AddTag("error", std::format("Could not read the second byte of the UTF-8 codepoint from {} bytes and bits of remaining data.", ReadResult2.InputLength));
                     Continue = false;
                 }
             }
@@ -7158,21 +7158,21 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_C
                         else
                         {
                             Result->GetValue()->AddTag("ended by error"s);
-                            Result->GetValue()->AddTag("error", "Could not read the fourth byte of the UTF-8 codepoint from " + to_string_cast(ReadResult3.InputLength) + " bytes and bits of remaining data.");
+                            Result->GetValue()->AddTag("error", std::format("Could not read the fourth byte of the UTF-8 codepoint from {} bytes and bits of remaining data.", ReadResult4.InputLength));
                             Continue = false;
                         }
                     }
                     else
                     {
                         Result->GetValue()->AddTag("ended by error"s);
-                        Result->GetValue()->AddTag("error", "Could not read the third byte of the UTF-8 codepoint from " + to_string_cast(ReadResult3.InputLength) + " bytes and bits of remaining data.");
+                        Result->GetValue()->AddTag("error", std::format("Could not read the third byte of the UTF-8 codepoint from {} bytes and bits of remaining data.", ReadResult3.InputLength));
                         Continue = false;
                     }
                 }
                 else
                 {
                     Result->GetValue()->AddTag("ended by error"s);
-                    Result->GetValue()->AddTag("error", "Could not read the second byte of the UTF-8 codepoint from " + to_string_cast(ReadResult2.InputLength) + " bytes and bits of remaining data.");
+                    Result->GetValue()->AddTag("error", std::format("Could not read the second byte of the UTF-8 codepoint from {} bytes and bits of remaining data.", ReadResult2.InputLength));
                     Continue = false;
                 }
             }
@@ -7180,7 +7180,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_C
         else
         {
             Result->GetValue()->AddTag("ended by error"s);
-            Result->GetValue()->AddTag("error", "Could not read the first byte of the UTF-8 codepoint from " + to_string_cast(ReadResult1.InputLength) + " bytes and bits of remaining data.");
+            Result->GetValue()->AddTag("error", std::format("Could not read the first byte of the UTF-8 codepoint from {} bytes and bits of remaining data.", ReadResult1.InputLength));
             Continue = false;
         }
     }
@@ -7214,7 +7214,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_S
             if(Continue == false)
             {
                 Result->GetValue()->AddTag("ended by error"s);
-                Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCodePoints + 1) + "th code point is not a valid UTF-8 code point.");
+                Result->GetValue()->AddTag("error", std::format("The {}th code point is not a valid UTF-8 code point.", NumberOfCodePoints + 1));
                 Continue = false;
             }
         }
@@ -7222,7 +7222,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_S
         {
             Result->GetValue()->AddTag("empty"s);
         }
-        Result->GetValue()->AddTag(to_string_cast(NumberOfCodePoints) + " code points"s);
+        Result->GetValue()->AddTag(std::format("{} code points", NumberOfCodePoints));
         if(Reader.IsAtEnd() == true)
         {
             Result->GetValue()->AddTag("ended by length"s);
@@ -7264,7 +7264,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_S
                     {
                         Result->GetValue()->AddTag("empty"s);
                     }
-                    Result->GetValue()->AddTag(to_string_cast(NumberOfCodePoints) + " code points + termination");
+                    Result->GetValue()->AddTag(std::format("{} code points + termination", NumberOfCodePoints));
                     Result->GetValue()->AddTag("ended by termination"s);
                     
                     break;
@@ -7278,7 +7278,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_S
             else
             {
                 Result->GetValue()->AddTag("ended by error"s);
-                Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCodePoints + 1) + "th code point is not a valid UTF-8 code point.");
+                Result->GetValue()->AddTag("error", std::format("The {}th code point is not a valid UTF-8 code point.", NumberOfCodePoints + 1));
                 Continue = false;
             }
         }
@@ -7329,7 +7329,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_S
             else
             {
                 Result->GetValue()->AddTag("ended by error"s);
-                Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCodePoints + 1) + "th code point is not a valid UTF-8 code point.");
+                Result->GetValue()->AddTag("error", std::format("The {}th code point is not a valid UTF-8 code point.", NumberOfCodePoints + 1));
                 Continue = false;
             }
         }
@@ -7339,11 +7339,11 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_S
         }
         if(EndedByTermination == true)
         {
-            Result->GetValue()->AddTag(to_string_cast(NumberOfCodePoints) + " code points + termination");
+            Result->GetValue()->AddTag(std::format("{} code points + termination", NumberOfCodePoints));
         }
         else
         {
-            Result->GetValue()->AddTag(to_string_cast(NumberOfCodePoints) + " code points");
+            Result->GetValue()->AddTag(std::format("{} code points", NumberOfCodePoints));
         }
         if(Reader.IsAtEnd() == true)
         {
@@ -7589,14 +7589,14 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UTF_16B
             else
             {
                 Result->GetValue()->AddTag("ended by error"s);
-                Result->GetValue()->AddTag("error", "Could not read the second byte from " + to_string_cast(ReadResult2.InputLength) + " bytes and bits of remaining data.");
+                Result->GetValue()->AddTag("error", std::format("Could not read the second byte from {} bytes and bits of remaining data.", ReadResult2.InputLength));
                 Continue = false;
             }
         }
         else
         {
             Result->GetValue()->AddTag("ended by error"s);
-            Result->GetValue()->AddTag("error", "Could not read the first byte from " + to_string_cast(ReadResult1.InputLength) + " bytes and bits of remaining data.");
+            Result->GetValue()->AddTag("error", std::format("Could not read the first byte from {} bytes and bits of remaining data.", ReadResult1.InputLength));
             Continue = false;
         }
     }
@@ -7637,7 +7637,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UTF_16B
                     {
                         Result->GetValue()->AddTag("emtpy"s);
                     }
-                    Result->GetValue()->AddTag(to_string_cast(NumberOfCodePoints) + " code points + termination");
+                    Result->GetValue()->AddTag(std::format("{} code points + termination", NumberOfCodePoints));
                     Result->GetValue()->AddTag("ended by termination"s);
                     
                     break;
@@ -7651,7 +7651,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UTF_16B
             else
             {
                 Result->GetValue()->AddTag("ended by error"s);
-                Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCodePoints + 1) + "th code point is not a valid UTF-16 code point.");
+                Result->GetValue()->AddTag("error", std::format("The {}th code point is not a valid UTF-16 code point.", NumberOfCodePoints + 1));
             }
         }
         Result->GetValue()->SetData(Value.str());
@@ -7703,7 +7703,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UTF_16B
             else
             {
                 Result->GetValue()->AddTag("ended by error"s);
-                Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCodePoints + 1) + "th code point is not a valid UTF-16 code point.");
+                Result->GetValue()->AddTag("error", std::format("The {}th code point is not a valid UTF-16 code point.", NumberOfCodePoints + 1));
                 Continue = false;
             }
         }
@@ -7713,11 +7713,11 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UTF_16B
         }
         if(EndedByTermination == true)
         {
-            Result->GetValue()->AddTag(to_string_cast(NumberOfCodePoints) + " code points + termination");
+            Result->GetValue()->AddTag(std::format("{} code points + termination", NumberOfCodePoints));
         }
         else
         {
-            Result->GetValue()->AddTag(to_string_cast(NumberOfCodePoints) + " code points");
+            Result->GetValue()->AddTag(std::format("{} code points", NumberOfCodePoints));
         }
         if(Reader.IsAtEnd() == true)
         {
@@ -7817,14 +7817,14 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UTF_16L
             else
             {
                 Result->GetValue()->AddTag("ended by error"s);
-                Result->GetValue()->AddTag("error", "Could not read the second byte from " + to_string_cast(ReadResult2.InputLength) + " bytes and bits of remaining data.");
+                Result->GetValue()->AddTag("error", std::format("Could not read the second byte from {} bytes and bits of remaining data.", ReadResult2.InputLength));
                 Continue = false;
             }
         }
         else
         {
             Result->GetValue()->AddTag("ended by error"s);
-            Result->GetValue()->AddTag("error", "Could not read the first byte from " + to_string_cast(ReadResult1.InputLength) + " bytes and bits of remaining data.");
+            Result->GetValue()->AddTag("error", std::format("Could not read the first byte from {} bytes and bits of remaining data.", ReadResult1.InputLength));
             Continue = false;
         }
     }
@@ -7878,7 +7878,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UTF_16L
             else
             {
                 Result->GetValue()->AddTag("ended by error"s);
-                Result->GetValue()->AddTag("error", "The " + to_string_cast(CodePointIndex + 1) + "th code point is not a valid UTF-16 code point.");
+                Result->GetValue()->AddTag("error", std::format("The {}th code point is not a valid UTF-16 code point.", CodePointIndex + 1));
                 Continue = false;
             }
         }
@@ -7886,7 +7886,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UTF_16L
         {
             Result->GetValue()->AddTag("empty"s);
         }
-        Result->GetValue()->AddTag(to_string_cast(CodePointIndex) + " code points");
+        Result->GetValue()->AddTag(std::format("{} code points", CodePointIndex));
         if(Reader.IsAtEnd() == true)
         {
             Result->GetValue()->AddTag("ended by length"s);
@@ -7934,7 +7934,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UTF_16L
                     {
                         Result->GetValue()->AddTag("emtpy"s);
                     }
-                    Result->GetValue()->AddTag(to_string_cast(NumberOfCodePoints) + " code points + termination");
+                    Result->GetValue()->AddTag(std::format("{} code points + termination", NumberOfCodePoints));
                     Result->GetValue()->AddTag("ended by termination"s);
                     
                     break;
@@ -7948,7 +7948,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UTF_16L
             else
             {
                 Result->GetValue()->AddTag("ended by error"s);
-                Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCodePoints + 1) + "th code point is not a valid UTF-16 code point.");
+                Result->GetValue()->AddTag("error", std::format("The {}th code point is not a valid UTF-16 code point.", NumberOfCodePoints + 1));
             }
         }
         Result->GetValue()->SetData(Value.str());
@@ -8005,7 +8005,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UTF_16L
             else
             {
                 Result->GetValue()->AddTag("ended by error"s);
-                Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCodePoints + 1) + "th code point is not a valid UTF-16 code point.");
+                Result->GetValue()->AddTag("error", std::format("The {}th code point is not a valid UTF-16 code point.", NumberOfCodePoints + 1));
                 Continue = false;
             }
         }
@@ -8020,11 +8020,11 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UTF_16L
         }
         if(EndedByTermination == true)
         {
-            Result->GetValue()->AddTag(to_string_cast(NumberOfCodePoints) + " code points + termination");
+            Result->GetValue()->AddTag(std::format("{} code points + termination", NumberOfCodePoints));
         }
         else
         {
-            Result->GetValue()->AddTag(to_string_cast(NumberOfCodePoints) + " code points");
+            Result->GetValue()->AddTag(std::format("{} code points", NumberOfCodePoints));
         }
         if(Reader.IsAtEnd() == true)
         {
@@ -8090,7 +8090,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UTF_16L
             else
             {
                 Result->GetValue()->AddTag("ended by error"s);
-                Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCodePoints + 1) + "th code point is not a valid UTF-16 code point.");
+                Result->GetValue()->AddTag("error", std::format("The {}th code point is not a valid UTF-16 code point.", NumberOfCodePoints + 1));
                 Continue = false;
             }
         }
@@ -8100,11 +8100,11 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UTF_16L
         }
         if(EndedByTermination == true)
         {
-            Result->GetValue()->AddTag(to_string_cast(NumberOfCodePoints) + " code points + termination");
+            Result->GetValue()->AddTag(std::format("{} code points + termination", NumberOfCodePoints));
         }
         else
         {
-            Result->GetValue()->AddTag(to_string_cast(NumberOfCodePoints) + " code points");
+            Result->GetValue()->AddTag(std::format("{} code points", NumberOfCodePoints));
         }
         if(Reader.IsAtEnd() == true)
         {
@@ -8162,7 +8162,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UTF_16L
                     EndedByTermination = true;
                     if(CodePointIndex + 1 != NumberOfCodePoints)
                     {
-                        Result->GetValue()->AddTag("error", "With the termination code point, the string must contain exactly " + to_string_cast(NumberOfCodePoints) + " code points."s);
+                        Result->GetValue()->AddTag("error", std::format("With the termination code point, the string must contain exactly {} code points.", NumberOfCodePoints));
                         Continue = false;
                     }
                     
@@ -8177,7 +8177,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UTF_16L
             else
             {
                 Result->GetValue()->AddTag("ended by error"s);
-                Result->GetValue()->AddTag("error", "The " + to_string_cast(CodePointIndex + 1) + "th code point is not a valid UTF-16 code point.");
+                Result->GetValue()->AddTag("error", std::format("The {}th code point is not a valid UTF-16 code point.", CodePointIndex + 1));
                 Continue = false;
             }
         }
@@ -8192,11 +8192,11 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UTF_16L
         }
         if(EndedByTermination == true)
         {
-            Result->GetValue()->AddTag(to_string_cast(CodePointIndex) + " code points + termination");
+            Result->GetValue()->AddTag(std::format("{} code points + termination", CodePointIndex));
         }
         else
         {
-            Result->GetValue()->AddTag(to_string_cast(CodePointIndex) + " code points");
+            Result->GetValue()->AddTag(std::format("{} code points", CodePointIndex));
         }
         if(Reader.IsAtEnd() == true)
         {
@@ -8448,7 +8448,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_MPEG_1_FrameHeader_BitRateIn
             }
             else if(BitRateIndex == 0x0f)
             {
-                Result->GetValue()->AddTag("error", "The bit rate index \"" + to_string_cast(BitRateIndex) + "\" in layer \"" + to_string_cast(LayerDescription) + "\" is reserved and should not be used.");
+                Result->GetValue()->AddTag("error", std::format("The bit rate index {} in layer {} is reserved and should not be used.", BitRateIndex, LayerDescription));
                 Result->GetValue()->AddTag("interpretation", nullptr);
                 Continue = false;
             }
@@ -8531,7 +8531,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_MPEG_1_FrameHeader_BitRateIn
             }
             else if(BitRateIndex == 0x0f)
             {
-                Result->GetValue()->AddTag("error", "The bit rate index \"" + to_string_cast(BitRateIndex) + "\" in layer \"" + to_string_cast(LayerDescription) + "\" is reserved and should not be used.");
+                Result->GetValue()->AddTag("error", std::format("The bit rate index {} in layer {} is reserved and should not be used.", BitRateIndex, LayerDescription));
                 Result->GetValue()->AddTag("interpretation", nullptr);
                 Continue = false;
             }
@@ -8614,7 +8614,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_MPEG_1_FrameHeader_BitRateIn
             }
             else if(BitRateIndex == 0x0f)
             {
-                Result->GetValue()->AddTag("error", "The bit rate index \"" + to_string_cast(BitRateIndex) + "\" in layer \"" + to_string_cast(LayerDescription) + "\" is reserved and should not be used.");
+                Result->GetValue()->AddTag("error", std::format("The bit rate index {} in layer {} is reserved and should not be used.", BitRateIndex, LayerDescription));
                 Result->GetValue()->AddTag("interpretation", nullptr);
                 Continue = false;
             }
@@ -8673,7 +8673,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_MPEG_1_FrameHeader_Mode(Insp
                 else
                 {
                     // LayerDescription is a 2-bit value. Value 0 is reserved and an error will be produced when reading that value; 1, 2 and 3 are handled above.
-                    IMPOSSIBLE_CODE_REACHED("LayerDescription == " + to_string_cast(LayerDescription));
+                    IMPOSSIBLE_CODE_REACHED(std::format("LayerDescription == {}", LayerDescription));
                 }
                 
                 break;
@@ -8693,7 +8693,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_MPEG_1_FrameHeader_Mode(Insp
         default:
             {
                 // all possile values of a 2-bit value have been handled
-                IMPOSSIBLE_CODE_REACHED("Mode == " + to_string_cast(Mode));
+                IMPOSSIBLE_CODE_REACHED(std::format("Mode == {}", Mode));
             }
         }
     }
@@ -8748,7 +8748,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_MPEG_1_FrameHeader_ModeExten
                 else
                 {
                     // every 2-bit value is either 0, 1, 2 or 3
-                    IMPOSSIBLE_CODE_REACHED("ModeExtension == " + to_string_cast(ModeExtension));
+                    IMPOSSIBLE_CODE_REACHED(std::format("ModeExtension == {}", ModeExtension));
                 }
             }
             else if(LayerDescription == 0x01)
@@ -8776,13 +8776,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_MPEG_1_FrameHeader_ModeExten
                 else
                 {
                     // every 2-bit value is either 0, 1, 2 or 3
-                    IMPOSSIBLE_CODE_REACHED("ModeExtension == " + to_string_cast(ModeExtension));
+                    IMPOSSIBLE_CODE_REACHED(std::format("ModeExtension == {}", ModeExtension));
                 }
             }
             else
             {
                 // LayerDescription is a 2-bit value. Value 0 is reserved and an error will be produced when reading that value; 1, 2 and 3 are handled above.
-                IMPOSSIBLE_CODE_REACHED("LayerDescription == " + to_string_cast(LayerDescription));
+                IMPOSSIBLE_CODE_REACHED(std::format("LayerDescription == {}", LayerDescription));
             }
         }
         else
@@ -9242,7 +9242,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_Ogg_Vorbis_HeaderPacket(Insp
         }
         else
         {
-            Result->GetValue()->AddTag("error", "The packet type " + to_string_cast(PacketType) + " is not a valid packet type for a header packet.");
+            Result->GetValue()->AddTag("error", std::format("The packet type {} is not a valid packet type for a header packet.", PacketType));
             Result->GetValue()->AddTag("standard", "Vorbis I specification"s);
             Continue = false;
         }
@@ -9592,7 +9592,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_RIFF_Chunk(Inspection::Reade
         }
         else
         {
-            Result->GetValue()->AddTag("error", "The RIFF chunk claims to have a length of " + to_string_cast(ClaimedSize) + " bytes and bits but only " + to_string_cast(Reader.CalculateRemainingOutputLength()) + " bytes and bits are available.");
+            Result->GetValue()->AddTag("error", std::format("The RIFF chunk claims to have a length of {} bytes and bits but only {} bytes and bits are available.", ClaimedSize, Reader.CalculateRemainingOutputLength()));
             Continue = false;
         }
     }
@@ -10081,7 +10081,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_SignedInteger_BigEndian(Insp
         }
     default:
         {
-            NOT_IMPLEMENTED("Reading " + to_string_cast(Bits) + " bits as a signed integer is not yet implemented in the generic function.");
+            NOT_IMPLEMENTED(std::format("Reading {} bits as a signed integer is not yet implemented in the generic function.", Bits));
         }
     }
     // finalization
@@ -11149,7 +11149,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_String_ASCII_ByTemplate(Insp
                 else
                 {
                     Result->GetValue()->AddTag("ended by error"s);
-                    Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character does not match the template.");
+                    Result->GetValue()->AddTag("error", std::format("The {}th character does not match the template.", NumberOfCharacters + 1));
                     Result->GetValue()->AddTag("expected character", TemplateCharacter);
                     Result->GetValue()->AddTag("found character", static_cast<char>(ReadResult.Data));
                     Continue = false;
@@ -11169,7 +11169,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_String_ASCII_ByTemplate(Insp
         {
             Result->GetValue()->AddTag("ended by template"s);
         }
-        Result->GetValue()->AddTag(to_string_cast(NumberOfCharacters) + " characters"s);
+        Result->GetValue()->AddTag(std::format("{} characters", NumberOfCharacters));
         Result->GetValue()->SetData(Value.str());
     }
     // finalization
@@ -11207,7 +11207,7 @@ auto Inspection::Get_String_ASCII_ByTemplate_EndedByTermination(Inspection::Read
                 else
                 {
                     Result->GetValue()->AddTag("ended by error"s);
-                    Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character does not match the template.");
+                    Result->GetValue()->AddTag("error", std::format("The {}th character does not match the template.", NumberOfCharacters + 1));
                     Result->GetValue()->AddTag("expected character", TemplateCharacter);
                     Result->GetValue()->AddTag("found character", static_cast<char>(ReadResult.Data));
                     Continue = false;
@@ -11244,7 +11244,7 @@ auto Inspection::Get_String_ASCII_ByTemplate_EndedByTermination(Inspection::Read
                 AppendReadErrorTag(Result->GetValue(), ReadResult);
             }
         }
-        Result->GetValue()->AddTag(to_string_cast(NumberOfCharacters) + " characters"s);
+        Result->GetValue()->AddTag(std::format("{} characters", NumberOfCharacters));
         Result->GetValue()->SetData(Value.str());
     }
     // finalization
@@ -11289,27 +11289,27 @@ auto Inspection::Get_String_ASCII_ByTemplate_EndedByTerminationUntilLength(Inspe
                     else
                     {
                         Result->GetValue()->AddTag("ended by error"s);
-                        Result->GetValue()->AddTag("error", "After the first termination byte only terminations are allowed, but the " + to_string_cast(NumberOfCharacters + NumberOfTerminations + 1) + "th byte is not."s);
+                        Result->GetValue()->AddTag("error", std::format("After the first termination byte only terminations are allowed, but the {}th byte is not.", NumberOfCharacters + NumberOfTerminations + 1));
                         Continue = false;
                     }
                 }
                 else
                 {
                     Result->GetValue()->AddTag("ended by error"s);
-                    Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCharacters + NumberOfTerminations + 1) + "th byte does not match the template and is not a termination.");
+                    Result->GetValue()->AddTag("error", std::format("The {}th byte does not match the template and is not a termination.", NumberOfCharacters + NumberOfTerminations + 1));
                     Continue = false;
                 }
             }
             else
             {
                 Result->GetValue()->AddTag("ended by error"s);
-                Result->GetValue()->AddTag("error", "Could not read the " + to_string_cast(NumberOfCharacters + NumberOfTerminations + 1) + "th byte from " + to_string_cast(ReadResult.InputLength) + " bytes and bits of remaining data.");
+                Result->GetValue()->AddTag("error", std::format("Could not read the {}th byte from {} bytes and bits of remaining data.", NumberOfCharacters + NumberOfTerminations + 1, ReadResult.InputLength));
                 Continue = false;
             }
         }
         if(NumberOfCharacters > 0)
         {
-            Result->GetValue()->AddTag(to_string_cast(NumberOfCharacters) + " characters");
+            Result->GetValue()->AddTag(std::format("{} characters", NumberOfCharacters));
         }
         else
         {
@@ -11320,7 +11320,7 @@ auto Inspection::Get_String_ASCII_ByTemplate_EndedByTerminationUntilLength(Inspe
             Result->GetValue()->AddTag("ended by termination"s);
             if(Reader.IsAtEnd() == true)
             {
-                Result->GetValue()->AddTag(to_string_cast(NumberOfTerminations) + " terminations until length");
+                Result->GetValue()->AddTag(std::format("{} terminations until length", NumberOfTerminations));
             }
         }
         else
@@ -11372,27 +11372,27 @@ auto Inspection::Get_String_ASCII_Printable_EndedByTerminationUntilLength(Inspec
                     else
                     {
                         Result->GetValue()->AddTag("ended by error"s);
-                        Result->GetValue()->AddTag("error", "After the first termination byte only terminations are allowed, but the " + to_string_cast(NumberOfCharacters + NumberOfTerminations + 1) + "th byte is not."s);
+                        Result->GetValue()->AddTag("error", std::format("After the first termination byte only terminations are allowed, but the {}th byte is not.", NumberOfCharacters + NumberOfTerminations + 1));
                         Continue = false;
                     }
                 }
                 else
                 {
                     Result->GetValue()->AddTag("ended by error"s);
-                    Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCharacters + NumberOfTerminations + 1) + "th byte is not an ASCII character or termination.");
+                    Result->GetValue()->AddTag("error", std::format("The {}th byte is not an ASCII character or termination.", NumberOfCharacters + NumberOfTerminations + 1));
                     Continue = false;
                 }
             }
             else
             {
                 Result->GetValue()->AddTag("ended by error"s);
-                Result->GetValue()->AddTag("error", "Could not read the " + to_string_cast(NumberOfCharacters + NumberOfTerminations + 1) + "th byte from " + to_string_cast(ReadResult.InputLength) + " bytes and bits of remaining data.");
+                Result->GetValue()->AddTag("error", std::format("Could not read the {}th byte from {} bytes and bits of remaining data.", NumberOfCharacters + NumberOfTerminations + 1, ReadResult.InputLength));
                 Continue = false;
             }
         }
         if(NumberOfCharacters > 0)
         {
-            Result->GetValue()->AddTag(to_string_cast(NumberOfCharacters) + " characters");
+            Result->GetValue()->AddTag(std::format("{} characters", NumberOfCharacters));
         }
         else
         {
@@ -11403,7 +11403,7 @@ auto Inspection::Get_String_ASCII_Printable_EndedByTerminationUntilLength(Inspec
             Result->GetValue()->AddTag("ended by termination"s);
             if(Reader.IsAtEnd() == true)
             {
-                Result->GetValue()->AddTag(to_string_cast(NumberOfTerminations) + " terminations until length");
+                Result->GetValue()->AddTag(std::format("{} terminations until length", NumberOfTerminations));
             }
         }
         else
@@ -11706,7 +11706,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_BigEndian(In
         }
     default:
         {
-            NOT_IMPLEMENTED("Reading " + to_string_cast(Bits) + " bits as an unsigned integer is not yet implemented in the generic function.");
+            NOT_IMPLEMENTED(std::format("Reading {} bits as an unsigned integer is not yet implemented in the generic function.", Bits));
         }
     }
     // finalization
@@ -11985,7 +11985,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_8Bit_Alterna
             else
             {
                 Result->SetSuccess(true);
-                Result->GetValue()->AddTag(to_string_cast(Value + 1) + "bit"s);
+                Result->GetValue()->AddTag(std::format("{} bit", Value + 1));
                 
                 break;
             }
@@ -11993,7 +11993,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_8Bit_Alterna
         else
         {
             Result->SetSuccess(true);
-            Result->GetValue()->AddTag(to_string_cast(Value) + "bit"s);
+            Result->GetValue()->AddTag(std::format("{} bit", Value));
             Result->GetValue()->AddTag("ended by boundary"s);
             
             break;

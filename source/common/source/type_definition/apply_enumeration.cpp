@@ -16,7 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 **/
 
-#include <string_cast/string_cast.h>
+#include <format>
 
 #include <xml_puny_dom/xml_puny_dom.h>
 
@@ -45,7 +45,7 @@ template<typename DataType>
 static auto m_ApplyEnumeration(Inspection::ExecutionContext & ExecutionContext, Inspection::TypeDefinition::Enumeration const & Enumeration, Inspection::Value * Target) -> bool
 {
     auto Result = false;
-    auto BaseValueString = to_string_cast(std::any_cast<DataType const &>(Target->GetData()));
+    auto BaseValueString = std::format("{}", std::any_cast<DataType const &>(Target->GetData()));
     auto ElementIterator = std::find_if(Enumeration.GetElements().begin(), Enumeration.GetElements().end(), [&BaseValueString](auto & Element)
                                                                                                             {
                                                                                                                 return Element.BaseValue == BaseValueString;

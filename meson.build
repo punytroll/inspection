@@ -10,11 +10,6 @@ project(
   }
 )
 
-string_cast_dependency = dependency(
-  'string_cast',
-  version: '>=2.0.2'
-)
-
 xml_parser_dependency = dependency(
   'xml_parser',
   version: '>=2.0.2'

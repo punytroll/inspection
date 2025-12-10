@@ -1,9 +1,8 @@
+#include <format>
 #include <numeric>
 #include <sstream>
 #include <time.h>
 #include <vector>
-
-#include <string_cast/string_cast.h>
 
 #include "assertion.h"
 #include "explode.h"
@@ -513,7 +512,7 @@ std::string Inspection::Get_ID3_1_Genre(std::uint8_t GenreNumber)
     case 77: return "Musical";
     case 78: return "Rock & Roll";
     case 79: return "Hard Rock";
-    default: throw Inspection::UnknownValueException(to_string_cast(GenreNumber));
+    default: throw Inspection::UnknownValueException(std::format("{}", GenreNumber));
     }
 }
 
@@ -567,7 +566,7 @@ std::string Inspection::Get_ID3_1_Winamp_Genre(std::uint8_t GenreNumber)
     case 123: return "Acapella";
     case 124: return "Euro-House";
     case 125: return "Dance Hall";
-    default: throw Inspection::UnknownValueException(to_string_cast(GenreNumber));
+    default: throw Inspection::UnknownValueException(std::format("{}", GenreNumber));
     }
 }
 
@@ -659,7 +658,7 @@ std::string Inspection::Get_ID3_2_PictureType_Interpretation(std::uint8_t Value)
     }
     else
     {
-        throw Inspection::UnknownValueException(to_string_cast(Value));
+        throw Inspection::UnknownValueException(std::format("{}", Value));
     }
 }
 

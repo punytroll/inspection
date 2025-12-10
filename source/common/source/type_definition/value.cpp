@@ -18,14 +18,13 @@
 
 #include <any>
 
-#include <string_cast/string_cast.h>
-
 #include <xml_puny_dom/xml_puny_dom.h>
 
 #include <assertion.h>
 
 #include "../internal_output_operators.h"
 #include "data_type.h"
+#include "from_string.h"
 #include "value.h"
 
 auto Inspection::TypeDefinition::Value::GetAny(Inspection::ExecutionContext & ExecutionContext) const -> std::any
@@ -111,90 +110,114 @@ auto Inspection::TypeDefinition::Value::Load(XML::Element const * Element) -> st
     
     auto Result = std::unique_ptr<Inspection::TypeDefinition::Value>{new Inspection::TypeDefinition::Value{}};
     
-    ASSERTION(Element != nullptr);
     if(Element->GetName() == "nothing")
     {
         Result->m_DataType = Inspection::TypeDefinition::DataType::Nothing;
-        ASSERTION(Element->GetChildNodes().size() == 0);
+        INVALID_INPUT_IF(Element->GetChildNodes().size() > 0, "A nothing value must not have any child elements.");
     }
     else if(Element->GetName() == "boolean")
     {
         Result->m_DataType = Inspection::TypeDefinition::DataType::Boolean;
-        ASSERTION(Element->GetChildNodes().size() == 1);
+        INVALID_INPUT_IF(Element->GetChildNodes().size() != 1, "A boolean value must have exactly one child element.");
         
         auto TextNode = dynamic_cast<XML::Text const *>(Element->GetChildNode(0));
         
-        ASSERTION(TextNode != nullptr);
-        Result->m_Data = from_string_cast<bool>(TextNode->GetText());
+        INVALID_INPUT_IF(TextNode == nullptr, "A boolean value must contain a text child element.");
+        
+        auto Boolean = Inspection::FromString<bool>(TextNode->GetText());
+        
+        INVALID_INPUT_IF(Boolean.has_value() == false, "The text in a boolean value must be either \"true\" or \"false\".");
+        Result->m_Data = Boolean.value();
     }
     else if(Element->GetName() == "guid")
     {
         Result->m_DataType = Inspection::TypeDefinition::DataType::GUID;
-        ASSERTION(Element->GetChildNodes().size() == 1);
+        INVALID_INPUT_IF(Element->GetChildNodes().size() != 1, "A guid value must have exactly one child element.");
         
         auto TextNode = dynamic_cast<XML::Text const *>(Element->GetChildNode(0));
         
-        ASSERTION(TextNode != nullptr);
+        INVALID_INPUT_IF(TextNode == nullptr, "A guid value must contain a text child element.");
         Result->m_Data.emplace<Inspection::GUID>(TextNode->GetText());
     }
     else if(Element->GetName() == "single-precision-real")
     {
         Result->m_DataType = Inspection::TypeDefinition::DataType::SinglePrecisionReal;
-        ASSERTION(Element->GetChildNodes().size() == 1);
+        INVALID_INPUT_IF(Element->GetChildNodes().size() != 1, "A single-precision-real value must have exactly one child element.");
         
         auto TextNode = dynamic_cast<XML::Text const *>(Element->GetChildNode(0));
         
-        ASSERTION(TextNode != nullptr);
-        Result->m_Data = from_string_cast<float>(TextNode->GetText());
+        INVALID_INPUT_IF(TextNode == nullptr, "A single-precision-real value must contain a text child element.");
+        
+        auto FloatingPoint = Inspection::FromString<float>(TextNode->GetText());
+        
+        INVALID_INPUT_IF(FloatingPoint.has_value() == false, "The text in a single-precision-real value must be a floating point number.");
+        Result->m_Data = FloatingPoint.value();
     }
     else if(Element->GetName() == "string")
     {
         Result->m_DataType = Inspection::TypeDefinition::DataType::String;
-        ASSERTION(Element->GetChildNodes().size() == 1);
+        INVALID_INPUT_IF(Element->GetChildNodes().size() != 1, "A string value must have exactly one child element.");
         
         auto TextNode = dynamic_cast<XML::Text const *>(Element->GetChildNode(0));
         
-        ASSERTION(TextNode != nullptr);
+        INVALID_INPUT_IF(TextNode == nullptr, "A string value must contain a text child element.");
         Result->m_Data = std::string{TextNode->GetText()};
     }
     else if(Element->GetName() == "unsigned-integer-8bit")
     {
         Result->m_DataType = Inspection::TypeDefinition::DataType::UnsignedInteger8Bit;
-        ASSERTION(Element->GetChildNodes().size() == 1);
+        INVALID_INPUT_IF(Element->GetChildNodes().size() != 1, "An unsigned-integer-8bit value must have exactly one child element.");
         
         auto TextNode = dynamic_cast<XML::Text const *>(Element->GetChildNode(0));
         
-        ASSERTION(TextNode != nullptr);
-        Result->m_Data = from_string_cast<std::uint8_t>(TextNode->GetText());
+        INVALID_INPUT_IF(TextNode == nullptr, "An unsigned-integer-8bit value must contain a text child element.");
+        
+        auto Integer = Inspection::FromString<std::uint8_t>(TextNode->GetText());
+        
+        INVALID_INPUT_IF(Integer.has_value() == false, "The text in an unsigned-integer-8bit value must be an integer number.");
+        Result->m_Data = Integer.value();
     }
     else if(Element->GetName() == "unsigned-integer-16bit")
     {
         Result->m_DataType = Inspection::TypeDefinition::DataType::UnsignedInteger16Bit;
-        ASSERTION(Element->GetChildNodes().size() == 1);
+        INVALID_INPUT_IF(Element->GetChildNodes().size() != 1, "An unsigned-integer-16bit value must have exactly one child element.");
         
         auto TextNode = dynamic_cast<XML::Text const *>(Element->GetChildNode(0));
         
-        ASSERTION(TextNode != nullptr);
-        Result->m_Data = from_string_cast<std::uint16_t>(TextNode->GetText());
+        INVALID_INPUT_IF(TextNode == nullptr, "An unsigned-integer-16bit value must contain a text child element.");
+        
+        auto Integer = Inspection::FromString<std::uint16_t>(TextNode->GetText());
+        
+        INVALID_INPUT_IF(Integer.has_value() == false, "The text in an unsigned-integer-16bit value must be an integer number.");
+        Result->m_Data = Integer.value();
     }
     else if(Element->GetName() == "unsigned-integer-32bit")
     {
         Result->m_DataType = Inspection::TypeDefinition::DataType::UnsignedInteger32Bit;
-        ASSERTION(Element->GetChildNodes().size() == 1);
+        INVALID_INPUT_IF(Element->GetChildNodes().size() != 1, "An unsigned-integer-32bit value must have exactly one child element.");
         
         auto TextNode = dynamic_cast<XML::Text const *>(Element->GetChildNode(0));
-        ASSERTION(TextNode != nullptr);
-        Result->m_Data = from_string_cast<std::uint32_t>(TextNode->GetText());
+        
+        INVALID_INPUT_IF(TextNode == nullptr, "An unsigned-integer-32bit value must contain a text child element.");
+        
+        auto Integer = Inspection::FromString<std::uint32_t>(TextNode->GetText());
+        
+        INVALID_INPUT_IF(Integer.has_value() == false, "The text in an unsigned-integer-32bit value must be an integer number.");
+        Result->m_Data = Integer.value();
     }
     else if(Element->GetName() == "unsigned-integer-64bit")
     {
         Result->m_DataType = Inspection::TypeDefinition::DataType::UnsignedInteger64Bit;
-        ASSERTION(Element->GetChildNodes().size() == 1);
+        INVALID_INPUT_IF(Element->GetChildNodes().size() != 1, "An unsigned-integer-64bit value must have exactly one child element.");
         
         auto TextNode = dynamic_cast<XML::Text const *>(Element->GetChildNode(0));
         
-        ASSERTION(TextNode != nullptr);
-        Result->m_Data = from_string_cast<std::uint64_t>(TextNode->GetText());
+        INVALID_INPUT_IF(TextNode == nullptr, "An unsigned-integer-64bit value must contain a text child element.");
+        
+        auto Integer = Inspection::FromString<std::uint64_t>(TextNode->GetText());
+        
+        INVALID_INPUT_IF(Integer.has_value() == false, "The text in an unsigned-integer-64bit value must be an integer number.");
+        Result->m_Data = Integer.value();
     }
     else
     {

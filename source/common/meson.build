@@ -60,7 +60,6 @@ common_library = static_library(
   ],
   include_directories: [include_directories('include/common')],
   dependencies: [
-    string_cast_dependency,
     xml_puny_dom_dependency
   ]
 )
@@ -69,7 +68,6 @@ common_library_dependency = declare_dependency(
   include_directories: [include_directories('include')],
   link_with: [common_library],
   dependencies: [
-    string_cast_dependency,
     xml_puny_dom_dependency
   ]
 )

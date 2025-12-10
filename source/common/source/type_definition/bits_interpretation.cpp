@@ -18,8 +18,6 @@
 
 #include <bitset>
 
-#include <string_cast/string_cast.h>
-
 #include <xml_puny_dom/xml_puny_dom.h>
 
 #include <assertion.h>
@@ -34,6 +32,7 @@
 #include "data_verification.h"
 #include "enumeration.h"
 #include "expression.h"
+#include "from_string.h"
 #include "helper.h"
 #include "tag.h"
 
@@ -239,7 +238,11 @@ auto Inspection::TypeDefinition::BitsInterpretation::Load(XML::Element const * E
         INVALID_INPUT_IF(Element->HasAttribute("begin-index") == true, "A bit interpretation must not have a begin-index attribute.");
         INVALID_INPUT_IF(Element->HasAttribute("length") == true, "A bit interpretation must not have a length attribute.");
         INVALID_INPUT_IF(Element->HasAttribute("index") == false, "A bit interpretation must have an index attribute.");
-        Result->m_BeginIndex = from_string_cast<std::uint64_t>(Element->GetAttribute("index"));
+        
+        auto Index = Inspection::FromString<std::uint64_t>(Element->GetAttribute("index"));
+        
+        INVALID_INPUT_IF(Index.has_value() == false, "The index attribute of a bit interpretation must be an integer.");
+        Result->m_BeginIndex = Index.value();
         Result->m_Length = 1;
     }
     else if(Element->GetName() == "bits")
@@ -247,8 +250,16 @@ auto Inspection::TypeDefinition::BitsInterpretation::Load(XML::Element const * E
         INVALID_INPUT_IF(Element->HasAttribute("index") == true, "A bits interpretation must not have an index attribute.");
         INVALID_INPUT_IF(Element->HasAttribute("begin-index") == false, "A bits interpretation must have a begin-index attribute.");
         INVALID_INPUT_IF(Element->HasAttribute("length") == false, "A bits interpretation must have a length attribute.");
-        Result->m_BeginIndex = from_string_cast<std::uint64_t>(Element->GetAttribute("begin-index"));
-        Result->m_Length = from_string_cast<std::uint64_t>(Element->GetAttribute("length"));
+        
+        auto BeginIndex = Inspection::FromString<std::uint64_t>(Element->GetAttribute("begin-index"));
+        
+        INVALID_INPUT_IF(BeginIndex.has_value() == false, "The begin-index attribute of a bit interpretation must be an integer.");
+        Result->m_BeginIndex = BeginIndex.value();
+        
+        auto Length = Inspection::FromString<std::uint64_t>(Element->GetAttribute("length"));
+        
+        INVALID_INPUT_IF(Length.has_value() == false, "The length attribute of a bit interpretation must be an integer.");
+        Result->m_Length = Length.value();
     }
     ASSERTION(Element->HasAttribute("name") == true);
     Result->m_Name = Element->GetAttribute("name");

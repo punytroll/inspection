@@ -3,8 +3,6 @@
 #include <string>
 #include <vector>
 
-#include <string_cast/string_cast.h>
-
 #include <common/getters.h>
 #include <common/helper.h>
 #include <common/inspector.h>
@@ -19,8 +17,8 @@ void AppendUnkownContinuation(Inspection::Value * Value, Inspection::Reader & Re
 {
     auto ErrorValue = Value->AppendField("error", "Unknown continuation."s);
     
-    ErrorValue->AddTag("position", to_string_cast(Reader.GetReadPositionInInput()));
-    ErrorValue->AddTag("remaining length", to_string_cast(Reader.CalculateRemainingInputLength()));
+    ErrorValue->AddTag("position", Reader.GetReadPositionInInput());
+    ErrorValue->AddTag("remaining length", Reader.CalculateRemainingInputLength());
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
