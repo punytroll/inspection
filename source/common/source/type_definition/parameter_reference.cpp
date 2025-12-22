@@ -20,8 +20,8 @@
 
 #include <xml_puny_dom/xml_puny_dom.h>
 
-#include <assertion.h>
-#include <execution_context.h>
+#include <common/assertion.h>
+#include <common/execution_context.h>
 
 #include "parameter_reference.h"
 

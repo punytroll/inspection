@@ -18,8 +18,8 @@
 
 #include <xml_puny_dom/xml_puny_dom.h>
 
-#include <assertion.h>
-#include <value.h>
+#include <common/assertion.h>
+#include <common/value.h>
 
 #include "add_tag.h"
 #include "expression.h"

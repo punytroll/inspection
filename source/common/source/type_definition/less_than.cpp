@@ -20,7 +20,7 @@
 
 #include <xml_puny_dom/xml_puny_dom.h>
 
-#include <assertion.h>
+#include <common/assertion.h>
 
 #include "../internal_output_operators.h"
 #include "data_type.h"

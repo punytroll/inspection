@@ -22,7 +22,7 @@
 #include <memory>
 #include <variant>
 
-#include <guid.h>
+#include <common/guid.h>
 
 #include "expression.h"
 

@@ -1,10 +1,10 @@
 #include <cstdint>
 
-#include "assertion.h"
-#include "buffer.h"
-#include "id3_de_unsynchronization_eager_filter.h"
-#include "length.h"
-#include "read_result.h"
+#include <common/assertion.h>
+#include <common/buffer.h>
+#include <common/id3_de_unsynchronization_eager_filter.h>
+#include <common/length.h>
+#include <common/read_result.h>
 
 Inspection::ID3DeUnsynchronizationEagerFilter::ID3DeUnsynchronizationEagerFilter(const Inspection::Buffer & Buffer, const Inspection::Length & StartPositionInBuffer, const Inspection::Length & LengthInBuffer)
 {

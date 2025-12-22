@@ -18,8 +18,8 @@
 
 #include <xml_puny_dom/xml_puny_dom.h>
 
-#include <helper.h>
-#include <value.h>
+#include <common/helper.h>
+#include <common/value.h>
 
 #include "../internal_output_operators.h"
 #include "function_call.h"

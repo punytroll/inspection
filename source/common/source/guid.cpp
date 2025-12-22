@@ -1,8 +1,8 @@
 #include <vector>
 
-#include "explode.h"
-#include "guid.h"
-#include "helper.h"
+#include <common/explode.h>
+#include <common/guid.h>
+#include <common/helper.h>
 
 Inspection::GUID::GUID(void)
 {

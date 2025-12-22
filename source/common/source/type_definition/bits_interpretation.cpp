@@ -20,9 +20,10 @@
 
 #include <xml_puny_dom/xml_puny_dom.h>
 
-#include <assertion.h>
-#include <length.h>
-#include <value.h>
+#include <common/assertion.h>
+#include <common/from_string.h>
+#include <common/length.h>
+#include <common/value.h>
 
 #include "../internal_output_operators.h"
 #include "add_tag.h"
@@ -32,7 +33,6 @@
 #include "data_verification.h"
 #include "enumeration.h"
 #include "expression.h"
-#include "from_string.h"
 #include "helper.h"
 #include "tag.h"
 

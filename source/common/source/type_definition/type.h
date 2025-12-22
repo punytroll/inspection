@@ -25,7 +25,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include <type.h>
+#include <common/type.h>
 
 #include "expression.h"
 #include "part.h"

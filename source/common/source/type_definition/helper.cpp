@@ -16,8 +16,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 **/
 
-#include <length.h>
-#include <value.h>
+#include <common/length.h>
+#include <common/value.h>
 
 #include "data_type.h"
 #include "data_verification.h"

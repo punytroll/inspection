@@ -20,10 +20,10 @@
 
 #include <xml_puny_dom/xml_puny_dom.h>
 
-#include <assertion.h>
-#include <execution_context.h>
-#include <result.h>
-#include <value.h>
+#include <common/assertion.h>
+#include <common/execution_context.h>
+#include <common/result.h>
+#include <common/value.h>
 
 #include "../internal_output_operators.h"
 #include "field_reference.h"

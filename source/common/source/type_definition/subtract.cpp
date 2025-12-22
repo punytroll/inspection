@@ -20,8 +20,8 @@
 
 #include <xml_puny_dom/xml_puny_dom.h>
 
-#include <assertion.h>
-#include <length.h>
+#include <common/assertion.h>
+#include <common/length.h>
 
 #include "../internal_output_operators.h"
 #include "subtract.h"

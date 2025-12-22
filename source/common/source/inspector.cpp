@@ -2,15 +2,15 @@
 #include <sys/mman.h>
 #include <unistd.h>
 
-#include "assertion.h"
-#include "buffer.h"
-#include "colors.h"
-#include "from_string.h"
-#include "inspector.h"
+#include <common/assertion.h>
+#include <common/buffer.h>
+#include <common/colors.h>
+#include <common/from_string.h>
+#include <common/inspector.h>
+#include <common/output_operators.h>
+#include <common/query.h>
+
 #include "internal_output_operators.h"
-#include "output_operators.h"
-#include "query.h"
-#include "reader.h"
 
 using namespace std::string_literals;
 

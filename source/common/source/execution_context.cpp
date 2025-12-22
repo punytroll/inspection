@@ -21,13 +21,13 @@
 #include <list>
 #include <unordered_map>
 
-#include <assertion.h>
-#include <execution_context.h>
-#include <length.h>
-#include <result.h>
-#include <type.h>
-#include <type_repository.h>
-#include <value.h>
+#include <common/assertion.h>
+#include <common/execution_context.h>
+#include <common/length.h>
+#include <common/result.h>
+#include <common/type.h>
+#include <common/type_repository.h>
+#include <common/value.h>
 
 Inspection::ExecutionContext::Element::Element(Inspection::Result & Result, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) :
     m_Parameters{Parameters},

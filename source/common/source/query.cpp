@@ -2,9 +2,9 @@
 #include <string>
 #include <vector>
 
-#include "assertion.h"
-#include "output_operators.h"
-#include "query.h"
+#include <common/assertion.h>
+#include <common/output_operators.h>
+#include <common/query.h>
 
 std::vector<std::string> Inspection::SplitString(const std::string & String, char Delimiter)
 {

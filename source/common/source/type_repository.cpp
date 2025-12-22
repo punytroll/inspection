@@ -5,13 +5,13 @@
 
 #include <xml_puny_dom/xml_puny_dom.h>
 
-#include <helper.h>
-#include <result.h>
-#include <type.h>
-#include <type_library_path.h>
-#include <type_repository.h>
+#include <common/helper.h>
+#include <common/result.h>
+#include <common/type.h>
+#include <common/type_repository.h>
 
 #include "type_definition/type.h"
+#include "type_library_path.h"
 
 namespace Inspection
 {

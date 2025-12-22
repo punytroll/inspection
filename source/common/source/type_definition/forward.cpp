@@ -18,9 +18,9 @@
 
 #include <xml_puny_dom/xml_puny_dom.h>
 
-#include <execution_context.h>
-#include <reader.h>
-#include <result.h>
+#include <common/execution_context.h>
+#include <common/reader.h>
+#include <common/result.h>
 
 #include "forward.h"
 #include "part_type.h"

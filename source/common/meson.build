@@ -53,19 +53,23 @@ common_library = static_library(
     'source/type_definition/tag.cpp',
     'source/type_definition/type.cpp',
     'source/type_definition/type_reference.cpp',
-    'source/type_definition/verification.cpp',
     'source/type_definition/value.cpp',
+    'source/type_definition/verification.cpp',
     'source/type_repository.cpp',
     type_library_path_h
   ],
-  include_directories: [include_directories('include/common')],
+  include_directories: [
+    include_directories('include')
+  ],
   dependencies: [
     xml_puny_dom_dependency
   ]
 )
 
 common_library_dependency = declare_dependency(
-  include_directories: [include_directories('include')],
+  include_directories: [
+    include_directories('include')
+  ],
   link_with: [common_library],
   dependencies: [
     xml_puny_dom_dependency

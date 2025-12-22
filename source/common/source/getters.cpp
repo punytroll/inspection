@@ -6,19 +6,20 @@
 #include <sstream>
 #include <vector>
 
-#include "assertion.h"
-#include "buffer.h"
-#include "getters.h"
-#include "guid.h"
-#include "helper.h"
-#include "id3_de_unsynchronization_eager_filter.h"
-#include "id3_helper.h"
+#include <common/assertion.h>
+#include <common/buffer.h>
+#include <common/getters.h>
+#include <common/guid.h>
+#include <common/helper.h>
+#include <common/id3_de_unsynchronization_eager_filter.h>
+#include <common/id3_helper.h>
+#include <common/output_operators.h>
+#include <common/reader.h>
+#include <common/type.h>
+#include <common/type_repository.h>
+#include <common/unknown_value_exception.h>
+
 #include "internal_output_operators.h"
-#include "output_operators.h"
-#include "reader.h"
-#include "type.h"
-#include "type_repository.h"
-#include "unknown_value_exception.h"
 
 using namespace std::string_literals;
 

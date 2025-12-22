@@ -18,7 +18,7 @@
 
 #include <xml_puny_dom/xml_puny_dom.h>
 
-#include <value.h>
+#include <common/value.h>
 
 #include "expression.h"
 #include "tag.h"

@@ -1,8 +1,8 @@
-#include "assertion.h"
-#include "buffer.h"
-#include "id3_de_unsynchronization_eager_filter.h"
-#include "read_result.h"
-#include "reader.h"
+#include <common/assertion.h>
+#include <common/buffer.h>
+#include <common/id3_de_unsynchronization_eager_filter.h>
+#include <common/read_result.h>
+#include <common/reader.h>
 
 Inspection::Reader::Reader(const Inspection::Buffer & Buffer, const Inspection::Length & StartPositionInInput, const Inspection::Length & Length) :
     m_BufferCore{std::make_unique<Inspection::Reader::BufferCore>(Buffer, StartPositionInInput, StartPositionInInput + Length, Inspection::Reader::BitstreamType::MostSignificantBitFirst)}

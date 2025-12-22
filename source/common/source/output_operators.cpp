@@ -2,20 +2,22 @@
 #include <bitset>
 #include <iomanip>
 #include <format>
+#include <list>
+#include <memory>
 #include <ostream>
 #include <string>
 #include <vector>
 
-#include "assertion.h"
-#include "colors.h"
-#include "date_time.h"
-#include "guid.h"
+#include <common/assertion.h>
+#include <common/colors.h>
+#include <common/date_time.h>
+#include <common/guid.h>
+#include <common/output_operators.h>
+#include <common/value.h>
+
 #include "internal_output_operators.h"
-#include "length.h"
-#include "output_operators.h"
 #include "type_definition/data_type.h"
 #include "type_definition/part_type.h"
-#include "value.h"
 
 using namespace std::string_literals;
 
