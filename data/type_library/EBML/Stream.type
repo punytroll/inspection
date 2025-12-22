@@ -1,0 +1,12 @@
+<type>
+	<array name="Documents">
+		<iterate type="until-length"/>
+		<element-name>Document</element-name>
+		<element-type>
+			<type-reference>
+				<part>EBML</part>
+				<part>Document</part>
+			</type-reference>
+		</element-type>
+	</array>
+</type>

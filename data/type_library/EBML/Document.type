@@ -1,0 +1,42 @@
+<type>
+	<sequence>
+		<field name="EBML">
+			<sequence>
+				<field name="ID">
+					<type-reference>
+						<part>EBML</part>
+						<part>ElementID</part>
+					</type-reference>
+				</field>
+				<field name="Size">
+					<type-reference>
+						<part>EBML</part>
+						<part>VariableSizeInteger</part>
+					</type-reference>
+				</field>
+				<field name="Data">
+					<type-reference>
+						<part>Buffer</part>
+						<part>UnsignedInteger_8Bit_EndedByLength</part>
+					</type-reference>
+					<length>
+						<bytes>
+							<data-reference root="type">
+								<field>Size</field>
+							</data-reference>
+						</bytes>
+						<bits>
+							<unsigned-integer-64bit>0</unsigned-integer-64bit>
+						</bits>
+					</length>
+				</field>
+			</sequence>
+		</field>
+		<field name="Body">
+			<type-reference>
+				<part>Buffer</part>
+				<part>UnsignedInteger_8Bit_EndedByLength</part>
+			</type-reference>
+		</field>
+	</sequence>
+</type>

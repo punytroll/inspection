@@ -236,6 +236,14 @@ auto Inspection::TypeDefinition::Type::Load(XML::Element const * Element, std::v
             {
                 Result->m_HardcodedGetter = Inspection::Get_Data_Unset_Until8BitAlignment;
             }
+            else if(HardcodedText->GetText() == "Get_EBML_VariableSizeInteger")
+            {
+                Result->m_HardcodedGetter = Inspection::Get_EBML_VariableSizeInteger;
+            }
+            else if(HardcodedText->GetText() == "Get_EBML_ElementID")
+            {
+                Result->m_HardcodedGetter = Inspection::Get_EBML_ElementID;
+            }
             else if(HardcodedText->GetText() == "Get_FLAC_Frame_Header")
             {
                 Result->m_HardcodedGetter = Inspection::Get_FLAC_Frame_Header;

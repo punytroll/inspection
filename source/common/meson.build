@@ -14,6 +14,8 @@ common_library = static_library(
   'common',
   sources: [
     'source/execution_context.cpp',
+    'source/getters/ebml.cpp',
+    'source/getters/helpers.cpp',
     'source/getters.cpp',
     'source/guid.cpp',
     'source/helper.cpp',
