@@ -63,7 +63,9 @@
 					<part>Object</part>
 				</type-reference>
 			</element-type>
-			<element-name>AdditionalExtendedHeader</element-name>
+			<element-name>
+				<string>AdditionalExtendedHeader</string>
+			</element-name>
 		</array>
 	</sequence>
 </type>

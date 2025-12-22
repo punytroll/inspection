@@ -1,0 +1,8 @@
+<type>
+	<hardcoded>Get_ISO_IEC_IEEE_60559_2011_binary64</hardcoded>
+	<tag name="standard">
+		<value>
+			<string>ISO/IEC/IEEE-60559:2011 binary64</string>
+		</value>
+	</tag>
+</type>

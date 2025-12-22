@@ -7,6 +7,8 @@
 				<part>TLSPlaintext</part>
 			</type-reference>
 		</element-type>
-		<element-name>TLSPlaintext</element-name>
+		<element-name>
+			<string>TLSPlaintext</string>
+		</element-name>
 	</array>
 </type>

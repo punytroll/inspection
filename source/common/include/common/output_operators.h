@@ -26,7 +26,6 @@ namespace Inspection
     auto operator<<(std::ostream & OStream, Inspection::Value const & Value) -> std::ostream &;
 }
 
-
 template<class CharType>
 struct std::formatter<Inspection::Length, CharType>
 {

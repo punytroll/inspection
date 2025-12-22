@@ -19,32 +19,12 @@
 #include <common/type_repository.h>
 #include <common/unknown_value_exception.h>
 
+#include "getters/helpers.h"
 #include "internal_output_operators.h"
 
 using namespace std::string_literals;
 
 bool g_AppendFLACStream_Subframe_Residual_Rice_Partition_Samples{false};
-
-Inspection::Value * AppendLengthTag(Inspection::Value * Value, const Inspection::Length & Length, const std::string & LengthName = "length"s)
-{
-    auto Result = Value->AddTag(LengthName, Length);
-    
-    Result->AddTag("unit", "bytes and bits"s);
-    
-    return Result;
-}
-
-Inspection::Value * AppendReadErrorTag(Inspection::Value * Value, const Inspection::ReadResult & ReadResult)
-{
-    ASSERTION(ReadResult.Success == false);
-    
-    auto Result = Value->AddTag("error", "Could not read enough data."s);
-    
-    AppendLengthTag(Result, ReadResult.RequestedLength, "requested length");
-    AppendLengthTag(Result, ReadResult.InputLength, "remaining length");
-    
-    return Result;
-}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Readers & Getters                                                                             //
@@ -8222,14 +8202,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UTF_16L
     return Result;
 }
 
-std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_IEEE_60559_2011_binary32(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
+auto Inspection::Get_ISO_IEC_IEEE_60559_2011_binary32(Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) -> std::unique_ptr<Inspection::Result>
 {
     auto Result = std::make_unique<Inspection::Result>();
     auto Continue = true;
     
     Result->GetValue()->AddTag("floating point"s);
     Result->GetValue()->AddTag("32bit"s);
-    Result->GetValue()->AddTag("standard", "ISO/IEC/IEEE-60559:2011 binary32"s);
     // reading
     if(Continue == true)
     {
@@ -8251,11 +8230,111 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_IEEE_60559_2011_bina
                     {
                         std::uint8_t Data[4];
                         
-                        Data[0] = ReadResult1.Data;
-                        Data[1] = ReadResult2.Data;
-                        Data[2] = ReadResult3.Data;
-                        Data[3] = ReadResult4.Data;
-                        Result->GetValue()->SetData(*reinterpret_cast< const float * const >(Data));
+                        Data[0] = ReadResult4.Data;
+                        Data[1] = ReadResult3.Data;
+                        Data[2] = ReadResult2.Data;
+                        Data[3] = ReadResult1.Data;
+                        Result->GetValue()->SetData(*reinterpret_cast<float const * const>(Data));
+                    }
+                    else
+                    {
+                        AppendReadErrorTag(Result->GetValue(), ReadResult4);
+                    }
+                }
+                else
+                {
+                    AppendReadErrorTag(Result->GetValue(), ReadResult3);
+                }
+            }
+            else
+            {
+                AppendReadErrorTag(Result->GetValue(), ReadResult2);
+            }
+        }
+        else
+        {
+            AppendReadErrorTag(Result->GetValue(), ReadResult1);
+        }
+    }
+    // finalization
+    Result->SetSuccess(Continue);
+    
+    return Result;
+}
+
+auto Inspection::Get_ISO_IEC_IEEE_60559_2011_binary64(Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) -> std::unique_ptr<Inspection::Result>
+{
+    auto Result = std::make_unique<Inspection::Result>();
+    auto Continue = true;
+    
+    Result->GetValue()->AddTag("floating point"s);
+    Result->GetValue()->AddTag("64bit"s);
+    // reading
+    if(Continue == true)
+    {
+        auto ReadResult1 = Inspection::ReadResult{};
+        
+        if((Continue = Reader.Read8Bits(ReadResult1)) == true)
+        {
+            auto ReadResult2 = Inspection::ReadResult{};
+            
+            if((Continue = Reader.Read8Bits(ReadResult2)) == true)
+            {
+                auto ReadResult3 = Inspection::ReadResult{};
+                
+                if((Continue = Reader.Read8Bits(ReadResult3)) == true)
+                {
+                    auto ReadResult4 =  Inspection::ReadResult{};
+                    
+                    if((Continue = Reader.Read8Bits(ReadResult4)) == true)
+                    {
+                        auto ReadResult5 =  Inspection::ReadResult{};
+                        
+                        if((Continue = Reader.Read8Bits(ReadResult5)) == true)
+                        {
+                            auto ReadResult6 =  Inspection::ReadResult{};
+                            
+                            if((Continue = Reader.Read8Bits(ReadResult6)) == true)
+                            {
+                                auto ReadResult7 =  Inspection::ReadResult{};
+                                
+                                if((Continue = Reader.Read8Bits(ReadResult7)) == true)
+                                {
+                                    auto ReadResult8 =  Inspection::ReadResult{};
+                                    
+                                    if((Continue = Reader.Read8Bits(ReadResult8)) == true)
+                                    {
+                                        std::uint8_t Data[8];
+                                        
+                                        Data[0] = ReadResult8.Data;
+                                        Data[1] = ReadResult7.Data;
+                                        Data[2] = ReadResult6.Data;
+                                        Data[3] = ReadResult5.Data;
+                                        Data[4] = ReadResult4.Data;
+                                        Data[5] = ReadResult3.Data;
+                                        Data[6] = ReadResult2.Data;
+                                        Data[7] = ReadResult1.Data;
+                                        Result->GetValue()->SetData(*reinterpret_cast<double const * const>(Data));
+                                    }
+                                    else
+                                    {
+                                        AppendReadErrorTag(Result->GetValue(), ReadResult8);
+                                    }
+                                }
+                                else
+                                {
+                                    AppendReadErrorTag(Result->GetValue(), ReadResult7);
+                                }
+                            }
+                            else
+                            {
+                                AppendReadErrorTag(Result->GetValue(), ReadResult6);
+                            }
+                        }
+                        else
+                        {
+                            AppendReadErrorTag(Result->GetValue(), ReadResult5);
+                        }
                     }
                     else
                     {
@@ -11705,6 +11784,39 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_BigEndian(In
             
             break;
         }
+    case 32:
+        {
+            auto PartReader = Inspection::Reader{Reader};
+            auto PartResult{Inspection::Get_UnsignedInteger_32Bit_BigEndian(PartReader, {})};
+            
+            Continue = PartResult->GetSuccess();
+            Result->GetValue()->Extend(PartResult->ExtractValue());
+            Reader.AdvancePosition(PartReader.GetConsumedLength());
+            
+            break;
+        }
+    case 56:
+        {
+            auto PartReader = Inspection::Reader{Reader};
+            auto PartResult{Inspection::Get_UnsignedInteger_56Bit_BigEndian(PartReader, {})};
+            
+            Continue = PartResult->GetSuccess();
+            Result->GetValue()->Extend(PartResult->ExtractValue());
+            Reader.AdvancePosition(PartReader.GetConsumedLength());
+            
+            break;
+        }
+    case 64:
+        {
+            auto PartReader = Inspection::Reader{Reader};
+            auto PartResult{Inspection::Get_UnsignedInteger_64Bit_BigEndian(PartReader, {})};
+            
+            Continue = PartResult->GetSuccess();
+            Result->GetValue()->Extend(PartResult->ExtractValue());
+            Reader.AdvancePosition(PartReader.GetConsumedLength());
+            
+            break;
+        }
     default:
         {
             NOT_IMPLEMENTED(std::format("Reading {} bits as an unsigned integer is not yet implemented in the generic function.", Bits));
@@ -13531,6 +13643,89 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_36Bit_UTF_8_
     return Result;
 }
 
+auto Inspection::Get_UnsignedInteger_56Bit_BigEndian(Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) -> std::unique_ptr<Inspection::Result>
+{
+    auto Result = std::make_unique<Inspection::Result>();
+    auto Continue = true;
+    
+    Result->GetValue()->AddTag("integer"s);
+    Result->GetValue()->AddTag("unsigned"s);
+    Result->GetValue()->AddTag("64bit"s);
+    Result->GetValue()->AddTag("big endian"s);
+    // reading
+    if(Continue == true)
+    {
+        auto ReadResult1 = Inspection::ReadResult{};
+        
+        if((Continue == Reader.Read8Bits(ReadResult1)) == true)
+        {
+            auto ReadResult2 = Inspection::ReadResult{};
+            
+            if((Continue == Reader.Read8Bits(ReadResult2)) == true)
+            {
+                auto ReadResult3 = Inspection::ReadResult{};
+                
+                if((Continue == Reader.Read8Bits(ReadResult3)) == true)
+                {
+                    auto ReadResult4 = Inspection::ReadResult{};
+                    
+                    if((Continue == Reader.Read8Bits(ReadResult4)) == true)
+                    {
+                        auto ReadResult5 = Inspection::ReadResult{};
+                        
+                        if((Continue == Reader.Read8Bits(ReadResult5)) == true)
+                        {
+                            auto ReadResult6 = Inspection::ReadResult{};
+                            
+                            if((Continue == Reader.Read8Bits(ReadResult6)) == true)
+                            {
+                                auto ReadResult7 = Inspection::ReadResult{};
+                                
+                                if((Continue == Reader.Read8Bits(ReadResult7)) == true)
+                                {
+                                    Result->GetValue()->SetData((static_cast<std::uint64_t>(ReadResult1.Data) << 48) | (static_cast<std::uint64_t>(ReadResult2.Data) << 40) | (static_cast<std::uint64_t>(ReadResult3.Data) << 32) | (static_cast<std::uint64_t>(ReadResult4.Data) << 24) | (static_cast<std::uint64_t>(ReadResult5.Data) << 16) | (static_cast<std::uint64_t>(ReadResult6.Data) << 8) | static_cast<std::uint64_t>(ReadResult7.Data));
+                                }
+                                else
+                                {
+                                    AppendReadErrorTag(Result->GetValue(), ReadResult7);
+                                }
+                            }
+                            else
+                            {
+                                AppendReadErrorTag(Result->GetValue(), ReadResult6);
+                            }
+                        }
+                        else
+                        {
+                            AppendReadErrorTag(Result->GetValue(), ReadResult5);
+                        }
+                    }
+                    else
+                    {
+                        AppendReadErrorTag(Result->GetValue(), ReadResult4);
+                    }
+                }
+                else
+                {
+                    AppendReadErrorTag(Result->GetValue(), ReadResult3);
+                }
+            }
+            else
+            {
+                AppendReadErrorTag(Result->GetValue(), ReadResult2);
+            }
+        }
+        else
+        {
+            AppendReadErrorTag(Result->GetValue(), ReadResult1);
+        }
+    }
+    // finalization
+    Result->SetSuccess(Continue);
+    
+    return Result;
+}
+
 std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_64Bit_BigEndian(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
     auto Result = std::make_unique<Inspection::Result>();
@@ -13543,35 +13738,35 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_64Bit_BigEnd
     // reading
     if(Continue == true)
     {
-        Inspection::ReadResult ReadResult1;
+        auto ReadResult1 = Inspection::ReadResult{};
         
         if((Continue == Reader.Read8Bits(ReadResult1)) == true)
         {
-            Inspection::ReadResult ReadResult2;
+            auto ReadResult2 = Inspection::ReadResult{};
             
             if((Continue == Reader.Read8Bits(ReadResult2)) == true)
             {
-                Inspection::ReadResult ReadResult3;
+                auto ReadResult3 = Inspection::ReadResult{};
                 
                 if((Continue == Reader.Read8Bits(ReadResult3)) == true)
                 {
-                    Inspection::ReadResult ReadResult4;
+                    auto ReadResult4 = Inspection::ReadResult{};
                     
                     if((Continue == Reader.Read8Bits(ReadResult4)) == true)
                     {
-                        Inspection::ReadResult ReadResult5;
+                        auto ReadResult5 = Inspection::ReadResult{};
                         
                         if((Continue == Reader.Read8Bits(ReadResult5)) == true)
                         {
-                            Inspection::ReadResult ReadResult6;
+                            auto ReadResult6 = Inspection::ReadResult{};
                             
                             if((Continue == Reader.Read8Bits(ReadResult6)) == true)
                             {
-                                Inspection::ReadResult ReadResult7;
+                                auto ReadResult7 = Inspection::ReadResult{};
                                 
                                 if((Continue == Reader.Read8Bits(ReadResult7)) == true)
                                 {
-                                    Inspection::ReadResult ReadResult8;
+                                    auto ReadResult8 = Inspection::ReadResult{};
                                     
                                     if((Continue == Reader.Read8Bits(ReadResult8)) == true)
                                     {

@@ -365,7 +365,9 @@
 								<unsigned-integer-64bit>0</unsigned-integer-64bit>
 							</bits>
 						</length>
-						<element-name>SupportedSignatureAlgorithm</element-name>
+						<element-name>
+							<string>SupportedSignatureAlgorithm</string>
+						</element-name>
 						<element-type>
 							<type-reference>
 								<part>SSL_TLS</part>
@@ -411,7 +413,9 @@
 								<unsigned-integer-64bit>0</unsigned-integer-64bit>
 							</bits>
 						</length>
-						<element-name>ECPointFormat</element-name>
+						<element-name>
+							<string>ECPointFormat</string>
+						</element-name>
 						<element-type>
 							<type-reference>
 								<part>SSL_TLS</part>
@@ -544,7 +548,9 @@
 							<unsigned-integer-64bit>0</unsigned-integer-64bit>
 						</bits>
 					</length>
-					<element-name>Entry</element-name>
+					<element-name>
+						<string>Entry</string>
+					</element-name>
 					<element-type>
 						<type-reference>
 							<part>SSL_TLS</part>
@@ -621,7 +627,9 @@
 								<unsigned-integer-64bit>0</unsigned-integer-64bit>
 							</bits>
 						</length>
-						<element-name>Algorithm</element-name>
+						<element-name>
+							<string>Algorithm</string>
+						</element-name>
 						<element-type>
 							<type-reference>
 								<part>SSL_TLS</part>
@@ -757,7 +765,9 @@
 								<unsigned-integer-64bit>0</unsigned-integer-64bit>
 							</bits>
 						</length>
-						<element-name>Curve</element-name>
+						<element-name>
+							<string>Curve</string>
+						</element-name>
 						<element-type>
 							<type-reference>
 								<part>SSL_TLS</part>
@@ -803,7 +813,9 @@
 								<unsigned-integer-64bit>0</unsigned-integer-64bit>
 							</bits>
 						</length>
-						<element-name>SupportedVersion</element-name>
+						<element-name>
+							<string>SupportedVersion</string>
+						</element-name>
 						<element-type>
 							<type-reference>
 								<part>SSL_TLS</part>

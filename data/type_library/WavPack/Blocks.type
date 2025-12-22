@@ -654,7 +654,9 @@
 									<part>SubBlock</part>
 								</type-reference>
 							</element-type>
-							<element-name>SubBlock</element-name>
+							<element-name>
+								<string>SubBlock</string>
+							</element-name>
 							<length>
 								<bytes>
 									<subtract>
@@ -675,7 +677,9 @@
 					</sequence>
 				</type>
 			</element-type>
-			<element-name>Block</element-name>
+			<element-name>
+				<string>Block</string>
+			</element-name>
 		</array>
 	</forward>
 </type>

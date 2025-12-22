@@ -1,7 +1,9 @@
 <type>
 	<array name="SeekPoints">
 		<iterate type="until-length"/>
-		<element-name>SeekPoint</element-name>
+		<element-name>
+			<string>SeekPoint</string>
+		</element-name>
 		<element-type>
 			<type>
 				<sequence>

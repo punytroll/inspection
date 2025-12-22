@@ -1,0 +1,570 @@
+<type>
+	<sequence>
+		<field>
+			<name>
+				<string>ID</string>
+			</name>
+			<type-reference>
+				<part>EBML</part>
+				<part>ElementID</part>
+			</type-reference>
+		</field>
+		<field>
+			<name>
+				<string>Size</string>
+			</name>
+			<type-reference>
+				<part>EBML</part>
+				<part>VariableSizeInteger</part>
+			</type-reference>
+		</field>
+		<select>
+			<length>
+				<bytes>
+					<data-reference root="type">
+						<field>Size</field>
+					</data-reference>
+				</bytes>
+				<bits>
+					<unsigned-integer-64bit>0</unsigned-integer-64bit>
+				</bits>
+			</length>
+			<case>
+				<when>
+					<equals>
+						<data-reference root="type">
+							<field>ID</field>
+							<tag>interpretation</tag>
+							<fallback>
+								<nothing/>
+							</fallback>
+						</data-reference>
+						<string>TargetTypeValue</string>
+					</equals>
+				</when>
+				<field>
+					<name>
+						<string>Data</string>
+					</name>
+					<type-reference>
+						<part>Number</part>
+						<part>Integer</part>
+						<part>Unsigned</part>
+						<part>BigEndian</part>
+					</type-reference>
+					<parameters>
+						<parameter name="Bits">
+							<multiply>
+								<unsigned-integer-8bit>
+									<data-reference root="type">
+										<field>Size</field>
+									</data-reference>
+								</unsigned-integer-8bit>
+								<unsigned-integer-8bit>8</unsigned-integer-8bit>
+							</multiply>
+						</parameter>
+					</parameters>
+					<apply-cast data-type="unsigned integer 64bit"/>
+					<apply-enumeration>
+						<enumeration base-data-type="unsigned integer 64bit">
+							<element valid="true">
+								<base-value>
+									<unsigned-integer-64bit>10</unsigned-integer-64bit>
+								</base-value>
+								<tag name="interpretation">
+									<value>
+										<string>SHOT</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>The lowest hierarchy found in music or movies.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element valid="true">
+								<base-value>
+									<unsigned-integer-64bit>20</unsigned-integer-64bit>
+								</base-value>
+								<tag name="interpretation">
+									<value>
+										<string>SUBTRACK / MOVEMENT / SCENE</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Corresponds to parts of a track for audio, such as a movement or scene in a movie.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element valid="true">
+								<base-value>
+									<unsigned-integer-64bit>30</unsigned-integer-64bit>
+								</base-value>
+								<tag name="interpretation">
+									<value>
+										<string>TRACK / SONG / CHAPTER</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>The common parts of an album or movie.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element valid="true">
+								<base-value>
+									<unsigned-integer-64bit>40</unsigned-integer-64bit>
+								</base-value>
+								<tag name="interpretation">
+									<value>
+										<string>PART / SESSION</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>When an album or episode has different logical parts.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element valid="true">
+								<base-value>
+									<unsigned-integer-64bit>50</unsigned-integer-64bit>
+								</base-value>
+								<tag name="interpretation">
+									<value>
+										<string>ALBUM / OPERA / CONCERT / MOVIE / EPISODE</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>The most common grouping level of music and video (e.g., an episode for TV series).</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element valid="true">
+								<base-value>
+									<unsigned-integer-64bit>60</unsigned-integer-64bit>
+								</base-value>
+								<tag name="interpretation">
+									<value>
+										<string>EDITION / ISSUE / VOLUME / OPUS / SEASON / SEQUEL</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>A list of lower levels grouped together.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element valid="true">
+								<base-value>
+									<unsigned-integer-64bit>70</unsigned-integer-64bit>
+								</base-value>
+								<tag name="interpretation">
+									<value>
+										<string>COLLECTION</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>The highest hierarchical level that tags can describe.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<fallback-element valid="true"/>
+						</enumeration>
+					</apply-enumeration>
+				</field>
+			</case>
+			<case>
+				<when>
+					<equals>
+						<data-reference root="type">
+							<field>ID</field>
+							<tag>interpretation</tag>
+							<fallback>
+								<nothing/>
+							</fallback>
+						</data-reference>
+						<string>TrackType</string>
+					</equals>
+				</when>
+				<field>
+					<name>
+						<string>Data</string>
+					</name>
+					<type-reference>
+						<part>Number</part>
+						<part>Integer</part>
+						<part>Unsigned</part>
+						<part>BigEndian</part>
+					</type-reference>
+					<parameters>
+						<parameter name="Bits">
+							<multiply>
+								<unsigned-integer-8bit>
+									<data-reference root="type">
+										<field>Size</field>
+									</data-reference>
+								</unsigned-integer-8bit>
+								<unsigned-integer-8bit>8</unsigned-integer-8bit>
+							</multiply>
+						</parameter>
+					</parameters>
+					<apply-cast data-type="unsigned integer 64bit"/>
+					<apply-enumeration>
+						<enumeration base-data-type="unsigned integer 64bit">
+							<element valid="true">
+								<base-value>
+									<unsigned-integer-64bit>1</unsigned-integer-64bit>
+								</base-value>
+								<tag name="interpretation">
+									<value>
+										<string>video</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>An image.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element valid="true">
+								<base-value>
+									<unsigned-integer-64bit>2</unsigned-integer-64bit>
+								</base-value>
+								<tag name="interpretation">
+									<value>
+										<string>audio</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Audio samples.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element valid="true">
+								<base-value>
+									<unsigned-integer-64bit>3</unsigned-integer-64bit>
+								</base-value>
+								<tag name="interpretation">
+									<value>
+										<string>complex</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>A mix of different other TrackType.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element valid="true">
+								<base-value>
+									<unsigned-integer-64bit>16</unsigned-integer-64bit>
+								</base-value>
+								<tag name="interpretation">
+									<value>
+										<string>logo</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>An image to be rendered over the video track(s).</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element valid="true">
+								<base-value>
+									<unsigned-integer-64bit>17</unsigned-integer-64bit>
+								</base-value>
+								<tag name="interpretation">
+									<value>
+										<string>subtitle</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Subtitle or closed caption data to be rendered over the video track(s).</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element valid="true">
+								<base-value>
+									<unsigned-integer-64bit>18</unsigned-integer-64bit>
+								</base-value>
+								<tag name="interpretation">
+									<value>
+										<string>buttons</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Interactive button(s) to be rendered over the video track(s).</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element valid="true">
+								<base-value>
+									<unsigned-integer-64bit>32</unsigned-integer-64bit>
+								</base-value>
+								<tag name="interpretation">
+									<value>
+										<string>control</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Metadata used to control the player of the Matroska Player.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+							<element valid="true">
+								<base-value>
+									<unsigned-integer-64bit>33</unsigned-integer-64bit>
+								</base-value>
+								<tag name="interpretation">
+									<value>
+										<string>metadata</string>
+									</value>
+									<tag name="description">
+										<value>
+											<string>Timed metadata that can be passed on to the Matroska Player.</string>
+										</value>
+									</tag>
+								</tag>
+							</element>
+						</enumeration>
+					</apply-enumeration>
+				</field>
+			</case>
+			<case>
+				<when>
+					<equals>
+						<data-reference root="type">
+							<field>ID</field>
+							<tag>interpretation</tag>
+							<tag>type</tag>
+						</data-reference>
+						<string>master</string>
+					</equals>
+				</when>
+				<array name="Elements">
+					<iterate type="until-length"/>
+					<element-name>
+						<data-reference root="current">
+							<field>ID</field>
+							<tag>interpretation</tag>
+							<fallback>
+								<string>Element</string>
+							</fallback>
+						</data-reference>
+					</element-name>
+					<element-type>
+						<type-reference>
+							<part>EBML</part>
+							<part>Element</part>
+						</type-reference>
+					</element-type>
+				</array>
+			</case>
+			<case>
+				<when>
+					<equals>
+						<data-reference root="type">
+							<field>ID</field>
+							<tag>interpretation</tag>
+							<tag>type</tag>
+						</data-reference>
+						<string>unsigned integer</string>
+					</equals>
+				</when>
+				<field>
+					<name>
+						<string>Data</string>
+					</name>
+					<type-reference>
+						<part>Number</part>
+						<part>Integer</part>
+						<part>Unsigned</part>
+						<part>BigEndian</part>
+					</type-reference>
+					<parameters>
+						<parameter name="Bits">
+							<multiply>
+								<unsigned-integer-8bit>
+									<data-reference root="type">
+										<field>Size</field>
+									</data-reference>
+								</unsigned-integer-8bit>
+								<unsigned-integer-8bit>8</unsigned-integer-8bit>
+							</multiply>
+						</parameter>
+					</parameters>
+				</field>
+			</case>
+			<case>
+				<when>
+					<equals>
+						<data-reference root="type">
+							<field>ID</field>
+							<tag>interpretation</tag>
+							<tag>type</tag>
+						</data-reference>
+						<string>integer</string>
+					</equals>
+				</when>
+				<field>
+					<name>
+						<string>Data</string>
+					</name>
+					<type-reference>
+						<part>Number</part>
+						<part>Integer</part>
+						<part>Signed</part>
+						<part>BigEndian</part>
+					</type-reference>
+					<parameters>
+						<parameter name="Bits">
+							<multiply>
+								<unsigned-integer-8bit>
+									<data-reference root="type">
+										<field>Size</field>
+									</data-reference>
+								</unsigned-integer-8bit>
+								<unsigned-integer-8bit>8</unsigned-integer-8bit>
+							</multiply>
+						</parameter>
+					</parameters>
+				</field>
+			</case>
+			<case>
+				<when>
+					<equals>
+						<data-reference root="type">
+							<field>ID</field>
+							<tag>interpretation</tag>
+							<tag>type</tag>
+						</data-reference>
+						<string>ascii string</string>
+					</equals>
+				</when>
+				<field>
+					<name>
+						<string>Data</string>
+					</name>
+					<type-reference>
+						<part>String</part>
+						<part>ASCII</part>
+						<part>Printable_EndedByLength</part>
+					</type-reference>
+				</field>
+			</case>
+			<case>
+				<when>
+					<equals>
+						<data-reference root="type">
+							<field>ID</field>
+							<tag>interpretation</tag>
+							<tag>type</tag>
+						</data-reference>
+						<string>utf-8 string</string>
+					</equals>
+				</when>
+				<field>
+					<name>
+						<string>Data</string>
+					</name>
+					<type-reference>
+						<part>String</part>
+						<part>ISO_IEC_10646_1_1993</part>
+						<part>UTF-8</part>
+						<part>EndedByLength</part>
+					</type-reference>
+				</field>
+			</case>
+			<case>
+				<when>
+					<and>
+						<equals>
+							<data-reference root="type">
+								<field>ID</field>
+								<tag>interpretation</tag>
+								<tag>type</tag>
+							</data-reference>
+							<string>float</string>
+						</equals>
+						<equals>
+							<data-reference root="type">
+								<field>Size</field>
+							</data-reference>
+							<unsigned-integer-64bit>4</unsigned-integer-64bit>
+						</equals>
+					</and>
+				</when>
+				<field>
+					<name>
+						<string>Data</string>
+					</name>
+					<type-reference>
+						<part>Number</part>
+						<part>Real</part>
+						<part>IEEE_754_2019_binary32</part>
+					</type-reference>
+				</field>
+			</case>
+			<case>
+				<when>
+					<and>
+						<equals>
+							<data-reference root="type">
+								<field>ID</field>
+								<tag>interpretation</tag>
+								<tag>type</tag>
+							</data-reference>
+							<string>float</string>
+						</equals>
+						<equals>
+							<data-reference root="type">
+								<field>Size</field>
+							</data-reference>
+							<unsigned-integer-64bit>8</unsigned-integer-64bit>
+						</equals>
+					</and>
+				</when>
+				<field>
+					<name>
+						<string>Data</string>
+					</name>
+					<type-reference>
+						<part>Number</part>
+						<part>Real</part>
+						<part>IEEE_754_2019_binary64</part>
+					</type-reference>
+				</field>
+			</case>
+			<case>
+				<when>
+					<equals>
+						<data-reference root="type">
+							<field>ID</field>
+							<tag>interpretation</tag>
+							<tag>type</tag>
+						</data-reference>
+						<string>binary</string>
+					</equals>
+				</when>
+				<field>
+					<name>
+						<string>Data</string>
+					</name>
+					<type-reference>
+						<part>Buffer</part>
+						<part>UnsignedInteger_8Bit_EndedByLength</part>
+					</type-reference>
+				</field>
+			</case>
+		</select>
+	</sequence>
+</type>

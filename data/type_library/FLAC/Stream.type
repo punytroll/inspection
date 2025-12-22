@@ -14,7 +14,9 @@
 					<part>Frame</part>
 				</type-reference>
 			</element-type>
-			<element-name>Frame</element-name>
+			<element-name>
+				<string>Frame</string>
+			</element-name>
 			<element-parameters>
 				<parameter name="NumberOfChannelsByStream">
 					<data-reference root="type">

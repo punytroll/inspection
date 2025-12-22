@@ -68,7 +68,7 @@ namespace Inspection
             auto operator=(Inspection::TypeDefinition::Array const & Array) -> Inspection::TypeDefinition::Array & = delete;
             auto operator=(Inspection::TypeDefinition::Array && Array) -> Inspection::TypeDefinition::Array & = delete;
             
-            std::optional<std::string> m_ElementName;
+            std::unique_ptr<Inspection::TypeDefinition::Expression> m_ElementName;
             std::unique_ptr<Inspection::TypeDefinition::Parameters> m_ElementParameters;
             std::unique_ptr<Inspection::TypeDefinition::Expression> m_ElementType;
             std::unique_ptr<Inspection::TypeDefinition::FieldReference> m_IterateForEachField;

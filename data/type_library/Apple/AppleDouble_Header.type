@@ -70,7 +70,9 @@
 					</data-reference>
 				</unsigned-integer-64bit>
 			</iterate>
-			<element-name>EntryDescriptor</element-name>
+			<element-name>
+				<string>EntryDescriptor</string>
+			</element-name>
 			<element-type>
 				<type-reference>
 					<part>Apple</part>

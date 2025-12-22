@@ -11590,7 +11590,7 @@
 			<argument>../data/examples/019_id3_2.3_RGAD</argument>
 			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:PeakAmplitude/data</argument>
 		</execute>
-		<expected-output>1.03924e-33</expected-output>
+		<expected-output>0.33725</expected-output>
 	</test>
 	<test>
 		<execute>

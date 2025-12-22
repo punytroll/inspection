@@ -8,6 +8,8 @@
 				<part>Frame</part>
 			</type-reference>
 		</element-type>
-		<element-name>MPEGFrame</element-name>
+		<element-name>
+			<string>MPEGFrame</string>
+		</element-name>
 	</array>
 </type>

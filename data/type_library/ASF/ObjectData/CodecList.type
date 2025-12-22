@@ -41,7 +41,9 @@
 					<part>CodecEntry</part>
 				</type-reference>
 			</element-type>
-			<element-name>CodecEntry</element-name>
+			<element-name>
+				<string>CodecEntry</string>
+			</element-name>
 		</array>
 	</sequence>
 </type>

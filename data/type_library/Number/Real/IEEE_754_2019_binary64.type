@@ -1,0 +1,12 @@
+<type>
+	<!--
+	  ISO/IEC/IEEE 60559:21011 is the international adoption of IEEE 754-2008.
+	  Between IEEE 754-2008 and IEEE 754-2019, there has been no change to the storage format of type binary64.
+	-->
+	<hardcoded>Get_ISO_IEC_IEEE_60559_2011_binary64</hardcoded>
+	<tag name="standard">
+		<value>
+			<string>IEEE 754-2019 binary64</string>
+		</value>
+	</tag>
+</type>

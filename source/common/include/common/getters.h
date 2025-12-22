@@ -54,6 +54,8 @@ namespace Inspection
     std::unique_ptr<Inspection::Result> Get_Data_Unset_Until16BitAlignment(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
     std::unique_ptr<Inspection::Result> Get_Data_Unset_EndedByLength(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
     std::unique_ptr<Inspection::Result> Get_Data_Unset_Until8BitAlignment(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
+    auto Get_EBML_ElementID(Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) -> std::unique_ptr<Inspection::Result>;
+    auto Get_EBML_VariableSizeInteger(Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) -> std::unique_ptr<Inspection::Result>;
     std::unique_ptr<Inspection::Result> Get_FLAC_ApplicationBlock_Data(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
     std::unique_ptr<Inspection::Result> Get_FLAC_Frame_Header(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
     std::unique_ptr<Inspection::Result> Get_FLAC_MetaDataBlock(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
@@ -146,7 +148,8 @@ namespace Inspection
     std::unique_ptr<Inspection::Result> Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndLength(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
     std::unique_ptr<Inspection::Result> Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndNumberOfCodePoints(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
     std::unique_ptr<Inspection::Result> Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationOrLength(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
-    std::unique_ptr<Inspection::Result> Get_ISO_IEC_IEEE_60559_2011_binary32(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
+    auto Get_ISO_IEC_IEEE_60559_2011_binary32(Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) -> std::unique_ptr<Inspection::Result>;
+    auto Get_ISO_IEC_IEEE_60559_2011_binary64(Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) -> std::unique_ptr<Inspection::Result>;
     std::unique_ptr<Inspection::Result> Get_MPEG_1_Frame(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
     std::unique_ptr<Inspection::Result> Get_MPEG_1_FrameHeader_BitRateIndex(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
     std::unique_ptr<Inspection::Result> Get_MPEG_1_FrameHeader_Mode(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
@@ -230,6 +233,7 @@ namespace Inspection
     std::unique_ptr<Inspection::Result> Get_UnsignedInteger_32Bit_LittleEndian(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
     std::unique_ptr<Inspection::Result> Get_UnsignedInteger_36Bit_BigEndian(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
     std::unique_ptr<Inspection::Result> Get_UnsignedInteger_36Bit_UTF_8_Coded(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
+    auto Get_UnsignedInteger_56Bit_BigEndian(Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) -> std::unique_ptr<Inspection::Result>;
     std::unique_ptr<Inspection::Result> Get_UnsignedInteger_64Bit_BigEndian(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
     std::unique_ptr<Inspection::Result> Get_UnsignedInteger_64Bit_LittleEndian(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
 }

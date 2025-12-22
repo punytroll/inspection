@@ -19,6 +19,7 @@
 #ifndef INSPECTION__SOURCE__COMMON__SOURCE__TYPE_DEFINITION__HELPER_H
 #define INSPECTION__SOURCE__COMMON__SOURCE__TYPE_DEFINITION__HELPER_H
 
+#include <any>
 #include <string>
 
 namespace Inspection
@@ -35,6 +36,7 @@ namespace Inspection
         auto AppendBitLengthTag(Inspection::Value * Value, Inspection::Length const & Length, std::string const & LengthName = "length") -> Inspection::Value *;
         auto AppendLengthField(Inspection::Value * Value, std::string const & FieldName, Inspection::Length const & Length) -> Inspection::Value *;
         auto AppendOtherData(Inspection::Value * Value, Inspection::Length const & Length) -> Inspection::Value *;
+        auto CastToUnsignedInteger64Bit(std::any const & Any) -> std::uint64_t;
         auto GetBooleanFromString(std::string_view String) -> bool;
         auto GetDataTypeFromString(std::string_view String) -> Inspection::TypeDefinition::DataType;
         auto GetDataVerificationFromString(std::string_view String) -> Inspection::TypeDefinition::DataVerification;
