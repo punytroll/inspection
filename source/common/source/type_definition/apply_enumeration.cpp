@@ -105,6 +105,12 @@ auto Inspection::TypeDefinition::ApplyEnumeration::Apply(Inspection::ExecutionCo
             
             break;
         }
+    case Inspection::TypeDefinition::DataType::UnsignedInteger8BitBuffer:
+        {
+            ::m_ApplyEnumeration<std::vector<std::uint8_t>>(ExecutionContext, *m_Enumeration, Target);
+            
+            break;
+        }
     case Inspection::TypeDefinition::DataType::UnsignedInteger16Bit:
         {
             ::m_ApplyEnumeration<std::uint16_t>(ExecutionContext, *m_Enumeration, Target);
@@ -114,6 +120,12 @@ auto Inspection::TypeDefinition::ApplyEnumeration::Apply(Inspection::ExecutionCo
     case Inspection::TypeDefinition::DataType::UnsignedInteger32Bit:
         {
             ::m_ApplyEnumeration<std::uint32_t>(ExecutionContext, *m_Enumeration, Target);
+            
+            break;
+        }
+    case Inspection::TypeDefinition::DataType::UnsignedInteger64Bit:
+        {
+            ::m_ApplyEnumeration<std::uint64_t>(ExecutionContext, *m_Enumeration, Target);
             
             break;
         }

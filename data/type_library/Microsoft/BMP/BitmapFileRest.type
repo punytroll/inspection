@@ -816,7 +816,9 @@
 							</unsigned-integer-64bit>
 						</parameter>
 					</element-parameters>
-					<element-name>Row</element-name>
+					<element-name>
+						<string>Row</string>
+					</element-name>
 				</array>
 			</case>
 		</select>

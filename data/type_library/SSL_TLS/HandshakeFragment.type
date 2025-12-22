@@ -253,7 +253,9 @@
 								<part>CipherSuite</part>
 							</type-reference>
 						</element-type>
-						<element-name>CipherSuite</element-name>
+						<element-name>
+							<string>CipherSuite</string>
+						</element-name>
 					</array>
 					<field>
 						<name>
@@ -286,7 +288,9 @@
 								<part>CompressionMethod</part>
 							</type-reference>
 						</element-type>
-						<element-name>CompressionMethod</element-name>
+						<element-name>
+							<string>CompressionMethod</string>
+						</element-name>
 					</array>
 					<field>
 						<name>
@@ -319,7 +323,9 @@
 								<part>Extension</part>
 							</type-reference>
 						</element-type>
-						<element-name>Extension</element-name>
+						<element-name>
+							<string>Extension</string>
+						</element-name>
 					</array>
 				</sequence>
 			</case>
@@ -462,7 +468,9 @@
 								<part>Extension</part>
 							</type-reference>
 						</element-type>
-						<element-name>Extension</element-name>
+						<element-name>
+							<string>Extension</string>
+						</element-name>
 					</array>
 					-->
 				</sequence>

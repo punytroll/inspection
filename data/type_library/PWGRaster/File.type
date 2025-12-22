@@ -17,7 +17,9 @@
 		</field>
 		<array name="Pages">
 			<iterate type="until-length"/>
-			<element-name>Page</element-name>
+			<element-name>
+				<string>Page</string>
+			</element-name>
 			<element-type>
 				<type-reference>
 					<part>PWGRaster</part>

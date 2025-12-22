@@ -42,6 +42,10 @@ auto Inspection::TypeDefinition::CompareEquals(std::any const & Any1, std::any c
         {
             return std::any_cast<std::uint8_t const &>(Any1) == std::any_cast<std::uint8_t const &>(Any2);
         }
+        else if(Any1.type() == typeid(std::vector<std::uint8_t>))
+        {
+            return std::any_cast<std::vector<std::uint8_t> const &>(Any1) == std::any_cast<std::vector<std::uint8_t> const &>(Any2);
+        }
         else if(Any1.type() == typeid(std::uint16_t))
         {
             return std::any_cast<std::uint16_t const &>(Any1) == std::any_cast<std::uint16_t const &>(Any2);
@@ -49,6 +53,10 @@ auto Inspection::TypeDefinition::CompareEquals(std::any const & Any1, std::any c
         else if(Any1.type() == typeid(std::uint32_t))
         {
             return std::any_cast<std::uint32_t const &>(Any1) == std::any_cast<std::uint32_t const &>(Any2);
+        }
+        else if(Any1.type() == typeid(std::uint64_t))
+        {
+            return std::any_cast<std::uint64_t const &>(Any1) == std::any_cast<std::uint64_t const &>(Any2);
         }
         else if(Any1.type() == typeid(Inspection::GUID))
         {

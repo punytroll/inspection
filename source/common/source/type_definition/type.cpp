@@ -26,12 +26,17 @@
 
 #include "../internal_output_operators.h"
 #include "../xml_helper.h"
+#include "add_tag.h"
+#include "apply_enumeration.h"
 #include "data_type.h"
+#include "enumeration.h"
 #include "interpretation.h"
 #include "parameters.h"
 #include "part_type.h"
+#include "tag.h"
 #include "type.h"
 #include "type_reference.h"
+#include "value.h"
 
 using namespace std::string_literals;
 
@@ -54,7 +59,11 @@ auto Inspection::TypeDefinition::Type::Get(Inspection::ExecutionContext & Execut
         auto HardcodedResult = m_HardcodedGetter(ExecutionContext.GetCurrentReader(), ExecutionContext.GetCurrentParameters());
         
         Continue = HardcodedResult->GetSuccess();
-        ExecutionContext.GetCurrentResult().GetValue()->Extend(HardcodedResult->ExtractValue());
+        
+        auto HardcodedValue = HardcodedResult->ExtractValue();
+        
+        ApplyInterpretations(ExecutionContext, HardcodedValue.get());
+        ExecutionContext.GetCurrentResult().GetValue()->Extend(std::move(HardcodedValue));
     }
     else if(m_Part != nullptr)
     {
@@ -242,6 +251,14 @@ auto Inspection::TypeDefinition::Type::Load(XML::Element const * Element, std::v
             {
                 Result->m_HardcodedGetter = Inspection::Get_Data_Unset_Until8BitAlignment;
             }
+            else if(HardcodedText->GetText() == "Get_EBML_VariableSizeInteger")
+            {
+                Result->m_HardcodedGetter = Inspection::Get_EBML_VariableSizeInteger;
+            }
+            else if(HardcodedText->GetText() == "Get_EBML_ElementID")
+            {
+                Result->m_HardcodedGetter = Inspection::Get_EBML_ElementID;
+            }
             else if(HardcodedText->GetText() == "Get_FLAC_Frame_Header")
             {
                 Result->m_HardcodedGetter = Inspection::Get_FLAC_Frame_Header;
@@ -398,6 +415,10 @@ auto Inspection::TypeDefinition::Type::Load(XML::Element const * Element, std::v
             {
                 Result->m_HardcodedGetter = Inspection::Get_ISO_IEC_IEEE_60559_2011_binary32;
             }
+            else if(HardcodedText->GetText() == "Get_ISO_IEC_IEEE_60559_2011_binary64")
+            {
+                Result->m_HardcodedGetter = Inspection::Get_ISO_IEC_IEEE_60559_2011_binary64;
+            }
             else if(HardcodedText->GetText() == "Get_MPEG_1_Frame")
             {
                 Result->m_HardcodedGetter = Inspection::Get_MPEG_1_Frame;
@@ -546,6 +567,14 @@ auto Inspection::TypeDefinition::Type::Load(XML::Element const * Element, std::v
             {
                 UNEXPECTED_CASE("HardcodedText->GetText() == " + HardcodedText->GetText());
             }
+        }
+        else if(ChildElement->GetName() == "apply-enumeration")
+        {
+            Result->m_AppendInterpretation(Inspection::TypeDefinition::ApplyEnumeration::Load(ChildElement));
+        }
+        else if(ChildElement->GetName() == "tag")
+        {
+            Result->m_AppendInterpretation(Inspection::TypeDefinition::AddTag::Load(ChildElement));
         }
         else if((ChildElement->GetName() == "alternative") || (ChildElement->GetName() == "array") || (ChildElement->GetName() == "sequence") || (ChildElement->GetName() == "field") || (ChildElement->GetName() == "fields") || (ChildElement->GetName() == "forward"))
         {

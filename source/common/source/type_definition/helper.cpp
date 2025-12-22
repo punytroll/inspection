@@ -19,6 +19,7 @@
 #include <common/length.h>
 #include <common/value.h>
 
+#include "../internal_output_operators.h"
 #include "data_type.h"
 #include "data_verification.h"
 #include "helper.h"
@@ -55,6 +56,32 @@ auto Inspection::TypeDefinition::AppendLengthField(Inspection::Value * Value, st
 auto Inspection::TypeDefinition::AppendOtherData(Inspection::Value * Value, Inspection::Length const & Length) -> Inspection::Value *
 {
     return AppendLengthField(Value, "OtherData", Length);
+}
+
+auto Inspection::TypeDefinition::CastToUnsignedInteger64Bit(std::any const & Any) -> std::uint64_t
+{
+    auto const & Type = Any.type();
+    
+    if(Type == typeid(std::uint8_t))
+    {
+        return std::any_cast<std::uint8_t>(Any);
+    }
+    else if(Type == typeid(std::uint16_t))
+    {
+        return std::any_cast<std::uint16_t>(Any);
+    }
+    else if(Type == typeid(std::uint32_t))
+    {
+        return std::any_cast<std::uint32_t>(Any);
+    }
+    else if(Type == typeid(std::uint64_t))
+    {
+        return std::any_cast<std::uint64_t>(Any);
+    }
+    else
+    {
+        UNEXPECTED_CASE(std::format("Type in any: {}", Inspection::to_string(Type)));
+    }
 }
 
 auto Inspection::TypeDefinition::GetBooleanFromString(std::string_view String) -> bool
@@ -102,6 +129,10 @@ auto Inspection::TypeDefinition::GetDataTypeFromString(std::string_view String) 
     else if((String == "unsigned integer 8bit") || (String == "unsigned-integer-8bit"))
     {
         return Inspection::TypeDefinition::DataType::UnsignedInteger8Bit;
+    }
+    else if((String == "unsigned integer 8bit buffer") || (String == "unsigned-integer-8bit-buffer"))
+    {
+        return Inspection::TypeDefinition::DataType::UnsignedInteger8BitBuffer;
     }
     else if((String == "unsigned integer 16bit") || (String == "unsigned-integer-16bit"))
     {

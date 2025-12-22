@@ -138,7 +138,7 @@ namespace Inspection
                 }
             }
             
-            throw std::invalid_argument("Could not find a tag named \"" + std::string{Name} + "\".");
+            return nullptr;
         }
         
         auto GetTag(std::string_view Name) const -> Inspection::Value const *
@@ -151,7 +151,7 @@ namespace Inspection
                 }
             }
             
-            throw std::invalid_argument("Could not find a tag named \"" + std::string{Name} + "\".");
+            return nullptr;
         }
         
         auto GetField(std::string_view Name) -> Inspection::Value *
@@ -164,7 +164,7 @@ namespace Inspection
                 }
             }
             
-            throw std::invalid_argument("Could not find a field named \"" + std::string{Name} + "\".");
+            return nullptr;
         }
         
         auto GetField(std::string_view Name) const -> Inspection::Value const *
@@ -177,7 +177,7 @@ namespace Inspection
                 }
             }
             
-            throw std::invalid_argument("Could not find a field named \"" + std::string{Name} + "\".");
+            return nullptr;
         }
         
         auto GetFields() const -> std::list<std::unique_ptr<Inspection::Value>> const &

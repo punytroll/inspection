@@ -14,6 +14,8 @@ common_library = static_library(
   'common',
   sources: [
     'source/execution_context.cpp',
+    'source/getters/ebml.cpp',
+    'source/getters/helpers.cpp',
     'source/getters.cpp',
     'source/guid.cpp',
     'source/helper.cpp',
@@ -26,6 +28,7 @@ common_library = static_library(
     'source/type_definition/add_tag.cpp',
     'source/type_definition/alternative.cpp',
     'source/type_definition/and.cpp',
+    'source/type_definition/apply_cast.cpp',
     'source/type_definition/apply_enumeration.cpp',
     'source/type_definition/array.cpp',
     'source/type_definition/bits_interpretation.cpp',

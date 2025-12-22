@@ -24,6 +24,7 @@ namespace Inspection::TypeDefinition
     enum class DataType
     {
         Boolean,
+        DoublePrecisionReal,
         GUID,
         Nothing,
         Length,
@@ -32,6 +33,7 @@ namespace Inspection::TypeDefinition
         String,
         Type,
         UnsignedInteger8Bit,
+        UnsignedInteger8BitBuffer,
         UnsignedInteger16Bit,
         UnsignedInteger32Bit,
         UnsignedInteger64Bit

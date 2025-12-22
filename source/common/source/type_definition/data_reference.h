@@ -78,6 +78,7 @@ namespace Inspection
             auto operator=(Inspection::TypeDefinition::DataReference const & DataReference) -> Inspection::TypeDefinition::DataReference & = delete;
             auto operator=(Inspection::TypeDefinition::DataReference && DataReference) -> Inspection::TypeDefinition::DataReference & = delete;
         private:
+            std::unique_ptr<Inspection::TypeDefinition::Expression> m_Fallback;
             std::vector<Inspection::TypeDefinition::DataReference::Part> m_Parts;
             Inspection::TypeDefinition::DataReference::Root m_Root;
         };

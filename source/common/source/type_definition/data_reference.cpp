@@ -75,7 +75,7 @@ auto Inspection::TypeDefinition::DataReference::GetAny(Inspection::ExecutionCont
             auto PartIterator = std::begin(m_Parts);
             auto EndIterator = std::end(m_Parts);
             
-            while(PartIterator != EndIterator)
+            while((Value != nullptr) && (PartIterator != EndIterator))
             {
                 switch(PartIterator->GetType())
                 {
@@ -117,9 +117,17 @@ auto Inspection::TypeDefinition::DataReference::GetAny(Inspection::ExecutionCont
             break;
         }
     }
-    ASSERTION(Value != nullptr);
-    
-    return Value->GetData();
+    if((Value != nullptr) && (Value->GetData().has_value() == true))
+    {
+        return Value->GetData();
+    }
+    else
+    {
+        INVALID_INPUT_IF((Value == nullptr) && (m_Fallback == nullptr), "If a \"data-reference\" cannot be resolved, it needs a \"fallback\".");
+        INVALID_INPUT_IF((Value != nullptr) && (Value->GetData().has_value() == false) && (m_Fallback == nullptr), "If a \"data-reference\" resolves to empty data, it needs a \"fallback\".");
+        
+        return m_Fallback->GetAny(ExecutionContext);
+    }
 }
 
 auto Inspection::TypeDefinition::DataReference::GetDataType() const -> Inspection::TypeDefinition::DataType
@@ -166,6 +174,11 @@ auto Inspection::TypeDefinition::DataReference::Load(XML::Element const * Elemen
             
             ASSERTION(TextNode != nullptr);
             Result->m_Parts.emplace_back(Inspection::TypeDefinition::DataReference::Part::Type::Tag, TextNode->GetText());
+        }
+        else if(ChildElement->GetName() == "fallback")
+        {
+            INVALID_INPUT_IF(Result->m_Fallback != nullptr, "A \"data-reference\" can only have one fallback.");
+            Result->m_Fallback = Inspection::TypeDefinition::Expression::LoadFromWithin(ChildElement);
         }
         else
         {

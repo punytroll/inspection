@@ -24,6 +24,7 @@
 
 #include "add_tag.h"
 #include "alternative.h"
+#include "apply_cast.h"
 #include "apply_enumeration.h"
 #include "array.h"
 #include "bits_interpretation.h"
@@ -171,6 +172,11 @@ auto Inspection::TypeDefinition::Part::m_AddPartResult(Inspection::ExecutionCont
     }
 }
 
+auto Inspection::TypeDefinition::Part::m_AppendInterpretation(std::unique_ptr<Inspection::TypeDefinition::Interpretation> Interpretation) -> void
+{
+    m_Interpretations.push_back(std::move(Interpretation));
+}
+
 auto Inspection::TypeDefinition::Part::m_LoadProperties(XML::Element const * Element) -> void
 {
     ASSERTION(Element != nullptr);
@@ -189,10 +195,15 @@ auto Inspection::TypeDefinition::Part::m_LoadProperty(XML::Element const * Eleme
         ASSERTION((m_PartType == Inspection::TypeDefinition::PartType::Field) || (m_PartType == Inspection::TypeDefinition::PartType::Forward));
         m_TypeReference = Inspection::TypeDefinition::TypeReference::Load(Element);
     }
+    else if(Element->GetName() == "apply-cast")
+    {
+        ASSERTION(m_PartType == Inspection::TypeDefinition::PartType::Field);
+        m_AppendInterpretation(Inspection::TypeDefinition::ApplyCast::Load(Element));
+    }
     else if(Element->GetName() == "apply-enumeration")
     {
         ASSERTION((m_PartType == Inspection::TypeDefinition::PartType::Field) || (m_PartType == Inspection::TypeDefinition::PartType::Forward));
-        m_Interpretations.push_back(Inspection::TypeDefinition::ApplyEnumeration::Load(Element));
+        m_AppendInterpretation(Inspection::TypeDefinition::ApplyEnumeration::Load(Element));
     }
     else if(Element->GetName() == "length")
     {
@@ -208,13 +219,13 @@ auto Inspection::TypeDefinition::Part::m_LoadProperty(XML::Element const * Eleme
         for(auto const & ChildElement : Element->GetChildElements())
         {
             ASSERTION(ChildElement != nullptr);
-            m_Interpretations.push_back(Inspection::TypeDefinition::Verification::Load(ChildElement));
+            m_AppendInterpretation(Inspection::TypeDefinition::Verification::Load(ChildElement));
         }
     }
     else if(Element->GetName() == "tag")
     {
         ASSERTION((m_PartType == Inspection::TypeDefinition::PartType::Field) || (m_PartType == Inspection::TypeDefinition::PartType::Forward) || (m_PartType == Inspection::TypeDefinition::PartType::Sequence));
-        m_Interpretations.push_back(Inspection::TypeDefinition::AddTag::Load(Element));
+        m_AppendInterpretation(Inspection::TypeDefinition::AddTag::Load(Element));
     }
     else if(Element->GetName() == "array")
     {
@@ -229,7 +240,7 @@ auto Inspection::TypeDefinition::Part::m_LoadProperty(XML::Element const * Eleme
     else if((Element->GetName() == "bit") || (Element->GetName() == "bits"))
     {
         ASSERTION((m_PartType == Inspection::TypeDefinition::PartType::Field) || (m_PartType == Inspection::TypeDefinition::PartType::Forward));
-        m_Interpretations.push_back(Inspection::TypeDefinition::BitsInterpretation::Load(Element));
+        m_AppendInterpretation(Inspection::TypeDefinition::BitsInterpretation::Load(Element));
     }
     else
     {

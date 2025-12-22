@@ -30,7 +30,9 @@
 					<part>Subframe_CalculateBitsPerSample</part>
 				</type-reference>
 			</element-type>
-			<element-name>Subframe</element-name>
+			<element-name>
+				<string>Subframe</string>
+			</element-name>
 			<element-parameters>
 				<parameter name="BlockSize">
 					<data-reference root="type">

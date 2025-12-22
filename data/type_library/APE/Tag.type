@@ -24,7 +24,9 @@
 					<part>Item</part>
 				</type-reference>
 			</element-type>
-			<element-name>APETagsItem</element-name>
+			<element-name>
+				<string>APETagsItem</string>
+			</element-name>
 		</array>
 		<field>
 			<name>

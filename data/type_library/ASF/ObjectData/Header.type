@@ -59,7 +59,9 @@
 					<part>Object</part>
 				</type-reference>
 			</element-type>
-			<element-name>HeaderObject</element-name>
+			<element-name>
+				<string>HeaderObject</string>
+			</element-name>
 		</array>
 	</sequence>
 </type>

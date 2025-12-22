@@ -163,6 +163,10 @@ auto Inspection::operator<<(std::ostream & OStream, std::any const & Any) -> std
         {
             OStream << std::any_cast<float>(Any);
         }
+        else if(Any.type() == typeid(double))
+        {
+            OStream << std::any_cast<double>(Any);
+        }
         else if(Any.type() == typeid(std::int16_t))
         {
             OStream << std::any_cast<std::int16_t>(Any);
@@ -309,6 +313,10 @@ auto Inspection::operator<<(std::ostream & OStream, enum Inspection::TypeDefinit
         {
             return OStream << "boolean";
         }
+    case Inspection::TypeDefinition::DataType::DoublePrecisionReal:
+        {
+            return OStream << "double-precision-real";
+        }
     case Inspection::TypeDefinition::DataType::GUID:
         {
             return OStream << "guid";
@@ -340,6 +348,10 @@ auto Inspection::operator<<(std::ostream & OStream, enum Inspection::TypeDefinit
     case Inspection::TypeDefinition::DataType::UnsignedInteger8Bit:
         {
             return OStream << "unsigned-integer-8bit";
+        }
+    case Inspection::TypeDefinition::DataType::UnsignedInteger8BitBuffer:
+        {
+            return OStream << "unsigned-integer-8bit-buffer";
         }
     case Inspection::TypeDefinition::DataType::UnsignedInteger16Bit:
         {
@@ -456,6 +468,10 @@ auto Inspection::to_string(std::type_info const & TypeInformation) -> std::strin
     else if(TypeInformation == typeid(std::uint8_t))
     {
         return "unsigned integer 8bit";
+    }
+    else if(TypeInformation == typeid(std::vector<std::uint8_t>))
+    {
+        return "unsigned integer 8bit buffer";
     }
     else if(TypeInformation == typeid(std::uint16_t))
     {

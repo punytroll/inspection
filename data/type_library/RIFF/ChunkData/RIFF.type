@@ -26,7 +26,9 @@
 					<part>Chunk</part>
 				</type-reference>
 			</element-type>
-			<element-name>Chunk</element-name>
+			<element-name>
+				<string>Chunk</string>
+			</element-name>
 		</array>
 	</sequence>
 </type>

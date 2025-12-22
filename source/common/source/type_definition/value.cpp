@@ -37,6 +37,12 @@ auto Inspection::TypeDefinition::Value::GetAny(Inspection::ExecutionContext & Ex
             
             return std::get<bool>(m_Data);
         }
+    case Inspection::TypeDefinition::DataType::DoublePrecisionReal:
+        {
+            ASSERTION(std::holds_alternative<double>(m_Data) == true);
+            
+            return std::get<double>(m_Data);
+        }
     case Inspection::TypeDefinition::DataType::GUID:
         {
             ASSERTION(std::holds_alternative<Inspection::GUID>(m_Data) == true);
@@ -64,6 +70,12 @@ auto Inspection::TypeDefinition::Value::GetAny(Inspection::ExecutionContext & Ex
             ASSERTION(std::holds_alternative<std::uint8_t>(m_Data) == true);
             
             return std::get<std::uint8_t>(m_Data);
+        }
+    case Inspection::TypeDefinition::DataType::UnsignedInteger8BitBuffer:
+        {
+            ASSERTION(std::holds_alternative<std::vector<std::uint8_t>>(m_Data) == true);
+            
+            return std::get<std::vector<std::uint8_t>>(m_Data);
         }
     case Inspection::TypeDefinition::DataType::UnsignedInteger16Bit:
         {
@@ -129,6 +141,20 @@ auto Inspection::TypeDefinition::Value::Load(XML::Element const * Element) -> st
         INVALID_INPUT_IF(Boolean.has_value() == false, "The text in a boolean value must be either \"true\" or \"false\".");
         Result->m_Data = Boolean.value();
     }
+    else if(Element->GetName() == "double-precision-real")
+    {
+        Result->m_DataType = Inspection::TypeDefinition::DataType::DoublePrecisionReal;
+        INVALID_INPUT_IF(Element->GetChildNodes().size() != 1, "A double-precision-real value must have exactly one child element.");
+        
+        auto TextNode = dynamic_cast<XML::Text const *>(Element->GetChildNode(0));
+        
+        INVALID_INPUT_IF(TextNode == nullptr, "A double-precision-real value must contain a text child element.");
+        
+        auto DoublePrecisionReal = Inspection::FromString<double>(TextNode->GetText());
+        
+        INVALID_INPUT_IF(DoublePrecisionReal.has_value() == false, "The text in a double-precision-real value must be a floating point number.");
+        Result->m_Data = DoublePrecisionReal.value();
+    }
     else if(Element->GetName() == "guid")
     {
         Result->m_DataType = Inspection::TypeDefinition::DataType::GUID;
@@ -176,6 +202,35 @@ auto Inspection::TypeDefinition::Value::Load(XML::Element const * Element) -> st
         
         INVALID_INPUT_IF(Integer.has_value() == false, "The text in an unsigned-integer-8bit value must be an integer number.");
         Result->m_Data = Integer.value();
+    }
+    else if(Element->GetName() == "unsigned-integer-8bit-buffer")
+    {
+        Result->m_DataType = Inspection::TypeDefinition::DataType::UnsignedInteger8BitBuffer;
+        
+        auto Buffer = std::vector<std::uint8_t>{};
+        
+        for(auto const & ChildElement : Element->GetChildElements())
+        {
+            ASSERTION(ChildElement != nullptr);
+            if(ChildElement->GetName() == "unsigned-integer-8bit")
+            {
+                INVALID_INPUT_IF(ChildElement->GetChildNodes().size() != 1, "An unsigned-integer-8bit value must have exactly one child element.");
+                
+                auto TextNode = dynamic_cast<XML::Text const *>(ChildElement->GetChildNode(0));
+                
+                INVALID_INPUT_IF(TextNode == nullptr, "An unsigned-integer-8bit value must contain a text child element.");
+                
+                auto Integer = Inspection::FromString<std::uint8_t>(TextNode->GetText());
+                
+                INVALID_INPUT_IF(Integer.has_value() == false, "The text in an unsigned-integer-8bit value must be an integer number.");
+                Buffer.push_back(Integer.value());
+            }
+            else
+            {
+                INVALID_INPUT("\"unsigned-integer-8bit-buffer\" elements may only contain \"unsigned-integer-8bit\" elements, not an \"" + ChildElement->GetName() + "\" element.");
+            }
+        }
+        Result->m_Data = Buffer;
     }
     else if(Element->GetName() == "unsigned-integer-16bit")
     {

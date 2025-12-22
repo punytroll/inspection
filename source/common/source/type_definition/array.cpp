@@ -20,6 +20,7 @@
 
 #include <common/execution_context.h>
 #include <common/result.h>
+#include <common/type_repository.h>
 #include <common/value.h>
 
 #include "../xml_helper.h"
@@ -65,19 +66,25 @@ auto Inspection::TypeDefinition::Array::Get(Inspection::ExecutionContext & Execu
             
             while((Continue == true) && (ExecutionContext.GetCurrentReader().HasRemaining() == true))
             {
-                auto ElementReader = Inspection::Reader{ExecutionContext.GetCurrentReader()};
-                
                 ElementParameters["ElementIndexInArray"] = ElementIndexInArray;
                 
-                auto ElementResult = ElementType->Get(ElementReader, ElementParameters);
+                auto ElementResult = std::make_unique<Inspection::Result>();
+                auto ElementReader = Inspection::Reader{ExecutionContext.GetCurrentReader()};
+                auto ElementExecutionContext = Inspection::ExecutionContext{Inspection::g_TypeRepository};
                 
+                ElementExecutionContext.Push(*ElementResult, ElementReader, ElementParameters);
+                ElementType->Get(ElementExecutionContext);
                 Continue = ElementResult->GetSuccess();
                 if(Continue == true)
                 {
                     ElementResult->GetValue()->AddTag("element index in array", ElementIndexInArray++);
-                    if(m_ElementName.has_value() == true)
+                    if(m_ElementName != nullptr)
                     {
-                        ExecutionContext.GetCurrentResult().GetValue()->AppendField(m_ElementName.value(), ElementResult->ExtractValue());
+                        auto ElementNameAny = m_ElementName->GetAny(ElementExecutionContext);
+                        
+                        ASSERTION(ElementNameAny.has_value() == true);
+                        ASSERTION(ElementNameAny.type() == typeid(std::string));
+                        ExecutionContext.GetCurrentResult().GetValue()->AppendField(std::any_cast<std::string const &>(ElementNameAny), ElementResult->ExtractValue());
                     }
                     else
                     {
@@ -89,6 +96,7 @@ auto Inspection::TypeDefinition::Array::Get(Inspection::ExecutionContext & Execu
                 {
                     break;
                 }
+                ElementExecutionContext.Pop();
             }
             if(ExecutionContext.GetCurrentReader().IsAtEnd() == true)
             {
@@ -149,9 +157,14 @@ auto Inspection::TypeDefinition::Array::Get(Inspection::ExecutionContext & Execu
                 
                 ASSERTION(ExecutionContext.GetCurrentReader().GetReadPositionInInput() == Properties.first);
                 
-                auto ElementReader = Inspection::Reader{ExecutionContext.GetCurrentReader(), Properties.second};
-                auto ElementResult = ElementType->Get(ElementReader, ElementParameters);
+                ElementParameters["ElementIndexInArray"] = ElementPropertiesIndex;
                 
+                auto ElementResult = std::make_unique<Inspection::Result>();
+                auto ElementReader = Inspection::Reader{ExecutionContext.GetCurrentReader(), Properties.second};
+                auto ElementExecutionContext = Inspection::ExecutionContext{Inspection::g_TypeRepository};
+                
+                ElementExecutionContext.Push(*ElementResult, ElementReader, ElementParameters);
+                ElementType->Get(ElementExecutionContext);
                 Continue = ElementResult->GetSuccess();
                 if(Continue == true)
                 {
@@ -161,9 +174,13 @@ auto Inspection::TypeDefinition::Array::Get(Inspection::ExecutionContext & Execu
                         ElementResult->GetValue()->AddTag("requested data length", Properties.second);
                         ElementResult->GetValue()->AddTag("processed data length", ElementReader.GetConsumedLength());
                     }
-                    if(m_ElementName.has_value() == true)
+                    if(m_ElementName != nullptr)
                     {
-                        ExecutionContext.GetCurrentResult().GetValue()->AppendField(m_ElementName.value(), ElementResult->ExtractValue());
+                        auto ElementNameAny = m_ElementName->GetAny(ElementExecutionContext);
+                        
+                        ASSERTION(ElementNameAny.has_value() == true);
+                        ASSERTION(ElementNameAny.type() == typeid(std::string));
+                        ExecutionContext.GetCurrentResult().GetValue()->AppendField(std::any_cast<std::string const &>(ElementNameAny), ElementResult->ExtractValue());
                     }
                     else
                     {
@@ -179,6 +196,7 @@ auto Inspection::TypeDefinition::Array::Get(Inspection::ExecutionContext & Execu
                         ExecutionContext.GetCurrentReader().AdvancePosition(OtherDataLength);
                     }
                 }
+                ElementExecutionContext.Pop();
             }
             ExecutionContext.GetCurrentResult().GetValue()->AddTag("number of elements", NumberOfAppendedElements);
             
@@ -211,17 +229,23 @@ auto Inspection::TypeDefinition::Array::Get(Inspection::ExecutionContext & Execu
             {
                 if(ElementIndexInArray < NumberOfElements)
                 {
-                    auto ElementReader = Inspection::Reader{ExecutionContext.GetCurrentReader()};
-                    
                     ElementParameters["ElementIndexInArray"] = ElementIndexInArray;
                     
-                    auto ElementResult = ElementType->Get(ElementReader, ElementParameters);
+                    auto ElementResult = std::make_unique<Inspection::Result>();
+                    auto ElementReader = Inspection::Reader{ExecutionContext.GetCurrentReader()};
+                    auto ElementExecutionContext = Inspection::ExecutionContext{Inspection::g_TypeRepository};
                     
+                    ElementExecutionContext.Push(*ElementResult, ElementReader, ElementParameters);
+                    ElementType->Get(ElementExecutionContext);
                     Continue = ElementResult->GetSuccess();
                     ElementResult->GetValue()->AddTag("element index in array", ElementIndexInArray++);
-                    if(m_ElementName.has_value() == true)
+                    if(m_ElementName != nullptr)
                     {
-                        ExecutionContext.GetCurrentResult().GetValue()->AppendField(m_ElementName.value(), ElementResult->ExtractValue());
+                        auto ElementNameAny = m_ElementName->GetAny(ElementExecutionContext);
+                        
+                        ASSERTION(ElementNameAny.has_value() == true);
+                        ASSERTION(ElementNameAny.type() == typeid(std::string));
+                        ExecutionContext.GetCurrentResult().GetValue()->AppendField(std::any_cast<std::string const &>(ElementNameAny), ElementResult->ExtractValue());
                     }
                     else
                     {
@@ -234,6 +258,7 @@ auto Inspection::TypeDefinition::Array::Get(Inspection::ExecutionContext & Execu
                         
                         break;
                     }
+                    ElementExecutionContext.Pop();
                 }
                 else
                 {
@@ -266,19 +291,25 @@ auto Inspection::TypeDefinition::Array::Get(Inspection::ExecutionContext & Execu
             
             while((Continue == true) && (ExecutionContext.GetCurrentReader().HasRemaining() == true))
             {
-                auto ElementReader = Inspection::Reader{ExecutionContext.GetCurrentReader()};
-                
                 ElementParameters["ElementIndexInArray"] = ElementIndexInArray;
                 
-                auto ElementResult = ElementType->Get(ElementReader, ElementParameters);
+                auto ElementResult = std::make_unique<Inspection::Result>();
+                auto ElementReader = Inspection::Reader{ExecutionContext.GetCurrentReader()};
+                auto ElementExecutionContext = Inspection::ExecutionContext{Inspection::g_TypeRepository};
                 
+                ElementExecutionContext.Push(*ElementResult, ElementReader, ElementParameters);
+                ElementType->Get(ElementExecutionContext);
                 Continue = ElementResult->GetSuccess();
                 if(Continue == true)
                 {
                     ElementResult->GetValue()->AddTag("element index in array", ElementIndexInArray++);
-                    if(m_ElementName.has_value() == true)
+                    if(m_ElementName != nullptr)
                     {
-                        ExecutionContext.GetCurrentResult().GetValue()->AppendField(m_ElementName.value(), ElementResult->ExtractValue());
+                        auto ElementNameAny = m_ElementName->GetAny(ElementExecutionContext);
+                        
+                        ASSERTION(ElementNameAny.has_value() == true);
+                        ASSERTION(ElementNameAny.type() == typeid(std::string));
+                        ExecutionContext.GetCurrentResult().GetValue()->AppendField(std::any_cast<std::string const &>(ElementNameAny), ElementResult->ExtractValue());
                     }
                     else
                     {
@@ -292,6 +323,7 @@ auto Inspection::TypeDefinition::Array::Get(Inspection::ExecutionContext & Execu
                     
                     break;
                 }
+                ElementExecutionContext.Pop();
             }
             if(ExecutionContext.GetCurrentReader().IsAtEnd() == true)
             {
@@ -325,23 +357,30 @@ auto Inspection::TypeDefinition::Array::Get(Inspection::ExecutionContext & Execu
             
             while((Continue == true) && (ExecutionContext.GetCurrentReader().HasRemaining() == true))
             {
-                auto ElementReader = Inspection::Reader{ExecutionContext.GetCurrentReader()};
-                
                 ElementParameters["ElementIndexInArray"] = ElementIndexInArray;
                 
-                auto ElementResult = ElementType->Get(ElementReader, ElementParameters);
+                auto ElementResult = std::make_unique<Inspection::Result>();
+                auto ElementReader = Inspection::Reader{ExecutionContext.GetCurrentReader()};
+                auto ElementExecutionContext = Inspection::ExecutionContext{Inspection::g_TypeRepository};
                 
+                ElementExecutionContext.Push(*ElementResult, ElementReader, ElementParameters);
+                ElementType->Get(ElementExecutionContext);
                 Continue = ElementResult->GetSuccess();
                 ElementResult->GetValue()->AddTag("element index in array", ElementIndexInArray++);
-                if(m_ElementName.has_value() == true)
+                if(m_ElementName != nullptr)
                 {
-                    ExecutionContext.GetCurrentResult().GetValue()->AppendField(m_ElementName.value(), ElementResult->ExtractValue());
+                    auto ElementNameAny = m_ElementName->GetAny(ElementExecutionContext);
+                    
+                    ASSERTION(ElementNameAny.has_value() == true);
+                    ASSERTION(ElementNameAny.type() == typeid(std::string));
+                    ExecutionContext.GetCurrentResult().GetValue()->AppendField(std::any_cast<std::string const &>(ElementNameAny), ElementResult->ExtractValue());
                 }
                 else
                 {
                     ExecutionContext.GetCurrentResult().GetValue()->AppendField(ElementResult->ExtractValue());
                 }
                 ExecutionContext.GetCurrentReader().AdvancePosition(ElementReader.GetConsumedLength());
+                ElementExecutionContext.Pop();
             }
             if(ExecutionContext.GetCurrentReader().IsAtEnd() == true)
             {
@@ -419,12 +458,7 @@ auto Inspection::TypeDefinition::Array::m_LoadProperty(XML::Element const * Elem
     }
     else if(Element->GetName() == "element-name")
     {
-        ASSERTION(Element->GetChildNodes().size() == 1);
-        
-        auto ElementNameText = dynamic_cast<XML::Text const *>(Element->GetChildNode(0));
-        
-        ASSERTION(ElementNameText != nullptr);
-        m_ElementName = ElementNameText->GetText();
+        m_ElementName = Inspection::TypeDefinition::Expression::LoadFromWithin(Element);
     }
     else if(Element->GetName() == "element-type")
     {

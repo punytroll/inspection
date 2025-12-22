@@ -19,7 +19,9 @@
 					<part>TextStringAccordingToEncoding_EndedByTerminationOrLength</part>
 				</type-reference>
 			</element-type>
-			<element-name>Information</element-name>
+			<element-name>
+				<string>Information</string>
+			</element-name>
 			<element-parameters>
 				<parameter name="TextEncoding">
 					<data-reference root="type">

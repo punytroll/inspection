@@ -1,0 +1,2435 @@
+<type>
+	<hardcoded>Get_EBML_ElementID</hardcoded>
+	<apply-enumeration>
+		<enumeration base-data-type="unsigned-integer-8bit-buffer">
+			<element valid="true">
+				<base-value>
+					<unsigned-integer-8bit-buffer>
+						<unsigned-integer-8bit>26</unsigned-integer-8bit>
+						<unsigned-integer-8bit>69</unsigned-integer-8bit>
+						<unsigned-integer-8bit>223</unsigned-integer-8bit>
+						<unsigned-integer-8bit>163</unsigned-integer-8bit>
+					</unsigned-integer-8bit-buffer>
+				</base-value>
+				<tag name="interpretation">
+					<value>
+						<string>EBML</string>
+					</value>
+					<tag name="type">
+						<value>
+							<string>master</string>
+						</value>
+					</tag>
+					<tag name="min occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="max occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>Set the EBML characteristics of the data to follow. Each EBML Document has to start with this.</string>
+						</value>
+					</tag>
+					<tag name="standard">
+						<value>
+							<string>RFC 8794 (EBML)</string>
+						</value>
+					</tag>
+				</tag>
+			</element>
+			<element valid="true">
+				<base-value>
+					<unsigned-integer-8bit-buffer>
+						<unsigned-integer-8bit>66</unsigned-integer-8bit>
+						<unsigned-integer-8bit>134</unsigned-integer-8bit>
+					</unsigned-integer-8bit-buffer>
+				</base-value>
+				<tag name="interpretation">
+					<value>
+						<string>EBMLVersion</string>
+					</value>
+					<tag name="type">
+						<value>
+							<string>unsigned integer</string>
+						</value>
+					</tag>
+					<tag name="default">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="range">
+						<value>
+							<string>not 0</string>
+						</value>
+					</tag>
+					<tag name="min occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="max occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>The version of EBML specifications used to create the EBML Document.</string>
+						</value>
+					</tag>
+					<tag name="standard">
+						<value>
+							<string>RFC 8794 (EBML)</string>
+						</value>
+					</tag>
+				</tag>
+			</element>
+			<element valid="true">
+				<base-value>
+					<unsigned-integer-8bit-buffer>
+						<unsigned-integer-8bit>66</unsigned-integer-8bit>
+						<unsigned-integer-8bit>247</unsigned-integer-8bit>
+					</unsigned-integer-8bit-buffer>
+				</base-value>
+				<tag name="interpretation">
+					<value>
+						<string>EBMLReadVersion</string>
+					</value>
+					<tag name="type">
+						<value>
+							<string>unsigned integer</string>
+						</value>
+					</tag>
+					<tag name="default">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="range">
+						<value>
+							<string>1</string>
+						</value>
+					</tag>
+					<tag name="min occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="max occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>The minimum EBML version an EBML Reader has to support to read this EBML Document.</string>
+						</value>
+					</tag>
+					<tag name="standard">
+						<value>
+							<string>RFC 8794 (EBML)</string>
+						</value>
+					</tag>
+				</tag>
+			</element>
+			<element valid="true">
+				<base-value>
+					<unsigned-integer-8bit-buffer>
+						<unsigned-integer-8bit>66</unsigned-integer-8bit>
+						<unsigned-integer-8bit>242</unsigned-integer-8bit>
+					</unsigned-integer-8bit-buffer>
+				</base-value>
+				<tag name="interpretation">
+					<value>
+						<string>EBMLMaxIDLength</string>
+					</value>
+					<tag name="type">
+						<value>
+							<string>unsigned integer</string>
+						</value>
+					</tag>
+					<tag name="default">
+						<value>
+							<unsigned-integer-64bit>4</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="range">
+						<value>
+							<string>&gt;= 4</string>
+						</value>
+					</tag>
+					<tag name="min occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="max occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>The EBMLMaxIDLength Element stores the maximum permitted length in octets of the Element IDs to be found within the EBML Body.</string>
+						</value>
+					</tag>
+					<tag name="standard">
+						<value>
+							<string>RFC 8794 (EBML)</string>
+						</value>
+					</tag>
+				</tag>
+			</element>
+			<element valid="true">
+				<base-value>
+					<unsigned-integer-8bit-buffer>
+						<unsigned-integer-8bit>66</unsigned-integer-8bit>
+						<unsigned-integer-8bit>243</unsigned-integer-8bit>
+					</unsigned-integer-8bit-buffer>
+				</base-value>
+				<tag name="interpretation">
+					<value>
+						<string>EBMLMaxSizeLength</string>
+					</value>
+					<tag name="type">
+						<value>
+							<string>unsigned integer</string>
+						</value>
+					</tag>
+					<tag name="default">
+						<value>
+							<unsigned-integer-64bit>8</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="range">
+						<value>
+							<string>not 0</string>
+						</value>
+					</tag>
+					<tag name="min occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="max occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>The EBMLMaxSizeLength Element stores the maximum permitted length in octets of the expressions of all Element Data Sizes to be found within the EBML Body.</string>
+						</value>
+					</tag>
+					<tag name="standard">
+						<value>
+							<string>RFC 8794 (EBML)</string>
+						</value>
+					</tag>
+				</tag>
+			</element>
+			<element valid="true">
+				<base-value>
+					<unsigned-integer-8bit-buffer>
+						<unsigned-integer-8bit>66</unsigned-integer-8bit>
+						<unsigned-integer-8bit>130</unsigned-integer-8bit>
+					</unsigned-integer-8bit-buffer>
+				</base-value>
+				<tag name="interpretation">
+					<value>
+						<string>DocType</string>
+					</value>
+					<tag name="type">
+						<value>
+							<string>ascii string</string>
+						</value>
+					</tag>
+					<tag name="length">
+						<value>
+							<string>&gt; 0</string>
+						</value>
+					</tag>
+					<tag name="min occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="max occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>A string that describes and identifies the content of the EBML Body that follows this EBML Header.</string>
+						</value>
+					</tag>
+					<tag name="standard">
+						<value>
+							<string>RFC 8794 (EBML)</string>
+						</value>
+					</tag>
+				</tag>
+			</element>
+			<element valid="true">
+				<base-value>
+					<unsigned-integer-8bit-buffer>
+						<unsigned-integer-8bit>66</unsigned-integer-8bit>
+						<unsigned-integer-8bit>135</unsigned-integer-8bit>
+					</unsigned-integer-8bit-buffer>
+				</base-value>
+				<tag name="interpretation">
+					<value>
+						<string>DocTypeVersion</string>
+					</value>
+					<tag name="type">
+						<value>
+							<string>unsigned integer</string>
+						</value>
+					</tag>
+					<tag name="default">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="range">
+						<value>
+							<string>&gt;= 4</string>
+						</value>
+					</tag>
+					<tag name="min occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="max occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>The version of DocType interpreter used to create the EBML Document.</string>
+						</value>
+					</tag>
+					<tag name="standard">
+						<value>
+							<string>RFC 8794 (EBML)</string>
+						</value>
+					</tag>
+				</tag>
+			</element>
+			<element valid="true">
+				<base-value>
+					<unsigned-integer-8bit-buffer>
+						<unsigned-integer-8bit>66</unsigned-integer-8bit>
+						<unsigned-integer-8bit>133</unsigned-integer-8bit>
+					</unsigned-integer-8bit-buffer>
+				</base-value>
+				<tag name="interpretation">
+					<value>
+						<string>DocTypeReadVersion</string>
+					</value>
+					<tag name="type">
+						<value>
+							<string>unsigned integer</string>
+						</value>
+					</tag>
+					<tag name="default">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="range">
+						<value>
+							<string>not 0</string>
+						</value>
+					</tag>
+					<tag name="min occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="max occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>The minimum DocType version an EBML Reader has to support to read this EBML Document.</string>
+						</value>
+					</tag>
+					<tag name="standard">
+						<value>
+							<string>RFC 8794 (EBML)</string>
+						</value>
+					</tag>
+				</tag>
+			</element>
+			<element valid="true">
+				<base-value>
+					<unsigned-integer-8bit-buffer>
+						<unsigned-integer-8bit>24</unsigned-integer-8bit>
+						<unsigned-integer-8bit>83</unsigned-integer-8bit>
+						<unsigned-integer-8bit>128</unsigned-integer-8bit>
+						<unsigned-integer-8bit>103</unsigned-integer-8bit>
+					</unsigned-integer-8bit-buffer>
+				</base-value>
+				<tag name="interpretation">
+					<value>
+						<string>Segment</string>
+					</value>
+					<tag name="type">
+						<value>
+							<string>master</string>
+						</value>
+					</tag>
+					<tag name="min occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="max occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>The Root Element that contains all other Top-Level Elements.</string>
+						</value>
+					</tag>
+					<tag name="standard">
+						<value>
+							<string>RFC 9559 (Matroska)</string>
+						</value>
+					</tag>
+				</tag>
+			</element>
+			<element valid="true">
+				<base-value>
+					<unsigned-integer-8bit-buffer>
+						<unsigned-integer-8bit>17</unsigned-integer-8bit>
+						<unsigned-integer-8bit>77</unsigned-integer-8bit>
+						<unsigned-integer-8bit>155</unsigned-integer-8bit>
+						<unsigned-integer-8bit>116</unsigned-integer-8bit>
+					</unsigned-integer-8bit-buffer>
+				</base-value>
+				<tag name="interpretation">
+					<value>
+						<string>SeekHead</string>
+					</value>
+					<tag name="type">
+						<value>
+							<string>master</string>
+						</value>
+					</tag>
+					<tag name="max occurs">
+						<value>
+							<unsigned-integer-64bit>2</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>Contains seeking information of Top-Level Elements.</string>
+						</value>
+					</tag>
+					<tag name="standard">
+						<value>
+							<string>RFC 9559 (Matroska)</string>
+						</value>
+					</tag>
+				</tag>
+			</element>
+			<element valid="true">
+				<base-value>
+					<unsigned-integer-8bit-buffer>
+						<unsigned-integer-8bit>77</unsigned-integer-8bit>
+						<unsigned-integer-8bit>187</unsigned-integer-8bit>
+					</unsigned-integer-8bit-buffer>
+				</base-value>
+				<tag name="interpretation">
+					<value>
+						<string>Seek</string>
+					</value>
+					<tag name="type">
+						<value>
+							<string>master</string>
+						</value>
+					</tag>
+					<tag name="min occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>Contains a single seek entry to an EBML Element.</string>
+						</value>
+					</tag>
+					<tag name="standard">
+						<value>
+							<string>RFC 9559 (Matroska)</string>
+						</value>
+					</tag>
+				</tag>
+			</element>
+			<element valid="true">
+				<base-value>
+					<unsigned-integer-8bit-buffer>
+						<unsigned-integer-8bit>83</unsigned-integer-8bit>
+						<unsigned-integer-8bit>171</unsigned-integer-8bit>
+					</unsigned-integer-8bit-buffer>
+				</base-value>
+				<tag name="interpretation">
+					<value>
+						<string>SeekID</string>
+					</value>
+					<tag name="type">
+						<value>
+							<string>binary</string>
+						</value>
+					</tag>
+					<tag name="min occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="max occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>The binary EBML ID of a Top-Level Element.</string>
+						</value>
+					</tag>
+					<tag name="standard">
+						<value>
+							<string>RFC 9559 (Matroska)</string>
+						</value>
+					</tag>
+				</tag>
+			</element>
+			<element valid="true">
+				<base-value>
+					<unsigned-integer-8bit-buffer>
+						<unsigned-integer-8bit>83</unsigned-integer-8bit>
+						<unsigned-integer-8bit>172</unsigned-integer-8bit>
+					</unsigned-integer-8bit-buffer>
+				</base-value>
+				<tag name="interpretation">
+					<value>
+						<string>SeekPosition</string>
+					</value>
+					<tag name="type">
+						<value>
+							<string>unsigned integer</string>
+						</value>
+					</tag>
+					<tag name="min occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="max occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>The Segment Position of a Top-Level Element.</string>
+						</value>
+					</tag>
+					<tag name="standard">
+						<value>
+							<string>RFC 9559 (Matroska)</string>
+						</value>
+					</tag>
+				</tag>
+			</element>
+			<element valid="true">
+				<base-value>
+					<unsigned-integer-8bit-buffer>
+						<unsigned-integer-8bit>21</unsigned-integer-8bit>
+						<unsigned-integer-8bit>73</unsigned-integer-8bit>
+						<unsigned-integer-8bit>169</unsigned-integer-8bit>
+						<unsigned-integer-8bit>102</unsigned-integer-8bit>
+					</unsigned-integer-8bit-buffer>
+				</base-value>
+				<tag name="interpretation">
+					<value>
+						<string>Info</string>
+					</value>
+					<tag name="type">
+						<value>
+							<string>master</string>
+						</value>
+					</tag>
+					<tag name="min occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="max occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="recurring">
+						<value>
+							<boolean>true</boolean>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>Contains general information about the Segment.</string>
+						</value>
+					</tag>
+					<tag name="standard">
+						<value>
+							<string>RFC 9559 (Matroska)</string>
+						</value>
+					</tag>
+				</tag>
+			</element>
+			<element valid="true">
+				<base-value>
+					<unsigned-integer-8bit-buffer>
+						<unsigned-integer-8bit>42</unsigned-integer-8bit>
+						<unsigned-integer-8bit>215</unsigned-integer-8bit>
+						<unsigned-integer-8bit>177</unsigned-integer-8bit>
+					</unsigned-integer-8bit-buffer>
+				</base-value>
+				<tag name="interpretation">
+					<value>
+						<string>TimestampScale</string>
+					</value>
+					<tag name="type">
+						<value>
+							<string>unsigned integer</string>
+						</value>
+					</tag>
+					<tag name="default">
+						<value>
+							<unsigned-integer-64bit>1000000</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="range">
+						<value>
+							<string>not 0</string>
+						</value>
+					</tag>
+					<tag name="min occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="max occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>Base unit for Segment Ticks and Track Ticks, in nanoseconds.</string>
+						</value>
+					</tag>
+					<tag name="standard">
+						<value>
+							<string>RFC 9559 (Matroska)</string>
+						</value>
+					</tag>
+				</tag>
+			</element>
+			<element valid="true">
+				<base-value>
+					<unsigned-integer-8bit-buffer>
+						<unsigned-integer-8bit>68</unsigned-integer-8bit>
+						<unsigned-integer-8bit>137</unsigned-integer-8bit>
+					</unsigned-integer-8bit-buffer>
+				</base-value>
+				<tag name="interpretation">
+					<value>
+						<string>Duration</string>
+					</value>
+					<tag name="type">
+						<value>
+							<string>float</string>
+						</value>
+					</tag>
+					<tag name="range">
+						<value>
+							<string>&gt; 0x0p+0</string>
+						</value>
+					</tag>
+					<tag name="max occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>Duration of the Segment, expressed in Segment Ticks, which are based on TimestampScale.</string>
+						</value>
+					</tag>
+					<tag name="standard">
+						<value>
+							<string>RFC 9559 (Matroska)</string>
+						</value>
+					</tag>
+				</tag>
+			</element>
+			<element valid="true">
+				<base-value>
+					<unsigned-integer-8bit-buffer>
+						<unsigned-integer-8bit>77</unsigned-integer-8bit>
+						<unsigned-integer-8bit>128</unsigned-integer-8bit>
+					</unsigned-integer-8bit-buffer>
+				</base-value>
+				<tag name="interpretation">
+					<value>
+						<string>MuxingApp</string>
+					</value>
+					<tag name="type">
+						<value>
+							<string>utf-8 string</string>
+						</value>
+					</tag>
+					<tag name="min occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="max occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>The full name of the writing application or library followed by the version number.</string>
+						</value>
+					</tag>
+					<tag name="standard">
+						<value>
+							<string>RFC 9559 (Matroska)</string>
+						</value>
+					</tag>
+				</tag>
+			</element>
+			<element valid="true">
+				<base-value>
+					<unsigned-integer-8bit-buffer>
+						<unsigned-integer-8bit>87</unsigned-integer-8bit>
+						<unsigned-integer-8bit>65</unsigned-integer-8bit>
+					</unsigned-integer-8bit-buffer>
+				</base-value>
+				<tag name="interpretation">
+					<value>
+						<string>WritingApp</string>
+					</value>
+					<tag name="type">
+						<value>
+							<string>utf-8 string</string>
+						</value>
+					</tag>
+					<tag name="min occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="max occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>The full name of the muxing application or library followed by the version number.</string>
+						</value>
+					</tag>
+					<tag name="standard">
+						<value>
+							<string>RFC 9559 (Matroska)</string>
+						</value>
+					</tag>
+				</tag>
+			</element>
+			<element valid="true">
+				<base-value>
+					<unsigned-integer-8bit-buffer>
+						<unsigned-integer-8bit>22</unsigned-integer-8bit>
+						<unsigned-integer-8bit>84</unsigned-integer-8bit>
+						<unsigned-integer-8bit>174</unsigned-integer-8bit>
+						<unsigned-integer-8bit>107</unsigned-integer-8bit>
+					</unsigned-integer-8bit-buffer>
+				</base-value>
+				<tag name="interpretation">
+					<value>
+						<string>Tracks</string>
+					</value>
+					<tag name="type">
+						<value>
+							<string>master</string>
+						</value>
+					</tag>
+					<tag name="max occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="recurring">
+						<value>
+							<boolean>true</boolean>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>A Top-Level Element of information with many tracks described.</string>
+						</value>
+					</tag>
+					<tag name="standard">
+						<value>
+							<string>RFC 9559 (Matroska)</string>
+						</value>
+					</tag>
+				</tag>
+			</element>
+			<element valid="true">
+				<base-value>
+					<unsigned-integer-8bit-buffer>
+						<unsigned-integer-8bit>174</unsigned-integer-8bit>
+					</unsigned-integer-8bit-buffer>
+				</base-value>
+				<tag name="interpretation">
+					<value>
+						<string>TrackEntry</string>
+					</value>
+					<tag name="type">
+						<value>
+							<string>master</string>
+						</value>
+					</tag>
+					<tag name="min occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>Describes a track with all elements.</string>
+						</value>
+					</tag>
+					<tag name="standard">
+						<value>
+							<string>RFC 9559 (Matroska)</string>
+						</value>
+					</tag>
+				</tag>
+			</element>
+			<element valid="true">
+				<base-value>
+					<unsigned-integer-8bit-buffer>
+						<unsigned-integer-8bit>215</unsigned-integer-8bit>
+					</unsigned-integer-8bit-buffer>
+				</base-value>
+				<tag name="interpretation">
+					<value>
+						<string>TrackNumber</string>
+					</value>
+					<tag name="type">
+						<value>
+							<string>unsigned integer</string>
+						</value>
+					</tag>
+					<tag name="range">
+						<value>
+							<string>not 0</string>
+						</value>
+					</tag>
+					<tag name="min occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="max occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>The track number as used in the Block Header.</string>
+						</value>
+					</tag>
+					<tag name="standard">
+						<value>
+							<string>RFC 9559 (Matroska)</string>
+						</value>
+					</tag>
+				</tag>
+			</element>
+			<element valid="true">
+				<base-value>
+					<unsigned-integer-8bit-buffer>
+						<unsigned-integer-8bit>115</unsigned-integer-8bit>
+						<unsigned-integer-8bit>197</unsigned-integer-8bit>
+					</unsigned-integer-8bit-buffer>
+				</base-value>
+				<tag name="interpretation">
+					<value>
+						<string>TrackUID</string>
+					</value>
+					<tag name="type">
+						<value>
+							<string>unsigned integer</string>
+						</value>
+					</tag>
+					<tag name="range">
+						<value>
+							<string>not 0</string>
+						</value>
+					</tag>
+					<tag name="min occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="max occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="stream copy">
+						<value>
+							<boolean>true</boolean>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>A UID that identifies the Track.</string>
+						</value>
+					</tag>
+					<tag name="standard">
+						<value>
+							<string>RFC 9559 (Matroska)</string>
+						</value>
+					</tag>
+				</tag>
+			</element>
+			<element valid="true">
+				<base-value>
+					<unsigned-integer-8bit-buffer>
+						<unsigned-integer-8bit>131</unsigned-integer-8bit>
+					</unsigned-integer-8bit-buffer>
+				</base-value>
+				<tag name="interpretation">
+					<value>
+						<string>TrackType</string>
+					</value>
+					<tag name="type">
+						<value>
+							<string>unsigned integer</string>
+						</value>
+					</tag>
+					<tag name="range">
+						<value>
+							<string>not 0</string>
+						</value>
+					</tag>
+					<tag name="min occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="max occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="stream copy">
+						<value>
+							<boolean>true</boolean>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>The TrackType defines the type of each frame found in the Track.</string>
+						</value>
+					</tag>
+					<tag name="standard">
+						<value>
+							<string>RFC 9559 (Matroska)</string>
+						</value>
+					</tag>
+				</tag>
+			</element>
+			<element valid="true">
+				<base-value>
+					<unsigned-integer-8bit-buffer>
+						<unsigned-integer-8bit>156</unsigned-integer-8bit>
+					</unsigned-integer-8bit-buffer>
+				</base-value>
+				<tag name="interpretation">
+					<value>
+						<string>FlagLacing</string>
+					</value>
+					<tag name="type">
+						<value>
+							<string>unsigned integer</string>
+						</value>
+					</tag>
+					<tag name="default">
+						<value>
+							<string>1</string>
+						</value>
+					</tag>
+					<tag name="range">
+						<value>
+							<string>0-1</string>
+						</value>
+					</tag>
+					<tag name="min occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="max occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>Set to 1 if the track MAY contain blocks that use lacing.</string>
+						</value>
+					</tag>
+					<tag name="standard">
+						<value>
+							<string>RFC 9559 (Matroska)</string>
+						</value>
+					</tag>
+				</tag>
+			</element>
+			<element valid="true">
+				<base-value>
+					<unsigned-integer-8bit-buffer>
+						<unsigned-integer-8bit>185</unsigned-integer-8bit>
+					</unsigned-integer-8bit-buffer>
+				</base-value>
+				<tag name="interpretation">
+					<value>
+						<string>FlagEnabled</string>
+					</value>
+					<tag name="type">
+						<value>
+							<string>unsigned integer</string>
+						</value>
+					</tag>
+					<tag name="default">
+						<value>
+							<string>1</string>
+						</value>
+					</tag>
+					<tag name="range">
+						<value>
+							<string>0-1</string>
+						</value>
+					</tag>
+					<tag name="min occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="max occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>Set to 1 if the track is usable. It is possible to turn a track that is not usable into a usable track using chapter codecs or control tracks.</string>
+						</value>
+					</tag>
+					<tag name="standard">
+						<value>
+							<string>RFC 9559 (Matroska)</string>
+						</value>
+					</tag>
+				</tag>
+			</element>
+			<element valid="true">
+				<base-value>
+					<unsigned-integer-8bit-buffer>
+						<unsigned-integer-8bit>136</unsigned-integer-8bit>
+					</unsigned-integer-8bit-buffer>
+				</base-value>
+				<tag name="interpretation">
+					<value>
+						<string>FlagDefault</string>
+					</value>
+					<tag name="type">
+						<value>
+							<string>unsigned integer</string>
+						</value>
+					</tag>
+					<tag name="default">
+						<value>
+							<string>1</string>
+						</value>
+					</tag>
+					<tag name="range">
+						<value>
+							<string>0-1</string>
+						</value>
+					</tag>
+					<tag name="min occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="max occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>Set to 1 if the track (audio, video, or subtitles) is eligible for automatic selection by the player.</string>
+						</value>
+					</tag>
+					<tag name="standard">
+						<value>
+							<string>RFC 9559 (Matroska)</string>
+						</value>
+					</tag>
+				</tag>
+			</element>
+			<element valid="true">
+				<base-value>
+					<unsigned-integer-8bit-buffer>
+						<unsigned-integer-8bit>85</unsigned-integer-8bit>
+						<unsigned-integer-8bit>170</unsigned-integer-8bit>
+					</unsigned-integer-8bit-buffer>
+				</base-value>
+				<tag name="interpretation">
+					<value>
+						<string>FlagForced</string>
+					</value>
+					<tag name="type">
+						<value>
+							<string>unsigned integer</string>
+						</value>
+					</tag>
+					<tag name="default">
+						<value>
+							<string>0</string>
+						</value>
+					</tag>
+					<tag name="range">
+						<value>
+							<string>0-1</string>
+						</value>
+					</tag>
+					<tag name="min occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="max occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>Applies only to subtitles. Set to 1 if the track is eligible for automatic selection by the player if it matches the user's language preference, even if the user's preferences would not normally enable subtitles with the selected audio track; this can be used for tracks containing only translations of audio in foreign languages or on-screen text.</string>
+						</value>
+					</tag>
+					<tag name="standard">
+						<value>
+							<string>RFC 9559 (Matroska)</string>
+						</value>
+					</tag>
+				</tag>
+			</element>
+			<element valid="true">
+				<base-value>
+					<unsigned-integer-8bit-buffer>
+						<unsigned-integer-8bit>34</unsigned-integer-8bit>
+						<unsigned-integer-8bit>181</unsigned-integer-8bit>
+						<unsigned-integer-8bit>156</unsigned-integer-8bit>
+					</unsigned-integer-8bit-buffer>
+				</base-value>
+				<tag name="interpretation">
+					<value>
+						<string>Language</string>
+					</value>
+					<tag name="type">
+						<value>
+							<string>ascii string</string>
+						</value>
+					</tag>
+					<tag name="default">
+						<value>
+							<string>eng</string>
+						</value>
+					</tag>
+					<tag name="min occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="max occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>The language of the track, in the Matroska languages form.</string>
+						</value>
+					</tag>
+					<tag name="standard">
+						<value>
+							<string>RFC 9559 (Matroska)</string>
+						</value>
+					</tag>
+				</tag>
+			</element>
+			<element valid="true">
+				<base-value>
+					<unsigned-integer-8bit-buffer>
+						<unsigned-integer-8bit>134</unsigned-integer-8bit>
+					</unsigned-integer-8bit-buffer>
+				</base-value>
+				<tag name="interpretation">
+					<value>
+						<string>CodecID</string>
+					</value>
+					<tag name="type">
+						<value>
+							<string>ascii string</string>
+						</value>
+					</tag>
+					<tag name="min occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="max occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="stream copy">
+						<value>
+							<boolean>true</boolean>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>An ID corresponding to the codec.</string>
+						</value>
+					</tag>
+					<tag name="standard">
+						<value>
+							<string>RFC 9559 (Matroska)</string>
+						</value>
+					</tag>
+				</tag>
+			</element>
+			<element valid="true">
+				<base-value>
+					<unsigned-integer-8bit-buffer>
+						<unsigned-integer-8bit>99</unsigned-integer-8bit>
+						<unsigned-integer-8bit>162</unsigned-integer-8bit>
+					</unsigned-integer-8bit-buffer>
+				</base-value>
+				<tag name="interpretation">
+					<value>
+						<string>CodecPrivate</string>
+					</value>
+					<tag name="type">
+						<value>
+							<string>binary</string>
+						</value>
+					</tag>
+					<tag name="max occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="stream copy">
+						<value>
+							<boolean>true</boolean>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>Private data only known to the codec.</string>
+						</value>
+					</tag>
+					<tag name="standard">
+						<value>
+							<string>RFC 9559 (Matroska)</string>
+						</value>
+					</tag>
+				</tag>
+			</element>
+			<element valid="true">
+				<base-value>
+					<unsigned-integer-8bit-buffer>
+						<unsigned-integer-8bit>86</unsigned-integer-8bit>
+						<unsigned-integer-8bit>170</unsigned-integer-8bit>
+					</unsigned-integer-8bit-buffer>
+				</base-value>
+				<tag name="interpretation">
+					<value>
+						<string>CodecDelay</string>
+					</value>
+					<tag name="type">
+						<value>
+							<string>unsigned integer</string>
+						</value>
+					</tag>
+					<tag name="default">
+						<value>
+							<unsigned-integer-64bit>0</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="min occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="max occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="stream copy">
+						<value>
+							<boolean>true</boolean>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>The built-in delay for the codec, expressed in Matroska Ticks.</string>
+						</value>
+					</tag>
+					<tag name="standard">
+						<value>
+							<string>RFC 9559 (Matroska)</string>
+						</value>
+					</tag>
+				</tag>
+			</element>
+			<element valid="true">
+				<base-value>
+					<unsigned-integer-8bit-buffer>
+						<unsigned-integer-8bit>86</unsigned-integer-8bit>
+						<unsigned-integer-8bit>187</unsigned-integer-8bit>
+					</unsigned-integer-8bit-buffer>
+				</base-value>
+				<tag name="interpretation">
+					<value>
+						<string>SeekPreRoll</string>
+					</value>
+					<tag name="type">
+						<value>
+							<string>unsigned integer</string>
+						</value>
+					</tag>
+					<tag name="default">
+						<value>
+							<unsigned-integer-64bit>0</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="min occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="max occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="stream copy">
+						<value>
+							<boolean>true</boolean>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>After a discontinuity, the duration of the data that the decoder MUST decode before the decoded data is valid, expressed in Matroska Ticks.</string>
+						</value>
+					</tag>
+					<tag name="standard">
+						<value>
+							<string>RFC 9559 (Matroska)</string>
+						</value>
+					</tag>
+				</tag>
+			</element>
+			<element valid="true">
+				<base-value>
+					<unsigned-integer-8bit-buffer>
+						<unsigned-integer-8bit>225</unsigned-integer-8bit>
+					</unsigned-integer-8bit-buffer>
+				</base-value>
+				<tag name="interpretation">
+					<value>
+						<string>Audio</string>
+					</value>
+					<tag name="type">
+						<value>
+							<string>master</string>
+						</value>
+					</tag>
+					<tag name="max occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>Audio settings.</string>
+						</value>
+					</tag>
+					<tag name="standard">
+						<value>
+							<string>RFC 9559 (Matroska)</string>
+						</value>
+					</tag>
+				</tag>
+			</element>
+			<element valid="true">
+				<base-value>
+					<unsigned-integer-8bit-buffer>
+						<unsigned-integer-8bit>181</unsigned-integer-8bit>
+					</unsigned-integer-8bit-buffer>
+				</base-value>
+				<tag name="interpretation">
+					<value>
+						<string>SamplingFrequency</string>
+					</value>
+					<tag name="type">
+						<value>
+							<string>float</string>
+						</value>
+					</tag>
+					<tag name="default">
+						<value>
+							<double-precision-real>8000.0</double-precision-real>
+						</value>
+					</tag>
+					<tag name="range">
+						<value>
+							<string>&gt; 0x0p+0</string>
+						</value>
+					</tag>
+					<tag name="min occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="max occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>Sampling frequency in Hz.</string>
+						</value>
+					</tag>
+					<tag name="stream copy">
+						<value>
+							<boolean>true</boolean>
+						</value>
+					</tag>
+					<tag name="standard">
+						<value>
+							<string>RFC 9559 (Matroska)</string>
+						</value>
+					</tag>
+				</tag>
+			</element>
+			<element valid="true">
+				<base-value>
+					<unsigned-integer-8bit-buffer>
+						<unsigned-integer-8bit>159</unsigned-integer-8bit>
+					</unsigned-integer-8bit-buffer>
+				</base-value>
+				<tag name="interpretation">
+					<value>
+						<string>Channels</string>
+					</value>
+					<tag name="type">
+						<value>
+							<string>unsigned integer</string>
+						</value>
+					</tag>
+					<tag name="default">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="range">
+						<value>
+							<string>&gt; 0</string>
+						</value>
+					</tag>
+					<tag name="min occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="max occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>Numbers of channels in the track.</string>
+						</value>
+					</tag>
+					<tag name="stream copy">
+						<value>
+							<boolean>true</boolean>
+						</value>
+					</tag>
+					<tag name="standard">
+						<value>
+							<string>RFC 9559 (Matroska)</string>
+						</value>
+					</tag>
+				</tag>
+			</element>
+			<element valid="true">
+				<base-value>
+					<unsigned-integer-8bit-buffer>
+						<unsigned-integer-8bit>98</unsigned-integer-8bit>
+						<unsigned-integer-8bit>100</unsigned-integer-8bit>
+					</unsigned-integer-8bit-buffer>
+				</base-value>
+				<tag name="interpretation">
+					<value>
+						<string>BitDepth</string>
+					</value>
+					<tag name="type">
+						<value>
+							<string>unsigned integer</string>
+						</value>
+					</tag>
+					<tag name="range">
+						<value>
+							<string>&gt; 0</string>
+						</value>
+					</tag>
+					<tag name="max occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>Bits per sample, mostly used for PCM.</string>
+						</value>
+					</tag>
+					<tag name="stream copy">
+						<value>
+							<boolean>true</boolean>
+						</value>
+					</tag>
+					<tag name="standard">
+						<value>
+							<string>RFC 9559 (Matroska)</string>
+						</value>
+					</tag>
+				</tag>
+			</element>
+			<element valid="true">
+				<base-value>
+					<unsigned-integer-8bit-buffer>
+						<unsigned-integer-8bit>28</unsigned-integer-8bit>
+						<unsigned-integer-8bit>83</unsigned-integer-8bit>
+						<unsigned-integer-8bit>187</unsigned-integer-8bit>
+						<unsigned-integer-8bit>107</unsigned-integer-8bit>
+					</unsigned-integer-8bit-buffer>
+				</base-value>
+				<tag name="interpretation">
+					<value>
+						<string>Cues</string>
+					</value>
+					<tag name="type">
+						<value>
+							<string>master</string>
+						</value>
+					</tag>
+					<tag name="max occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>A Top-Level Element to speed seeking access. All entries are local to the Segment.</string>
+						</value>
+					</tag>
+					<tag name="standard">
+						<value>
+							<string>RFC 9559 (Matroska)</string>
+						</value>
+					</tag>
+				</tag>
+			</element>
+			<element valid="true">
+				<base-value>
+					<unsigned-integer-8bit-buffer>
+						<unsigned-integer-8bit>187</unsigned-integer-8bit>
+					</unsigned-integer-8bit-buffer>
+				</base-value>
+				<tag name="interpretation">
+					<value>
+						<string>CuePoint</string>
+					</value>
+					<tag name="type">
+						<value>
+							<string>master</string>
+						</value>
+					</tag>
+					<tag name="min occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>Contains all information relative to a seek point in the Segment.</string>
+						</value>
+					</tag>
+					<tag name="standard">
+						<value>
+							<string>RFC 9559 (Matroska)</string>
+						</value>
+					</tag>
+				</tag>
+			</element>
+			<element valid="true">
+				<base-value>
+					<unsigned-integer-8bit-buffer>
+						<unsigned-integer-8bit>179</unsigned-integer-8bit>
+					</unsigned-integer-8bit-buffer>
+				</base-value>
+				<tag name="interpretation">
+					<value>
+						<string>CueTime</string>
+					</value>
+					<tag name="type">
+						<value>
+							<string>unsigned integer</string>
+						</value>
+					</tag>
+					<tag name="min occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="max occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>Absolute timestamp of the seek point, expressed in Segment Ticks, which are based on TimestampScale.</string>
+						</value>
+					</tag>
+					<tag name="standard">
+						<value>
+							<string>RFC 9559 (Matroska)</string>
+						</value>
+					</tag>
+				</tag>
+			</element>
+			<element valid="true">
+				<base-value>
+					<unsigned-integer-8bit-buffer>
+						<unsigned-integer-8bit>183</unsigned-integer-8bit>
+					</unsigned-integer-8bit-buffer>
+				</base-value>
+				<tag name="interpretation">
+					<value>
+						<string>CueTrackPositions</string>
+					</value>
+					<tag name="type">
+						<value>
+							<string>master</string>
+						</value>
+					</tag>
+					<tag name="min occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>Contains positions for different tracks corresponding to the timestamp.</string>
+						</value>
+					</tag>
+					<tag name="standard">
+						<value>
+							<string>RFC 9559 (Matroska)</string>
+						</value>
+					</tag>
+				</tag>
+			</element>
+			<element valid="true">
+				<base-value>
+					<unsigned-integer-8bit-buffer>
+						<unsigned-integer-8bit>247</unsigned-integer-8bit>
+					</unsigned-integer-8bit-buffer>
+				</base-value>
+				<tag name="interpretation">
+					<value>
+						<string>CueTrack</string>
+					</value>
+					<tag name="type">
+						<value>
+							<string>unsigned integer</string>
+						</value>
+					</tag>
+					<tag name="range">
+						<value>
+							<string>&gt; 0</string>
+						</value>
+					</tag>
+					<tag name="min occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="max occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>The track for which a position is given.</string>
+						</value>
+					</tag>
+					<tag name="standard">
+						<value>
+							<string>RFC 9559 (Matroska)</string>
+						</value>
+					</tag>
+				</tag>
+			</element>
+			<element valid="true">
+				<base-value>
+					<unsigned-integer-8bit-buffer>
+						<unsigned-integer-8bit>241</unsigned-integer-8bit>
+					</unsigned-integer-8bit-buffer>
+				</base-value>
+				<tag name="interpretation">
+					<value>
+						<string>CueClusterPosition</string>
+					</value>
+					<tag name="type">
+						<value>
+							<string>unsigned integer</string>
+						</value>
+					</tag>
+					<tag name="range">
+						<value>
+							<string>&gt; 0</string>
+						</value>
+					</tag>
+					<tag name="min occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="max occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>The Segment Position of the Cluster containing the associated Block.</string>
+						</value>
+					</tag>
+					<tag name="standard">
+						<value>
+							<string>RFC 9559 (Matroska)</string>
+						</value>
+					</tag>
+				</tag>
+			</element>
+			<element valid="true">
+				<base-value>
+					<unsigned-integer-8bit-buffer>
+						<unsigned-integer-8bit>31</unsigned-integer-8bit>
+						<unsigned-integer-8bit>67</unsigned-integer-8bit>
+						<unsigned-integer-8bit>182</unsigned-integer-8bit>
+						<unsigned-integer-8bit>117</unsigned-integer-8bit>
+					</unsigned-integer-8bit-buffer>
+				</base-value>
+				<tag name="interpretation">
+					<value>
+						<string>Cluster</string>
+					</value>
+					<tag name="type">
+						<value>
+							<string>master</string>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>The Top-Level Element containing the (monolithic) Block structure.</string>
+						</value>
+					</tag>
+					<tag name="standard">
+						<value>
+							<string>RFC 9559 (Matroska)</string>
+						</value>
+					</tag>
+				</tag>
+			</element>
+			<element valid="true">
+				<base-value>
+					<unsigned-integer-8bit-buffer>
+						<unsigned-integer-8bit>231</unsigned-integer-8bit>
+					</unsigned-integer-8bit-buffer>
+				</base-value>
+				<tag name="interpretation">
+					<value>
+						<string>Timestamp</string>
+					</value>
+					<tag name="type">
+						<value>
+							<string>unsigned integer</string>
+						</value>
+					</tag>
+					<tag name="min occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="max occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>Absolute timestamp of the cluster, expressed in Segment Ticks, which are based on TimestampScale.</string>
+						</value>
+					</tag>
+					<tag name="standard">
+						<value>
+							<string>RFC 9559 (Matroska)</string>
+						</value>
+					</tag>
+				</tag>
+			</element>
+			<element valid="true">
+				<base-value>
+					<unsigned-integer-8bit-buffer>
+						<unsigned-integer-8bit>163</unsigned-integer-8bit>
+					</unsigned-integer-8bit-buffer>
+				</base-value>
+				<tag name="interpretation">
+					<value>
+						<string>SimpleBlock</string>
+					</value>
+					<tag name="type">
+						<value>
+							<string>binary</string>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>Similar to Block but without all the extra information. Mostly used to reduce overhead when no extra feature is needed.</string>
+						</value>
+					</tag>
+					<tag name="standard">
+						<value>
+							<string>RFC 9559 (Matroska)</string>
+						</value>
+					</tag>
+				</tag>
+			</element>
+			<element valid="true">
+				<base-value>
+					<unsigned-integer-8bit-buffer>
+						<unsigned-integer-8bit>160</unsigned-integer-8bit>
+					</unsigned-integer-8bit-buffer>
+				</base-value>
+				<tag name="interpretation">
+					<value>
+						<string>BlockGroup</string>
+					</value>
+					<tag name="type">
+						<value>
+							<string>master</string>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>Basic container of information containing a single Block and information specific to that Block.</string>
+						</value>
+					</tag>
+					<tag name="standard">
+						<value>
+							<string>RFC 9559 (Matroska)</string>
+						</value>
+					</tag>
+				</tag>
+			</element>
+			<element valid="true">
+				<base-value>
+					<unsigned-integer-8bit-buffer>
+						<unsigned-integer-8bit>117</unsigned-integer-8bit>
+						<unsigned-integer-8bit>162</unsigned-integer-8bit>
+					</unsigned-integer-8bit-buffer>
+				</base-value>
+				<tag name="interpretation">
+					<value>
+						<string>DiscardPadding</string>
+					</value>
+					<tag name="type">
+						<value>
+							<string>integer</string>
+						</value>
+					</tag>
+					<tag name="max occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>Duration of the silent data added to the Block, expressed in Matroska Ticks -- i.e., in nanoseconds.</string>
+						</value>
+					</tag>
+					<tag name="standard">
+						<value>
+							<string>RFC 9559 (Matroska)</string>
+						</value>
+					</tag>
+				</tag>
+			</element>
+			<element valid="true">
+				<base-value>
+					<unsigned-integer-8bit-buffer>
+						<unsigned-integer-8bit>161</unsigned-integer-8bit>
+					</unsigned-integer-8bit-buffer>
+				</base-value>
+				<tag name="interpretation">
+					<value>
+						<string>Block</string>
+					</value>
+					<tag name="type">
+						<value>
+							<string>binary</string>
+						</value>
+					</tag>
+					<tag name="min occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="max occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>Block containing the actual data to be rendered and a timestamp relative to the Cluster Timestamp.</string>
+						</value>
+					</tag>
+					<tag name="standard">
+						<value>
+							<string>RFC 9559 (Matroska)</string>
+						</value>
+					</tag>
+				</tag>
+			</element>
+			<element valid="true">
+				<base-value>
+					<unsigned-integer-8bit-buffer>
+						<unsigned-integer-8bit>123</unsigned-integer-8bit>
+						<unsigned-integer-8bit>169</unsigned-integer-8bit>
+					</unsigned-integer-8bit-buffer>
+				</base-value>
+				<tag name="interpretation">
+					<value>
+						<string>Title</string>
+					</value>
+					<tag name="type">
+						<value>
+							<string>utf-8 string</string>
+						</value>
+					</tag>
+					<tag name="max occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>General name of the Segment.</string>
+						</value>
+					</tag>
+					<tag name="standard">
+						<value>
+							<string>RFC 9559 (Matroska)</string>
+						</value>
+					</tag>
+				</tag>
+			</element>
+			<element valid="true">
+				<base-value>
+					<unsigned-integer-8bit-buffer>
+						<unsigned-integer-8bit>18</unsigned-integer-8bit>
+						<unsigned-integer-8bit>84</unsigned-integer-8bit>
+						<unsigned-integer-8bit>195</unsigned-integer-8bit>
+						<unsigned-integer-8bit>103</unsigned-integer-8bit>
+					</unsigned-integer-8bit-buffer>
+				</base-value>
+				<tag name="interpretation">
+					<value>
+						<string>Tags</string>
+					</value>
+					<tag name="type">
+						<value>
+							<string>master</string>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>Element containing metadata describing Tracks, Editions, Chapters, Attachments, or the Segment as a whole.</string>
+						</value>
+					</tag>
+					<tag name="standard">
+						<value>
+							<string>RFC 9559 (Matroska)</string>
+						</value>
+					</tag>
+				</tag>
+			</element>
+			<element valid="true">
+				<base-value>
+					<unsigned-integer-8bit-buffer>
+						<unsigned-integer-8bit>115</unsigned-integer-8bit>
+						<unsigned-integer-8bit>115</unsigned-integer-8bit>
+					</unsigned-integer-8bit-buffer>
+				</base-value>
+				<tag name="interpretation">
+					<value>
+						<string>Tag</string>
+					</value>
+					<tag name="type">
+						<value>
+							<string>master</string>
+						</value>
+					</tag>
+					<tag name="min occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>A single metadata descriptor.</string>
+						</value>
+					</tag>
+					<tag name="standard">
+						<value>
+							<string>RFC 9559 (Matroska)</string>
+						</value>
+					</tag>
+				</tag>
+			</element>
+			<element valid="true">
+				<base-value>
+					<unsigned-integer-8bit-buffer>
+						<unsigned-integer-8bit>99</unsigned-integer-8bit>
+						<unsigned-integer-8bit>192</unsigned-integer-8bit>
+					</unsigned-integer-8bit-buffer>
+				</base-value>
+				<tag name="interpretation">
+					<value>
+						<string>Targets</string>
+					</value>
+					<tag name="type">
+						<value>
+							<string>master</string>
+						</value>
+					</tag>
+					<tag name="min occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="max occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>Specifies which other elements the metadata represented by the tag value applies to. If empty or omitted, then the tag value describes everything in the Segment.</string>
+						</value>
+					</tag>
+					<tag name="standard">
+						<value>
+							<string>RFC 9559 (Matroska)</string>
+						</value>
+					</tag>
+				</tag>
+			</element>
+			<element valid="true">
+				<base-value>
+					<unsigned-integer-8bit-buffer>
+						<unsigned-integer-8bit>103</unsigned-integer-8bit>
+						<unsigned-integer-8bit>200</unsigned-integer-8bit>
+					</unsigned-integer-8bit-buffer>
+				</base-value>
+				<tag name="interpretation">
+					<value>
+						<string>SimpleTag</string>
+					</value>
+					<tag name="type">
+						<value>
+							<string>master</string>
+						</value>
+					</tag>
+					<tag name="min occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="recusive">
+						<value>
+							<boolean>true</boolean>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>Contains general information about the target.</string>
+						</value>
+					</tag>
+					<tag name="standard">
+						<value>
+							<string>RFC 9559 (Matroska)</string>
+						</value>
+					</tag>
+				</tag>
+			</element>
+			<element valid="true">
+				<base-value>
+					<unsigned-integer-8bit-buffer>
+						<unsigned-integer-8bit>69</unsigned-integer-8bit>
+						<unsigned-integer-8bit>163</unsigned-integer-8bit>
+					</unsigned-integer-8bit-buffer>
+				</base-value>
+				<tag name="interpretation">
+					<value>
+						<string>TagName</string>
+					</value>
+					<tag name="type">
+						<value>
+							<string>utf-8 string</string>
+						</value>
+					</tag>
+					<tag name="min occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="max occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>The name of the tag value that is going to be stored.</string>
+						</value>
+					</tag>
+					<tag name="standard">
+						<value>
+							<string>RFC 9559 (Matroska)</string>
+						</value>
+					</tag>
+				</tag>
+			</element>
+			<element valid="true">
+				<base-value>
+					<unsigned-integer-8bit-buffer>
+						<unsigned-integer-8bit>68</unsigned-integer-8bit>
+						<unsigned-integer-8bit>122</unsigned-integer-8bit>
+					</unsigned-integer-8bit-buffer>
+				</base-value>
+				<tag name="interpretation">
+					<value>
+						<string>TagLanguage</string>
+					</value>
+					<tag name="type">
+						<value>
+							<string>ascii string</string>
+						</value>
+					</tag>
+					<tag name="default">
+						<value>
+							<string>und</string>
+						</value>
+					</tag>
+					<tag name="min occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="max occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>Specifies the language of the specified tag in the Matroska languages form.</string>
+						</value>
+					</tag>
+					<tag name="standard">
+						<value>
+							<string>RFC 9559 (Matroska)</string>
+						</value>
+					</tag>
+				</tag>
+			</element>
+			<element valid="true">
+				<base-value>
+					<unsigned-integer-8bit-buffer>
+						<unsigned-integer-8bit>68</unsigned-integer-8bit>
+						<unsigned-integer-8bit>132</unsigned-integer-8bit>
+					</unsigned-integer-8bit-buffer>
+				</base-value>
+				<tag name="interpretation">
+					<value>
+						<string>TagDefault</string>
+					</value>
+					<tag name="type">
+						<value>
+							<string>unsigned integer</string>
+						</value>
+					</tag>
+					<tag name="default">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="range">
+						<value>
+							<string>0-1</string>
+						</value>
+					</tag>
+					<tag name="min occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="max occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>A boolean value to indicate if this is the default/original language to use for the given tag.</string>
+						</value>
+					</tag>
+					<tag name="standard">
+						<value>
+							<string>RFC 9559 (Matroska)</string>
+						</value>
+					</tag>
+				</tag>
+			</element>
+			<element valid="true">
+				<base-value>
+					<unsigned-integer-8bit-buffer>
+						<unsigned-integer-8bit>68</unsigned-integer-8bit>
+						<unsigned-integer-8bit>135</unsigned-integer-8bit>
+					</unsigned-integer-8bit-buffer>
+				</base-value>
+				<tag name="interpretation">
+					<value>
+						<string>TagString</string>
+					</value>
+					<tag name="type">
+						<value>
+							<string>utf-8 string</string>
+						</value>
+					</tag>
+					<tag name="max occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>The tag value.</string>
+						</value>
+					</tag>
+					<tag name="standard">
+						<value>
+							<string>RFC 9559 (Matroska)</string>
+						</value>
+					</tag>
+				</tag>
+			</element>
+			<element valid="true">
+				<base-value>
+					<unsigned-integer-8bit-buffer>
+						<unsigned-integer-8bit>104</unsigned-integer-8bit>
+						<unsigned-integer-8bit>202</unsigned-integer-8bit>
+					</unsigned-integer-8bit-buffer>
+				</base-value>
+				<tag name="interpretation">
+					<value>
+						<string>TargetTypeValue</string>
+					</value>
+					<tag name="type">
+						<value>
+							<string>unsigned integer</string>
+						</value>
+					</tag>
+					<tag name="default">
+						<value>
+							<unsigned-integer-64bit>50</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="range">
+						<value>
+							<string>not 0</string>
+						</value>
+					</tag>
+					<tag name="min occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="max occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>A number to indicate the logical level of the target.</string>
+						</value>
+					</tag>
+					<tag name="standard">
+						<value>
+							<string>RFC 9559 (Matroska)</string>
+						</value>
+					</tag>
+				</tag>
+			</element>
+			<element valid="true">
+				<base-value>
+					<unsigned-integer-8bit-buffer>
+						<unsigned-integer-8bit>99</unsigned-integer-8bit>
+						<unsigned-integer-8bit>202</unsigned-integer-8bit>
+					</unsigned-integer-8bit-buffer>
+				</base-value>
+				<tag name="interpretation">
+					<value>
+						<string>TargetType</string>
+					</value>
+					<tag name="type">
+						<value>
+							<string>ascii string</string>
+						</value>
+					</tag>
+					<tag name="max occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>An informational string that can be used to display the logical level of the target, such as "ALBUM", "TRACK", "MOVIE", "CHAPTER", etc.</string>
+						</value>
+					</tag>
+					<tag name="standard">
+						<value>
+							<string>RFC 9559 (Matroska)</string>
+						</value>
+					</tag>
+				</tag>
+			</element>
+			<element valid="true">
+				<base-value>
+					<unsigned-integer-8bit-buffer>
+						<unsigned-integer-8bit>99</unsigned-integer-8bit>
+						<unsigned-integer-8bit>197</unsigned-integer-8bit>
+					</unsigned-integer-8bit-buffer>
+				</base-value>
+				<tag name="interpretation">
+					<value>
+						<string>TagTrackUID</string>
+					</value>
+					<tag name="type">
+						<value>
+							<string>unsigned integer</string>
+						</value>
+					</tag>
+					<tag name="default">
+						<value>
+							<unsigned-integer-64bit>0</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>A UID that identifies the Track(s) that the tags belong to.</string>
+						</value>
+					</tag>
+					<tag name="standard">
+						<value>
+							<string>RFC 9559 (Matroska)</string>
+						</value>
+					</tag>
+				</tag>
+			</element>
+			<fallback-element valid="false">
+				<tag name="interpretation">
+					<tag name="type">
+						<value>
+							<string>binary</string>
+						</value>
+					</tag>
+				</tag>
+			</fallback-element>
+		</enumeration>
+	</apply-enumeration>
+</type>

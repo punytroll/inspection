@@ -213,7 +213,9 @@
 							</sequence>
 						</type>
 					</element-type>
-					<element-name>Entry</element-name>
+					<element-name>
+						<string>Entry</string>
+					</element-name>
 				</array>
 				<tag name="type name">
 					<value>
@@ -229,7 +231,9 @@
 					<field>Entries</field>
 				</field-reference>
 			</iterate>
-			<element-name>Image</element-name>
+			<element-name>
+				<string>Image</string>
+			</element-name>
 			<element-type>
 				<type>
 					<alternative>
