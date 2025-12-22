@@ -59,7 +59,7 @@ namespace Inspection
             auto operator=(Inspection::TypeDefinition::Value const & Value) -> Inspection::TypeDefinition::Value & = delete;
             auto operator=(Inspection::TypeDefinition::Value && Value) -> Inspection::TypeDefinition::Value & = delete;
         private:
-            std::variant<bool, Inspection::GUID, float, std::string, std::uint8_t, std::uint16_t, std::uint32_t, std::uint64_t> m_Data;
+            std::variant<bool, Inspection::GUID, float, std::string, std::uint8_t, std::uint16_t, std::uint32_t, std::uint64_t, std::vector<std::uint8_t>> m_Data;
             Inspection::TypeDefinition::DataType m_DataType;
         };
     }

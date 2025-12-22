@@ -48,6 +48,10 @@ auto Inspection::TypeDefinition::Equals::GetAny(Inspection::ExecutionContext & E
         {
             return std::any_cast<std::uint8_t const &>(Expression1Any) == std::any_cast<std::uint8_t const &>(Expression2Any);
         }
+        else if(Expression1Any.type() == typeid(std::vector<std::uint8_t>))
+        {
+            return std::any_cast<std::vector<std::uint8_t> const &>(Expression1Any) == std::any_cast<std::vector<std::uint8_t> const &>(Expression2Any);
+        }
         else if(Expression1Any.type() == typeid(std::uint16_t))
         {
             return std::any_cast<std::uint16_t const &>(Expression1Any) == std::any_cast<std::uint16_t const &>(Expression2Any);

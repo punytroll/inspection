@@ -1,0 +1,55 @@
+<type>
+	<sequence>
+		<forward>
+			<type-reference>
+				<part>EBML</part>
+				<part>ElementHeader</part>
+			</type-reference>
+		</forward>
+		<select>
+			<length>
+				<bytes>
+					<data-reference root="type">
+						<field>Size</field>
+					</data-reference>
+				</bytes>
+				<bits>
+					<unsigned-integer-64bit>0</unsigned-integer-64bit>
+				</bits>
+			</length>
+			<case>
+				<when>
+					<equals>
+						<data-reference root="type">
+							<field>ID</field>
+						</data-reference>
+						<unsigned-integer-8bit-buffer>
+							<unsigned-integer-8bit>26</unsigned-integer-8bit>
+							<unsigned-integer-8bit>69</unsigned-integer-8bit>
+							<unsigned-integer-8bit>223</unsigned-integer-8bit>
+							<unsigned-integer-8bit>163</unsigned-integer-8bit>
+						</unsigned-integer-8bit-buffer>
+					</equals>
+				</when>
+				<array name="Elements">
+					<iterate type="until-length"/>
+					<element-name>Element</element-name>
+					<element-type>
+						<type-reference>
+							<part>EBML</part>
+							<part>Element</part>
+						</type-reference>
+					</element-type>
+				</array>
+			</case>
+			<else>
+				<field name="Data">
+					<type-reference>
+						<part>Buffer</part>
+						<part>UnsignedInteger_8Bit_EndedByLength</part>
+					</type-reference>
+				</field>
+			</else>
+		</select>
+	</sequence>
+</type>

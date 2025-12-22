@@ -32,6 +32,7 @@ namespace Inspection::TypeDefinition
         String,
         Type,
         UnsignedInteger8Bit,
+        UnsignedInteger8BitBuffer,
         UnsignedInteger16Bit,
         UnsignedInteger32Bit,
         UnsignedInteger64Bit

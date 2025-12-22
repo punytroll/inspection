@@ -1,0 +1,16 @@
+<type>
+    <sequence>
+        <field name="ID">
+            <type-reference>
+                <part>EBML</part>
+                <part>ElementID</part>
+            </type-reference>
+        </field>
+        <field name="Size">
+            <type-reference>
+                <part>EBML</part>
+                <part>VariableSizeInteger</part>
+            </type-reference>
+        </field>
+    </sequence>
+</type>

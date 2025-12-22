@@ -341,6 +341,10 @@ auto Inspection::operator<<(std::ostream & OStream, enum Inspection::TypeDefinit
         {
             return OStream << "unsigned-integer-8bit";
         }
+    case Inspection::TypeDefinition::DataType::UnsignedInteger8BitBuffer:
+        {
+            return OStream << "unsigned-integer-8bit-buffer";
+        }
     case Inspection::TypeDefinition::DataType::UnsignedInteger16Bit:
         {
             return OStream << "unsigned-integer-16bit";
@@ -456,6 +460,10 @@ auto Inspection::to_string(std::type_info const & TypeInformation) -> std::strin
     else if(TypeInformation == typeid(std::uint8_t))
     {
         return "unsigned integer 8bit";
+    }
+    else if(TypeInformation == typeid(std::vector<std::uint8_t>))
+    {
+        return "unsigned integer 8bit buffer";
     }
     else if(TypeInformation == typeid(std::uint16_t))
     {

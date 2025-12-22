@@ -1,0 +1,37 @@
+<type>
+	<sequence>
+		<field name="Header">
+			<sequence>
+				<field name="EBML">
+					<type-reference>
+						<part>EBML</part>
+						<part>Element</part>
+					</type-reference>
+					<verification>
+						<equals>
+							<data-reference root="current">
+								<field>ID</field>
+							</data-reference>
+							<unsigned-integer-8bit-buffer>
+								<unsigned-integer-8bit>26</unsigned-integer-8bit>
+								<unsigned-integer-8bit>69</unsigned-integer-8bit>
+								<unsigned-integer-8bit>223</unsigned-integer-8bit>
+								<unsigned-integer-8bit>163</unsigned-integer-8bit>
+							</unsigned-integer-8bit-buffer>
+						</equals>
+					</verification>
+				</field>
+			</sequence>
+		</field>
+		<field name="Body">
+			<sequence>
+				<field name="Element">
+					<type-reference>
+						<part>EBML</part>
+						<part>Element</part>
+					</type-reference>
+				</field>
+			</sequence>
+		</field>
+	</sequence>
+</type>

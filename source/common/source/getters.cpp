@@ -19,32 +19,12 @@
 #include <common/type_repository.h>
 #include <common/unknown_value_exception.h>
 
+#include "getters/helpers.h"
 #include "internal_output_operators.h"
 
 using namespace std::string_literals;
 
 bool g_AppendFLACStream_Subframe_Residual_Rice_Partition_Samples{false};
-
-Inspection::Value * AppendLengthTag(Inspection::Value * Value, const Inspection::Length & Length, const std::string & LengthName = "length"s)
-{
-    auto Result = Value->AddTag(LengthName, Length);
-    
-    Result->AddTag("unit", "bytes and bits"s);
-    
-    return Result;
-}
-
-Inspection::Value * AppendReadErrorTag(Inspection::Value * Value, const Inspection::ReadResult & ReadResult)
-{
-    ASSERTION(ReadResult.Success == false);
-    
-    auto Result = Value->AddTag("error", "Could not read enough data."s);
-    
-    AppendLengthTag(Result, ReadResult.RequestedLength, "requested length");
-    AppendLengthTag(Result, ReadResult.InputLength, "remaining length");
-    
-    return Result;
-}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Readers & Getters                                                                             //

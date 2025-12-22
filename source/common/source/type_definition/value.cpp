@@ -65,6 +65,12 @@ auto Inspection::TypeDefinition::Value::GetAny(Inspection::ExecutionContext & Ex
             
             return std::get<std::uint8_t>(m_Data);
         }
+    case Inspection::TypeDefinition::DataType::UnsignedInteger8BitBuffer:
+        {
+            ASSERTION(std::holds_alternative<std::vector<std::uint8_t>>(m_Data) == true);
+            
+            return std::get<std::vector<std::uint8_t>>(m_Data);
+        }
     case Inspection::TypeDefinition::DataType::UnsignedInteger16Bit:
         {
             ASSERTION(std::holds_alternative<std::uint16_t>(m_Data) == true);
@@ -176,6 +182,35 @@ auto Inspection::TypeDefinition::Value::Load(XML::Element const * Element) -> st
         
         INVALID_INPUT_IF(Integer.has_value() == false, "The text in an unsigned-integer-8bit value must be an integer number.");
         Result->m_Data = Integer.value();
+    }
+    else if(Element->GetName() == "unsigned-integer-8bit-buffer")
+    {
+        Result->m_DataType = Inspection::TypeDefinition::DataType::UnsignedInteger8BitBuffer;
+        
+        auto Buffer = std::vector<std::uint8_t>{};
+        
+        for(auto const & ChildElement : Element->GetChildElements())
+        {
+            ASSERTION(ChildElement != nullptr);
+            if(ChildElement->GetName() == "unsigned-integer-8bit")
+            {
+                INVALID_INPUT_IF(ChildElement->GetChildNodes().size() != 1, "An unsigned-integer-8bit value must have exactly one child element.");
+                
+                auto TextNode = dynamic_cast<XML::Text const *>(ChildElement->GetChildNode(0));
+                
+                INVALID_INPUT_IF(TextNode == nullptr, "An unsigned-integer-8bit value must contain a text child element.");
+                
+                auto Integer = Inspection::FromString<std::uint8_t>(TextNode->GetText());
+                
+                INVALID_INPUT_IF(Integer.has_value() == false, "The text in an unsigned-integer-8bit value must be an integer number.");
+                Buffer.push_back(Integer.value());
+            }
+            else
+            {
+                INVALID_INPUT("\"unsigned-integer-8bit-buffer\" elements may only contain \"unsigned-integer-8bit\" elements, not an \"" + ChildElement->GetName() + "\" element.");
+            }
+        }
+        Result->m_Data = Buffer;
     }
     else if(Element->GetName() == "unsigned-integer-16bit")
     {

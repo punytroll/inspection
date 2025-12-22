@@ -1,6 +1,7 @@
 #include <common/assertion.h>
 #include <common/buffer.h>
 #include <common/id3_de_unsynchronization_eager_filter.h>
+#include <common/output_operators.h>
 #include <common/read_result.h>
 #include <common/reader.h>
 
@@ -44,7 +45,7 @@ Inspection::Reader::Reader(const Inspection::Reader & Reader, const Inspection::
 {
     if(Reader.m_BufferCore != nullptr)
     {
-        ASSERTION(Reader.m_BufferCore->m_ReadPositionInBuffer + Length <= Reader.m_BufferCore->m_EndPositionInBuffer);
+        ASSERTION_MESSAGE(Reader.m_BufferCore->m_ReadPositionInBuffer + Length <= Reader.m_BufferCore->m_EndPositionInBuffer, std::format("{} + {} <= {}", Reader.m_BufferCore->m_ReadPositionInBuffer, Length, Reader.m_BufferCore->m_EndPositionInBuffer));
         m_BufferCore = std::make_unique<Inspection::Reader::BufferCore>(Reader.m_BufferCore->m_Buffer, Reader.m_BufferCore->m_ReadPositionInBuffer, Reader.m_BufferCore->m_ReadPositionInBuffer + Length, Reader.m_BufferCore->m_BitstreamType);
         ASSERTION(m_BufferCore->m_EndPositionInBuffer <= Reader.m_BufferCore->m_EndPositionInBuffer);
         ASSERTION(m_BufferCore->m_StartPositionInBuffer <= m_BufferCore->m_Buffer.GetLength());
