@@ -35,6 +35,7 @@
 #include "expression.h"
 #include "helper.h"
 #include "tag.h"
+#include "value.h"
 
 using namespace std::string_literals;
 

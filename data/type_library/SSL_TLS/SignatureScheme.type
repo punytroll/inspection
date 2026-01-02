@@ -23,7 +23,10 @@
 		</tag>
 		<apply-enumeration>
 			<enumeration base-data-type="unsigned integer 16bit">
-				<element base-value="513" valid="true">
+				<element valid="true">
+					<base-value>
+						<unsigned-integer-16bit>513</unsigned-integer-16bit>
+					</base-value>
 					<tag name="interpretation">
 						<value>
 							<string>rsa_pkcs1_sha1</string>
@@ -35,7 +38,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="515" valid="true">
+				<element valid="true">
+					<base-value>
+						<unsigned-integer-16bit>515</unsigned-integer-16bit>
+					</base-value>
 					<tag name="interpretation">
 						<value>
 							<string>ecdsa_sha1</string>
@@ -47,7 +53,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="1025" valid="true">
+				<element valid="true">
+					<base-value>
+						<unsigned-integer-16bit>1025</unsigned-integer-16bit>
+					</base-value>
 					<tag name="interpretation">
 						<value>
 							<string>rsa_pkcs1_sha256</string>
@@ -59,7 +68,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="1027" valid="true">
+				<element valid="true">
+					<base-value>
+						<unsigned-integer-16bit>1027</unsigned-integer-16bit>
+					</base-value>
 					<tag name="interpretation">
 						<value>
 							<string>ecdsa_secp256r1_sha256</string>
@@ -71,7 +83,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="1281" valid="true">
+				<element valid="true">
+					<base-value>
+						<unsigned-integer-16bit>1281</unsigned-integer-16bit>
+					</base-value>
 					<tag name="interpretation">
 						<value>
 							<string>rsa_pkcs1_sha384</string>
@@ -83,7 +98,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="1283" valid="true">
+				<element valid="true">
+					<base-value>
+						<unsigned-integer-16bit>1283</unsigned-integer-16bit>
+					</base-value>
 					<tag name="interpretation">
 						<value>
 							<string>ecdsa_secp384r1_sha384</string>
@@ -95,7 +113,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="1537" valid="true">
+				<element valid="true">
+					<base-value>
+						<unsigned-integer-16bit>1537</unsigned-integer-16bit>
+					</base-value>
 					<tag name="interpretation">
 						<value>
 							<string>rsa_pkcs1_sha512</string>
@@ -107,7 +128,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="1539" valid="true">
+				<element valid="true">
+					<base-value>
+						<unsigned-integer-16bit>1539</unsigned-integer-16bit>
+					</base-value>
 					<tag name="interpretation">
 						<value>
 							<string>ecdsa_secp521r1_sha512</string>
@@ -119,7 +143,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="2052" valid="true">
+				<element valid="true">
+					<base-value>
+						<unsigned-integer-16bit>2052</unsigned-integer-16bit>
+					</base-value>
 					<tag name="interpretation">
 						<value>
 							<string>rsa_pss_rsae_sha256</string>
@@ -131,7 +158,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="2053" valid="true">
+				<element valid="true">
+					<base-value>
+						<unsigned-integer-16bit>2053</unsigned-integer-16bit>
+					</base-value>
 					<tag name="interpretation">
 						<value>
 							<string>rsa_pss_rsae_sha384</string>
@@ -143,7 +173,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="2054" valid="true">
+				<element valid="true">
+					<base-value>
+						<unsigned-integer-16bit>2054</unsigned-integer-16bit>
+					</base-value>
 					<tag name="interpretation">
 						<value>
 							<string>rsa_pss_rsae_sha512</string>
@@ -155,7 +188,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="2055" valid="true">
+				<element valid="true">
+					<base-value>
+						<unsigned-integer-16bit>2055</unsigned-integer-16bit>
+					</base-value>
 					<tag name="interpretation">
 						<value>
 							<string>ed25519</string>
@@ -167,7 +203,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="2056" valid="true">
+				<element valid="true">
+					<base-value>
+						<unsigned-integer-16bit>2056</unsigned-integer-16bit>
+					</base-value>
 					<tag name="interpretation">
 						<value>
 							<string>ed448</string>
@@ -179,7 +218,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="2057" valid="true">
+				<element valid="true">
+					<base-value>
+						<unsigned-integer-16bit>2057</unsigned-integer-16bit>
+					</base-value>
 					<tag name="interpretation">
 						<value>
 							<string>rsa_pss_pss_sha256</string>
@@ -191,7 +233,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="2058" valid="true">
+				<element valid="true">
+					<base-value>
+						<unsigned-integer-16bit>2058</unsigned-integer-16bit>
+					</base-value>
 					<tag name="interpretation">
 						<value>
 							<string>rsa_pss_pss_sha384</string>
@@ -203,7 +248,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="2059" valid="true">
+				<element valid="true">
+					<base-value>
+						<unsigned-integer-16bit>2059</unsigned-integer-16bit>
+					</base-value>
 					<tag name="interpretation">
 						<value>
 							<string>rsa_pss_pss_sha512</string>

@@ -39,6 +39,7 @@
 #include "sequence.h"
 #include "tag.h"
 #include "type_reference.h"
+#include "value.h"
 #include "verification.h"
 
 Inspection::TypeDefinition::Part::Part(Inspection::TypeDefinition::PartType PartType) :

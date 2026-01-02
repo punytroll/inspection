@@ -9,8 +9,11 @@
 			</type-reference>
 			<apply-enumeration>
 				<enumeration base-data-type="unsigned integer 32bit">
-					<element base-value="0" valid="false"/>
-					<element base-value="1" valid="true">
+					<element valid="false"><base-value>	<unsigned-integer-32bit>0</unsigned-integer-32bit></base-value></element>
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-32bit>1</unsigned-integer-32bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>Data Fork</string>
@@ -22,7 +25,10 @@
 							</value>
 						</tag>
 					</element>
-					<element base-value="2" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-32bit>2</unsigned-integer-32bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>Resource Fork</string>
@@ -34,7 +40,10 @@
 							</value>
 						</tag>
 					</element>
-					<element base-value="3" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-32bit>3</unsigned-integer-32bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>Real Name</string>
@@ -46,7 +55,10 @@
 							</value>
 						</tag>
 					</element>
-					<element base-value="4" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-32bit>4</unsigned-integer-32bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>Comment</string>
@@ -58,7 +70,10 @@
 							</value>
 						</tag>
 					</element>
-					<element base-value="5" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-32bit>5</unsigned-integer-32bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>Icon, B&amp;W</string>
@@ -70,7 +85,10 @@
 							</value>
 						</tag>
 					</element>
-					<element base-value="6" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-32bit>6</unsigned-integer-32bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>Icon, Color</string>
@@ -82,8 +100,11 @@
 							</value>
 						</tag>
 					</element>
-					<element base-value="7" valid="false"/>
-					<element base-value="8" valid="true">
+					<element valid="false"><base-value>	<unsigned-integer-32bit>7</unsigned-integer-32bit></base-value></element>
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-32bit>8</unsigned-integer-32bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>File Dates Info</string>
@@ -95,7 +116,10 @@
 							</value>
 						</tag>
 					</element>
-					<element base-value="9" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-32bit>9</unsigned-integer-32bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>Finder Info</string>
@@ -107,7 +131,10 @@
 							</value>
 						</tag>
 					</element>
-					<element base-value="10" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-32bit>10</unsigned-integer-32bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>Macintosh File Info</string>
@@ -119,7 +146,10 @@
 							</value>
 						</tag>
 					</element>
-					<element base-value="11" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-32bit>11</unsigned-integer-32bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>ProDOS File Info</string>
@@ -131,7 +161,10 @@
 							</value>
 						</tag>
 					</element>
-					<element base-value="12" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-32bit>12</unsigned-integer-32bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>MS-DOS File Info</string>
@@ -143,7 +176,10 @@
 							</value>
 						</tag>
 					</element>
-					<element base-value="13" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-32bit>13</unsigned-integer-32bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>Short Name</string>
@@ -155,7 +191,10 @@
 							</value>
 						</tag>
 					</element>
-					<element base-value="14" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-32bit>14</unsigned-integer-32bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>AFP File Info</string>
@@ -167,7 +206,10 @@
 							</value>
 						</tag>
 					</element>
-					<element base-value="15" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-32bit>15</unsigned-integer-32bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>Directory ID</string>

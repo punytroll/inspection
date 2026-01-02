@@ -7,14 +7,20 @@
 		<bit name="Broadcast" index="0" as-data-type="boolean">
 			<apply-enumeration>
 				<enumeration base-data-type="boolean">
-					<element base-value="true" valid="true">
+					<element valid="true">
+						<base-value>
+							<boolean>true</boolean>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>The file is in the process of being created.</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="false" valid="true">
+					<element valid="true">
+						<base-value>
+							<boolean>false</boolean>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>The file is complete as it is.</string>
@@ -27,14 +33,20 @@
 		<bit name="Seekable" index="1" as-data-type="boolean">
 			<apply-enumeration>
 				<enumeration base-data-type="boolean">
-					<element base-value="true" valid="true">
+					<element valid="true">
+						<base-value>
+							<boolean>true</boolean>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>The file is seekable.</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="false" valid="true">
+					<element valid="true">
+						<base-value>
+							<boolean>false</boolean>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>The file is NOT seekable.</string>

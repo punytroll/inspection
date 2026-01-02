@@ -24,6 +24,7 @@
 #include "expression.h"
 #include "helper.h"
 #include "tag.h"
+#include "value.h"
 
 auto Inspection::TypeDefinition::Enumeration::GetBaseDataType() const -> Inspection::TypeDefinition::DataType
 {
@@ -55,8 +56,6 @@ auto Inspection::TypeDefinition::Enumeration::Load(XML::Element const * Element)
         {
             auto & Element = Result->m_Elements.emplace_back();
             
-            ASSERTION(EnumerationChildElement->HasAttribute("base-value") == true);
-            Element.BaseValue = EnumerationChildElement->GetAttribute("base-value");
             ASSERTION(EnumerationChildElement->HasAttribute("valid") == true);
             Element.Valid = Inspection::TypeDefinition::GetBooleanFromString(EnumerationChildElement->GetAttribute("valid"));
             for(auto EnumerationElementChildElement : EnumerationChildElement->GetChildElements())
@@ -66,11 +65,17 @@ auto Inspection::TypeDefinition::Enumeration::Load(XML::Element const * Element)
                 {
                     Element.Tags.push_back(Inspection::TypeDefinition::Tag::Load(EnumerationElementChildElement));
                 }
+                else if(EnumerationElementChildElement->GetName() == "base-value")
+                {
+                    Element.BaseValue = Inspection::TypeDefinition::Value::LoadFromWithin(EnumerationElementChildElement);
+                }
                 else
                 {
                     UNEXPECTED_CASE("EnumerationElementChildElement->GetName() == " + EnumerationElementChildElement->GetName());
                 }
             }
+            INVALID_INPUT_IF(Element.BaseValue == nullptr, "Missing base value for Enumeration/Element.");
+            INVALID_INPUT_IF(Element.BaseValue->GetDataType() != Result->m_BaseDataType, "Enumeration elements must have the same data type as the parent enumeration's base data type.");
         }
         else if(EnumerationChildElement->GetName() == "fallback-element")
         {

@@ -9,14 +9,20 @@
 			</type-reference>
 			<apply-enumeration>
 				<enumeration base-data-type="unsigned integer 8bit">
-					<element base-value="1" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>1</unsigned-integer-8bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>warning</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="2" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>2</unsigned-integer-8bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>fatal</string>
@@ -42,189 +48,270 @@
 			</type-reference>
 			<apply-enumeration>
 				<enumeration base-data-type="unsigned integer 8bit">
-					<element base-value="0" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>0</unsigned-integer-8bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>close_notify</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="10" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>10</unsigned-integer-8bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>unexpected_message</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="20" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>20</unsigned-integer-8bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>bad_record_mac</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="22" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>22</unsigned-integer-8bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>record_overflow</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="40" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>40</unsigned-integer-8bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>handshake_failure</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="42" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>42</unsigned-integer-8bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>bad_certificate</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="43" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>43</unsigned-integer-8bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>unsupported_certificate</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="44" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>44</unsigned-integer-8bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>certificate_revoked</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="45" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>45</unsigned-integer-8bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>certificate_expired</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="46" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>46</unsigned-integer-8bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>certificate_unknown</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="47" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>47</unsigned-integer-8bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>illigal_parameter</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="48" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>48</unsigned-integer-8bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>unknown_ca</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="49" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>49</unsigned-integer-8bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>access_denied</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="50" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>50</unsigned-integer-8bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>decode_error</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="51" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>51</unsigned-integer-8bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>decrypt_error</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="70" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>70</unsigned-integer-8bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>protocol_version</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="71" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>71</unsigned-integer-8bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>insufficient_security</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="80" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>80</unsigned-integer-8bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>internal_error</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="86" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>86</unsigned-integer-8bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>inappropriate_fallback</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="90" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>90</unsigned-integer-8bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>user_cancelled</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="109" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>109</unsigned-integer-8bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>missing_extension</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="110" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>110</unsigned-integer-8bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>unsupported_extension</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="112" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>112</unsigned-integer-8bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>unrecognized_name</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="113" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>113</unsigned-integer-8bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>bad_certificate_status_response</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="115" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>115</unsigned-integer-8bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>unknown_psk_identity</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="116" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>116</unsigned-integer-8bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>certificate_required</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="120" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>120</unsigned-integer-8bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>no_application_protocol</string>

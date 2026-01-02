@@ -9,77 +9,110 @@
 			</type-reference>
 			<apply-enumeration>
 				<enumeration base-data-type="unsigned integer 8bit">
-					<element base-value="1" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>1</unsigned-integer-8bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>client_hello</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="2" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>2</unsigned-integer-8bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>server_hello</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="4" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>4</unsigned-integer-8bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>new_session_ticket</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="5" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>5</unsigned-integer-8bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>end_of_early_data</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="8" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>8</unsigned-integer-8bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>encrypted_extensions</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="11" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>11</unsigned-integer-8bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>certificate</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="13" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>13</unsigned-integer-8bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>certificate_request</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="15" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>15</unsigned-integer-8bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>certificate_verify</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="20" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>20</unsigned-integer-8bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>finished</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="24" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>24</unsigned-integer-8bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>key_update</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="254" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>254</unsigned-integer-8bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>message_hash</string>

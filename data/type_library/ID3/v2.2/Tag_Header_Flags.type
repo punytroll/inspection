@@ -7,14 +7,20 @@
 		<bit name="Unsynchronisation" index="7" as-data-type="boolean">
 			<apply-enumeration>
 				<enumeration base-data-type="boolean">
-					<element base-value="true" valid="true">
+					<element valid="true">
+						<base-value>
+							<boolean>true</boolean>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>Unsynchronisation is used.</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="false" valid="true">
+					<element valid="true">
+						<base-value>
+							<boolean>false</boolean>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>Unsynchronisation is NOT used.</string>
@@ -27,14 +33,20 @@
 		<bit name="Compression" index="6" as-data-type="boolean">
 			<apply-enumeration>
 				<enumeration base-data-type="boolean">
-					<element base-value="true" valid="true">
+					<element valid="true">
+						<base-value>
+							<boolean>true</boolean>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>Compression is used.</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="false" valid="true">
+					<element valid="true">
+						<base-value>
+							<boolean>false</boolean>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>Compression is NOT used.</string>

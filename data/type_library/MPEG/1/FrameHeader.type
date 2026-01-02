@@ -23,7 +23,10 @@
 			</type-reference>
 			<apply-enumeration>
 				<enumeration base-data-type="unsigned integer 8bit">
-					<element base-value="1" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>1</unsigned-integer-8bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>MPEG Version 1</string>
@@ -35,7 +38,10 @@
 							</value>
 						</tag>
 					</element>
-					<element base-value="0" valid="false">
+					<element valid="false">
+						<base-value>
+							<unsigned-integer-8bit>0</unsigned-integer-8bit>
+						</base-value>
 						<tag name="error">
 							<value>
 								<string>This audio version ID is reserved and MUST NOT be used.</string>
@@ -59,7 +65,10 @@
 			</type-reference>
 			<apply-enumeration>
 				<enumeration base-data-type="unsigned integer 8bit">
-					<element base-value="0" valid="false">
+					<element valid="false">
+						<base-value>
+							<unsigned-integer-8bit>0</unsigned-integer-8bit>
+						</base-value>
 						<tag name="error">
 							<value>
 								<string>This layer description is reserved and MUST NOT be used.</string>
@@ -71,21 +80,30 @@
 							</value>
 						</tag>
 					</element>
-					<element base-value="1" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>1</unsigned-integer-8bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>Layer III</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="2" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>2</unsigned-integer-8bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>Layer II</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="3" valid="false">
+					<element valid="false">
+						<base-value>
+							<unsigned-integer-8bit>3</unsigned-integer-8bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>Layer I</string>
@@ -104,14 +122,20 @@
 			</type-reference>
 			<apply-enumeration>
 				<enumeration base-data-type="unsigned integer 8bit">
-					<element base-value="0" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>0</unsigned-integer-8bit>
+						</base-value>
 						<tag name="redundancy">
 							<value>
 								<boolean>false</boolean>
 							</value>
 						</tag>
 					</element>
-					<element base-value="1" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>1</unsigned-integer-8bit>
+						</base-value>
 						<tag name="redundancy">
 							<value>
 								<boolean>true</boolean>
@@ -144,7 +168,10 @@
 			</type-reference>
 			<apply-enumeration>
 				<enumeration base-data-type="unsigned integer 8bit">
-					<element base-value="0" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>0</unsigned-integer-8bit>
+						</base-value>
 						<tag name="value">
 							<value>
 								<unsigned-integer-32bit>44100</unsigned-integer-32bit>
@@ -161,7 +188,10 @@
 							</value>
 						</tag>
 					</element>
-					<element base-value="1" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>1</unsigned-integer-8bit>
+						</base-value>
 						<tag name="value">
 							<value>
 								<unsigned-integer-32bit>48000</unsigned-integer-32bit>
@@ -178,7 +208,10 @@
 							</value>
 						</tag>
 					</element>
-					<element base-value="2" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>2</unsigned-integer-8bit>
+						</base-value>
 						<tag name="value">
 							<value>
 								<unsigned-integer-32bit>32000</unsigned-integer-32bit>
@@ -195,7 +228,10 @@
 							</value>
 						</tag>
 					</element>
-					<element base-value="3" valid="false">
+					<element valid="false">
+						<base-value>
+							<unsigned-integer-8bit>3</unsigned-integer-8bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<nothing/>
@@ -219,14 +255,20 @@
 			</type-reference>
 			<apply-enumeration>
 				<enumeration base-data-type="unsigned integer 8bit">
-					<element base-value="0" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>0</unsigned-integer-8bit>
+						</base-value>
 						<tag name="padding">
 							<value>
 								<boolean>false</boolean>
 							</value>
 						</tag>
 					</element>
-					<element base-value="1" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>1</unsigned-integer-8bit>
+						</base-value>
 						<tag name="padding">
 							<value>
 								<boolean>true</boolean>
@@ -286,14 +328,20 @@
 			</type-reference>
 			<apply-enumeration>
 				<enumeration base-data-type="unsigned integer 8bit">
-					<element base-value="0" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>0</unsigned-integer-8bit>
+						</base-value>
 						<tag name="copyright">
 							<value>
 								<boolean>false</boolean>
 							</value>
 						</tag>
 					</element>
-					<element base-value="1" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>1</unsigned-integer-8bit>
+						</base-value>
 						<tag name="copyright">
 							<value>
 								<boolean>true</boolean>
@@ -312,14 +360,20 @@
 			</type-reference>
 			<apply-enumeration>
 				<enumeration base-data-type="unsigned integer 8bit">
-					<element base-value="0" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>0</unsigned-integer-8bit>
+						</base-value>
 						<tag name="original">
 							<value>
 								<boolean>false</boolean>
 							</value>
 						</tag>
 					</element>
-					<element base-value="1" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>1</unsigned-integer-8bit>
+						</base-value>
 						<tag name="original">
 							<value>
 								<boolean>true</boolean>
@@ -338,21 +392,30 @@
 			</type-reference>
 			<apply-enumeration>
 				<enumeration base-data-type="unsigned integer 8bit">
-					<element base-value="0" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>0</unsigned-integer-8bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>no emphasis</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="1" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>1</unsigned-integer-8bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>50/15 microsec. emphasis</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="2" valid="false">
+					<element valid="false">
+						<base-value>
+							<unsigned-integer-8bit>2</unsigned-integer-8bit>
+						</base-value>
 						<tag name="error">
 							<value>
 								<string>This emphasis is reserved and MUST NOT be used.</string>
@@ -364,7 +427,10 @@
 							</value>
 						</tag>
 					</element>
-					<element base-value="3" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>3</unsigned-integer-8bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>CCITT J.17</string>

@@ -8,49 +8,70 @@
 		</type-reference>
 		<apply-enumeration>
 			<enumeration base-data-type="unsigned integer 16bit">
-				<element base-value="0" valid="true">
+				<element valid="true">
+					<base-value>
+						<unsigned-integer-16bit>0</unsigned-integer-16bit>
+					</base-value>
 					<tag name="interpretation">
 						<value>
 							<string>Unicode string</string>
 						</value>
 					</tag>
 				</element>
-				<element base-value="1" valid="true">
+				<element valid="true">
+					<base-value>
+						<unsigned-integer-16bit>1</unsigned-integer-16bit>
+					</base-value>
 					<tag name="interpretation">
 						<value>
 							<string>Byte array</string>
 						</value>
 					</tag>
 				</element>
-				<element base-value="2" valid="true">
+				<element valid="true">
+					<base-value>
+						<unsigned-integer-16bit>2</unsigned-integer-16bit>
+					</base-value>
 					<tag name="interpretation">
 						<value>
 							<string>Boolean</string>
 						</value>
 					</tag>
 				</element>
-				<element base-value="3" valid="true">
+				<element valid="true">
+					<base-value>
+						<unsigned-integer-16bit>3</unsigned-integer-16bit>
+					</base-value>
 					<tag name="interpretation">
 						<value>
 							<string>Unsigned integer 32bit</string>
 						</value>
 					</tag>
 				</element>
-				<element base-value="4" valid="true">
+				<element valid="true">
+					<base-value>
+						<unsigned-integer-16bit>4</unsigned-integer-16bit>
+					</base-value>
 					<tag name="interpretation">
 						<value>
 							<string>Unsigned integer 64bit</string>
 						</value>
 					</tag>
 				</element>
-				<element base-value="5" valid="true">
+				<element valid="true">
+					<base-value>
+						<unsigned-integer-16bit>5</unsigned-integer-16bit>
+					</base-value>
 					<tag name="interpretation">
 						<value>
 							<string>Unsigned integer 16bit</string>
 						</value>
 					</tag>
 				</element>
-				<element base-value="6" valid="true">
+				<element valid="true">
+					<base-value>
+						<unsigned-integer-16bit>6</unsigned-integer-16bit>
+					</base-value>
 					<tag name="interpretation">
 						<value>
 							<string>GUID</string>

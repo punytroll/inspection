@@ -8,28 +8,40 @@
 		</type-reference>
 		<apply-enumeration>
 			<enumeration base-data-type="unsigned integer 8bit">
-				<element base-value="0" valid="true">
+				<element valid="true">
+					<base-value>
+						<unsigned-integer-8bit>0</unsigned-integer-8bit>
+					</base-value>
 					<tag name="interpretation">
 						<value>
 							<string>unspecified</string>
 						</value>
 					</tag>
 				</element>
-				<element base-value="1" valid="true">
+				<element valid="true">
+					<base-value>
+						<unsigned-integer-8bit>1</unsigned-integer-8bit>
+					</base-value>
 					<tag name="interpretation">
 						<value>
 							<string>pre-set by artist/producer/mastering engineer</string>
 						</value>
 					</tag>
 				</element>
-				<element base-value="2" valid="true">
+				<element valid="true">
+					<base-value>
+						<unsigned-integer-8bit>2</unsigned-integer-8bit>
+					</base-value>
 					<tag name="interpretation">
 						<value>
 							<string>set by user</string>
 						</value>
 					</tag>
 				</element>
-				<element base-value="3" valid="true">
+				<element valid="true">
+					<base-value>
+						<unsigned-integer-8bit>3</unsigned-integer-8bit>
+					</base-value>
 					<tag name="interpretation">
 						<value>
 							<string>determined automatically</string>

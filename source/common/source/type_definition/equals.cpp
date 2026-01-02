@@ -27,6 +27,48 @@
 #include "data_type.h"
 #include "equals.h"
 
+auto Inspection::TypeDefinition::CompareEquals(std::any const & Any1, std::any const & Any2) -> bool
+{
+    ASSERTION(Any1.has_value() == true);
+    ASSERTION(Any2.has_value() == true);
+    // if we compare two values of different types, they are definitively not equal, as we have no implicit conversion
+    if(Any1.type() == Any2.type())
+    {
+        if(Any1.type() == typeid(bool))
+        {
+            return std::any_cast<bool const &>(Any1) == std::any_cast<bool const &>(Any2);
+        }
+        else if(Any1.type() == typeid(std::uint8_t))
+        {
+            return std::any_cast<std::uint8_t const &>(Any1) == std::any_cast<std::uint8_t const &>(Any2);
+        }
+        else if(Any1.type() == typeid(std::uint16_t))
+        {
+            return std::any_cast<std::uint16_t const &>(Any1) == std::any_cast<std::uint16_t const &>(Any2);
+        }
+        else if(Any1.type() == typeid(std::uint32_t))
+        {
+            return std::any_cast<std::uint32_t const &>(Any1) == std::any_cast<std::uint32_t const &>(Any2);
+        }
+        else if(Any1.type() == typeid(Inspection::GUID))
+        {
+            return std::any_cast<Inspection::GUID const &>(Any1) == std::any_cast<Inspection::GUID const &>(Any2);
+        }
+        else if(Any1.type() == typeid(std::string))
+        {
+            return std::any_cast<std::string const &>(Any1) == std::any_cast<std::string const &>(Any2);
+        }
+        else
+        {
+            UNEXPECTED_CASE("Any1.type() == " + Inspection::to_string(Any1.type()));
+        }
+    }
+    else
+    {    
+        return false;
+    }
+}
+
 auto Inspection::TypeDefinition::Equals::GetAny(Inspection::ExecutionContext & ExecutionContext) const -> std::any
 {
     ASSERTION(m_Expression1 != nullptr);
@@ -35,42 +77,7 @@ auto Inspection::TypeDefinition::Equals::GetAny(Inspection::ExecutionContext & E
     auto Expression1Any = m_Expression1->GetAny(ExecutionContext);
     auto Expression2Any = m_Expression2->GetAny(ExecutionContext);
     
-    ASSERTION(Expression1Any.has_value() == true);
-    ASSERTION(Expression2Any.has_value() == true);
-    // if we compare two values of different types, they are definitively not equal, as we have no implicit conversion
-    if(Expression1Any.type() == Expression2Any.type())
-    {
-        if(Expression1Any.type() == typeid(bool))
-        {
-            return std::any_cast<bool const &>(Expression1Any) == std::any_cast<bool const &>(Expression2Any);
-        }
-        else if(Expression1Any.type() == typeid(std::uint8_t))
-        {
-            return std::any_cast<std::uint8_t const &>(Expression1Any) == std::any_cast<std::uint8_t const &>(Expression2Any);
-        }
-        else if(Expression1Any.type() == typeid(std::uint16_t))
-        {
-            return std::any_cast<std::uint16_t const &>(Expression1Any) == std::any_cast<std::uint16_t const &>(Expression2Any);
-        }
-        else if(Expression1Any.type() == typeid(std::uint32_t))
-        {
-            return std::any_cast<std::uint32_t const &>(Expression1Any) == std::any_cast<std::uint32_t const &>(Expression2Any);
-        }
-        else if(Expression1Any.type() == typeid(Inspection::GUID))
-        {
-            return std::any_cast<Inspection::GUID const &>(Expression1Any) == std::any_cast<Inspection::GUID const &>(Expression2Any);
-        }
-        else if(Expression1Any.type() == typeid(std::string))
-        {
-            return std::any_cast<std::string const &>(Expression1Any) == std::any_cast<std::string const &>(Expression2Any);
-        }
-        else
-        {
-            UNEXPECTED_CASE("Expression1Any.type() == " + Inspection::to_string(Expression1Any.type()));
-        }
-    }
-    
-    return false;
+    return Inspection::TypeDefinition::CompareEquals(Expression1Any, Expression2Any);
 }
 
 auto Inspection::TypeDefinition::Equals::GetDataType() const -> Inspection::TypeDefinition::DataType

@@ -21,14 +21,20 @@
 			</type-reference>
 			<apply-enumeration>
 				<enumeration base-data-type="unsigned integer 32bit">
-					<element base-value="1000" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-32bit>1000</unsigned-integer-32bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>1.000 (old)</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="2000" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-32bit>2000</unsigned-integer-32bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>2.000 (new)</string>

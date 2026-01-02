@@ -37,6 +37,7 @@ namespace Inspection
     {
         enum class DataType;
         class Tag;
+        class Value;
         
         class Enumeration
         {
@@ -46,7 +47,7 @@ namespace Inspection
             class Element
             {
             public:
-                std::string BaseValue;
+                std::unique_ptr<Inspection::TypeDefinition::Value> BaseValue;
                 std::vector<std::unique_ptr<Inspection::TypeDefinition::Tag>> Tags;
                 bool Valid;
             };

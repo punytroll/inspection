@@ -69,7 +69,10 @@
 						</type-reference>
 						<apply-enumeration>
 							<enumeration base-data-type="unsigned integer 32bit">
-								<element base-value="0" valid="true">
+								<element valid="true">
+									<base-value>
+										<unsigned-integer-32bit>0</unsigned-integer-32bit>
+									</base-value>
 									<tag name="constant name">
 										<value>
 											<string>BI_RGB</string>
@@ -81,7 +84,10 @@
 										</value>
 									</tag>
 								</element>
-								<element base-value="3" valid="true">
+								<element valid="true">
+									<base-value>
+										<unsigned-integer-32bit>3</unsigned-integer-32bit>
+									</base-value>
 									<tag name="constant name">
 										<value>
 											<string>BI_BITFIELDS</string>
@@ -216,7 +222,10 @@
 						</type-reference>
 						<apply-enumeration>
 							<enumeration base-data-type="unsigned integer 32bit">
-								<element base-value="0" valid="true">
+								<element valid="true">
+									<base-value>
+										<unsigned-integer-32bit>0</unsigned-integer-32bit>
+									</base-value>
 									<tag name="constant name">
 										<value>
 											<string>BI_RGB</string>
@@ -228,7 +237,10 @@
 										</value>
 									</tag>
 								</element>
-								<element base-value="3" valid="true">
+								<element valid="true">
+									<base-value>
+										<unsigned-integer-32bit>3</unsigned-integer-32bit>
+									</base-value>
 									<tag name="constant name">
 										<value>
 											<string>BI_BITFIELDS</string>

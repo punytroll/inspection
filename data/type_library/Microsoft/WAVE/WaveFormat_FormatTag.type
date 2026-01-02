@@ -8,7 +8,10 @@
 		</type-reference>
 		<apply-enumeration>
 			<enumeration base-data-type="unsigned integer 16bit">
-				<element base-value="0" valid="false">
+				<element valid="false">
+					<base-value>
+						<unsigned-integer-16bit>0</unsigned-integer-16bit>
+					</base-value>
 					<tag name="constant name">
 						<value>
 							<string>WAVE_FORMAT_UNKNOWN</string>
@@ -20,7 +23,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="1" valid="true">
+				<element valid="true">
+					<base-value>
+						<unsigned-integer-16bit>1</unsigned-integer-16bit>
+					</base-value>
 					<tag name="constant name">
 						<value>
 							<string>WAVE_FORMAT_PCM</string>
@@ -32,7 +38,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="2" valid="true">
+				<element valid="true">
+					<base-value>
+						<unsigned-integer-16bit>2</unsigned-integer-16bit>
+					</base-value>
 					<tag name="constant name">
 						<value>
 							<string>WAVE_FORMAT_ADPCM</string>
@@ -44,7 +53,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="3" valid="true">
+				<element valid="true">
+					<base-value>
+						<unsigned-integer-16bit>3</unsigned-integer-16bit>
+					</base-value>
 					<tag name="constant name">
 						<value>
 							<string>WAVE_FORMAT_IEEE_FLOAT</string>
@@ -56,7 +68,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="85" valid="true">
+				<element valid="true">
+					<base-value>
+						<unsigned-integer-16bit>85</unsigned-integer-16bit>
+					</base-value>
 					<tag name="constant name">
 						<value>
 							<string>WAVE_FORMAT_MPEGLAYER3</string>
@@ -68,7 +83,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="146" valid="true">
+				<element valid="true">
+					<base-value>
+						<unsigned-integer-16bit>146</unsigned-integer-16bit>
+					</base-value>
 					<tag name="constant name">
 						<value>
 							<string>WAVE_FORMAT_DOLBY_AC3_SPDIF</string>
@@ -80,7 +98,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="353" valid="true">
+				<element valid="true">
+					<base-value>
+						<unsigned-integer-16bit>353</unsigned-integer-16bit>
+					</base-value>
 					<tag name="constant name">
 						<value>
 							<string>WAVE_FORMAT_WMAUDIO2</string>
@@ -92,7 +113,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="354" valid="true">
+				<element valid="true">
+					<base-value>
+						<unsigned-integer-16bit>354</unsigned-integer-16bit>
+					</base-value>
 					<tag name="constant name">
 						<value>
 							<string>WAVE_FORMAT_WMAUDIO3</string>
@@ -104,7 +128,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="355" valid="true">
+				<element valid="true">
+					<base-value>
+						<unsigned-integer-16bit>355</unsigned-integer-16bit>
+					</base-value>
 					<tag name="constant name">
 						<value>
 							<string>WAVE_FORMAT_WMAUDIO_LOSSLESS</string>
@@ -116,7 +143,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="356" valid="true">
+				<element valid="true">
+					<base-value>
+						<unsigned-integer-16bit>356</unsigned-integer-16bit>
+					</base-value>
 					<tag name="constant name">
 						<value>
 							<string>WAVE_FORMAT_WMASPDIF</string>
@@ -128,7 +158,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="65534" valid="true">
+				<element valid="true">
+					<base-value>
+						<unsigned-integer-16bit>65534</unsigned-integer-16bit>
+					</base-value>
 					<tag name="constant name">
 						<value>
 							<string>WAVE_FORMAT_EXTENSIBLE</string>

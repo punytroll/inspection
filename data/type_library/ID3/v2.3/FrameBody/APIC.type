@@ -23,7 +23,10 @@
 			</type-reference>
 			<apply-enumeration>
 				<enumeration base-data-type="unsigned integer 8bit">
-					<element base-value="0" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>0</unsigned-integer-8bit>
+						</base-value>
 						<tag name="standard">
 							<value>
 								<string>ID3 2.3</string>
@@ -35,7 +38,10 @@
 							</value>
 						</tag>
 					</element>
-					<element base-value="1" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>1</unsigned-integer-8bit>
+						</base-value>
 						<tag name="standard">
 							<value>
 								<string>ID3 2.3</string>
@@ -47,7 +53,10 @@
 							</value>
 						</tag>
 					</element>
-					<element base-value="2" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>2</unsigned-integer-8bit>
+						</base-value>
 						<tag name="standard">
 							<value>
 								<string>ID3 2.3</string>
@@ -59,7 +68,10 @@
 							</value>
 						</tag>
 					</element>
-					<element base-value="3" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>3</unsigned-integer-8bit>
+						</base-value>
 						<tag name="standard">
 							<value>
 								<string>ID3 2.3</string>
@@ -71,7 +83,10 @@
 							</value>
 						</tag>
 					</element>
-					<element base-value="4" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>4</unsigned-integer-8bit>
+						</base-value>
 						<tag name="standard">
 							<value>
 								<string>ID3 2.3</string>
@@ -83,7 +98,10 @@
 							</value>
 						</tag>
 					</element>
-					<element base-value="5" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>5</unsigned-integer-8bit>
+						</base-value>
 						<tag name="standard">
 							<value>
 								<string>ID3 2.3</string>
@@ -95,7 +113,10 @@
 							</value>
 						</tag>
 					</element>
-					<element base-value="6" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>6</unsigned-integer-8bit>
+						</base-value>
 						<tag name="standard">
 							<value>
 								<string>ID3 2.3</string>
@@ -107,7 +128,10 @@
 							</value>
 						</tag>
 					</element>
-					<element base-value="7" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>7</unsigned-integer-8bit>
+						</base-value>
 						<tag name="standard">
 							<value>
 								<string>ID3 2.3</string>
@@ -119,7 +143,10 @@
 							</value>
 						</tag>
 					</element>
-					<element base-value="8" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>8</unsigned-integer-8bit>
+						</base-value>
 						<tag name="standard">
 							<value>
 								<string>ID3 2.3</string>
@@ -131,7 +158,10 @@
 							</value>
 						</tag>
 					</element>
-					<element base-value="9" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>9</unsigned-integer-8bit>
+						</base-value>
 						<tag name="standard">
 							<value>
 								<string>ID3 2.3</string>
@@ -143,7 +173,10 @@
 							</value>
 						</tag>
 					</element>
-					<element base-value="10" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>10</unsigned-integer-8bit>
+						</base-value>
 						<tag name="standard">
 							<value>
 								<string>ID3 2.3</string>
@@ -155,7 +188,10 @@
 							</value>
 						</tag>
 					</element>
-					<element base-value="11" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>11</unsigned-integer-8bit>
+						</base-value>
 						<tag name="standard">
 							<value>
 								<string>ID3 2.3</string>
@@ -167,7 +203,10 @@
 							</value>
 						</tag>
 					</element>
-					<element base-value="12" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>12</unsigned-integer-8bit>
+						</base-value>
 						<tag name="standard">
 							<value>
 								<string>ID3 2.3</string>
@@ -179,7 +218,10 @@
 							</value>
 						</tag>
 					</element>
-					<element base-value="13" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>13</unsigned-integer-8bit>
+						</base-value>
 						<tag name="standard">
 							<value>
 								<string>ID3 2.3</string>
@@ -191,7 +233,10 @@
 							</value>
 						</tag>
 					</element>
-					<element base-value="14" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>14</unsigned-integer-8bit>
+						</base-value>
 						<tag name="standard">
 							<value>
 								<string>ID3 2.3</string>
@@ -203,7 +248,10 @@
 							</value>
 						</tag>
 					</element>
-					<element base-value="15" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>15</unsigned-integer-8bit>
+						</base-value>
 						<tag name="standard">
 							<value>
 								<string>ID3 2.3</string>
@@ -215,7 +263,10 @@
 							</value>
 						</tag>
 					</element>
-					<element base-value="16" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>16</unsigned-integer-8bit>
+						</base-value>
 						<tag name="standard">
 							<value>
 								<string>ID3 2.3</string>
@@ -227,7 +278,10 @@
 							</value>
 						</tag>
 					</element>
-					<element base-value="17" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>17</unsigned-integer-8bit>
+						</base-value>
 						<tag name="standard">
 							<value>
 								<string>ID3 2.3</string>
@@ -239,7 +293,10 @@
 							</value>
 						</tag>
 					</element>
-					<element base-value="18" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>18</unsigned-integer-8bit>
+						</base-value>
 						<tag name="standard">
 							<value>
 								<string>ID3 2.3</string>
@@ -251,7 +308,10 @@
 							</value>
 						</tag>
 					</element>
-					<element base-value="19" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>19</unsigned-integer-8bit>
+						</base-value>
 						<tag name="standard">
 							<value>
 								<string>ID3 2.3</string>
@@ -263,7 +323,10 @@
 							</value>
 						</tag>
 					</element>
-					<element base-value="20" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>20</unsigned-integer-8bit>
+						</base-value>
 						<tag name="standard">
 							<value>
 								<string>ID3 2.3</string>

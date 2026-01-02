@@ -12,14 +12,20 @@
 		</tag>
 		<apply-enumeration>
 			<enumeration base-data-type="unsigned integer 8bit">
-				<element base-value="0" valid="true">
+				<element valid="true">
+					<base-value>
+						<unsigned-integer-8bit>0</unsigned-integer-8bit>
+					</base-value>
 					<tag name="interpretation">
 						<value>
 							<string>Black</string>
 						</value>
 					</tag>
 				</element>
-				<element base-value="255" valid="true">
+				<element valid="true">
+					<base-value>
+						<unsigned-integer-8bit>255</unsigned-integer-8bit>
+					</base-value>
 					<tag name="interpretation">
 						<value>
 							<string>White</string>

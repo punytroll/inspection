@@ -59,6 +59,8 @@ namespace Inspection
             std::unique_ptr<Inspection::TypeDefinition::Expression> m_Expression1;
             std::unique_ptr<Inspection::TypeDefinition::Expression> m_Expression2;
         };
+        
+        auto CompareEquals(std::any const & Any1, std::any const & Any2) -> bool;
     }
 }
 

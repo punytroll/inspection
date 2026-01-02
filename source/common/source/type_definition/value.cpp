@@ -226,3 +226,16 @@ auto Inspection::TypeDefinition::Value::Load(XML::Element const * Element) -> st
     
     return Result;
 }
+
+auto Inspection::TypeDefinition::Value::LoadFromWithin(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::Value>
+{
+    ASSERTION(Element != nullptr);
+    
+    auto ChildElementsRange = Element->GetChildElements();
+    auto ChildElements = std::vector<XML::Element const *>{ChildElementsRange.begin(), ChildElementsRange.end()};
+    
+    INVALID_INPUT_IF(ChildElements.size() == 0, "Missing value.");
+    INVALID_INPUT_IF(ChildElements.size() > 1, "Too many values.");
+    
+    return Inspection::TypeDefinition::Value::Load(ChildElements.front());
+}

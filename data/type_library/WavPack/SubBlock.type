@@ -8,7 +8,10 @@
 			<bits name="MetadataIdentifier" begin-index="0" length="6" as-data-type="unsigned integer 8bit">
 				<apply-enumeration>
 					<enumeration base-data-type="unsigned integer 8bit">
-						<element base-value="0" valid="true">
+						<element valid="true">
+							<base-value>
+								<unsigned-integer-8bit>0</unsigned-integer-8bit>
+							</base-value>
 							<tag name="constant">
 								<value>
 									<string>ID_DUMMY</string>
@@ -20,7 +23,10 @@
 								</value>
 							</tag>
 						</element>
-						<element base-value="2" valid="true">
+						<element valid="true">
+							<base-value>
+								<unsigned-integer-8bit>2</unsigned-integer-8bit>
+							</base-value>
 							<tag name="constant">
 								<value>
 									<string>ID_DECORR_TERMS</string>
@@ -32,7 +38,10 @@
 								</value>
 							</tag>
 						</element>
-						<element base-value="3" valid="true">
+						<element valid="true">
+							<base-value>
+								<unsigned-integer-8bit>3</unsigned-integer-8bit>
+							</base-value>
 							<tag name="constant">
 								<value>
 									<string>ID_DECORR_WEIGHTS</string>
@@ -44,7 +53,10 @@
 								</value>
 							</tag>
 						</element>
-						<element base-value="4" valid="true">
+						<element valid="true">
+							<base-value>
+								<unsigned-integer-8bit>4</unsigned-integer-8bit>
+							</base-value>
 							<tag name="constant">
 								<value>
 									<string>ID_DECORR_SAMPLES</string>
@@ -56,7 +68,10 @@
 								</value>
 							</tag>
 						</element>
-						<element base-value="5" valid="true">
+						<element valid="true">
+							<base-value>
+								<unsigned-integer-8bit>5</unsigned-integer-8bit>
+							</base-value>
 							<tag name="constant">
 								<value>
 									<string>ID_ENTROPY_VARS</string>
@@ -68,7 +83,10 @@
 								</value>
 							</tag>
 						</element>
-						<element base-value="6" valid="true">
+						<element valid="true">
+							<base-value>
+								<unsigned-integer-8bit>6</unsigned-integer-8bit>
+							</base-value>
 							<tag name="constant">
 								<value>
 									<string>ID_HYBRID_PROFILE</string>
@@ -80,7 +98,10 @@
 								</value>
 							</tag>
 						</element>
-						<element base-value="7" valid="true">
+						<element valid="true">
+							<base-value>
+								<unsigned-integer-8bit>7</unsigned-integer-8bit>
+							</base-value>
 							<tag name="constant">
 								<value>
 									<string>ID_SHAPING_WEIGHTS</string>
@@ -92,7 +113,10 @@
 								</value>
 							</tag>
 						</element>
-						<element base-value="8" valid="true">
+						<element valid="true">
+							<base-value>
+								<unsigned-integer-8bit>8</unsigned-integer-8bit>
+							</base-value>
 							<tag name="constant">
 								<value>
 									<string>ID_FLOAT_INFO</string>
@@ -104,7 +128,10 @@
 								</value>
 							</tag>
 						</element>
-						<element base-value="9" valid="true">
+						<element valid="true">
+							<base-value>
+								<unsigned-integer-8bit>9</unsigned-integer-8bit>
+							</base-value>
 							<tag name="constant">
 								<value>
 									<string>ID_INT32_INFO</string>
@@ -116,7 +143,10 @@
 								</value>
 							</tag>
 						</element>
-						<element base-value="10" valid="true">
+						<element valid="true">
+							<base-value>
+								<unsigned-integer-8bit>10</unsigned-integer-8bit>
+							</base-value>
 							<tag name="constant">
 								<value>
 									<string>ID_WV_BITSTREAM</string>
@@ -128,7 +158,10 @@
 								</value>
 							</tag>
 						</element>
-						<element base-value="11" valid="true">
+						<element valid="true">
+							<base-value>
+								<unsigned-integer-8bit>11</unsigned-integer-8bit>
+							</base-value>
 							<tag name="constant">
 								<value>
 									<string>ID_WVC_BITSTREAM</string>
@@ -140,7 +173,10 @@
 								</value>
 							</tag>
 						</element>
-						<element base-value="12" valid="true">
+						<element valid="true">
+							<base-value>
+								<unsigned-integer-8bit>12</unsigned-integer-8bit>
+							</base-value>
 							<tag name="constant">
 								<value>
 									<string>ID_WVX_BITSTREAM</string>
@@ -152,7 +188,10 @@
 								</value>
 							</tag>
 						</element>
-						<element base-value="13" valid="true">
+						<element valid="true">
+							<base-value>
+								<unsigned-integer-8bit>13</unsigned-integer-8bit>
+							</base-value>
 							<tag name="constant">
 								<value>
 									<string>ID_CHANNEL_INFO</string>
@@ -164,7 +203,10 @@
 								</value>
 							</tag>
 						</element>
-						<element base-value="14" valid="true">
+						<element valid="true">
+							<base-value>
+								<unsigned-integer-8bit>14</unsigned-integer-8bit>
+							</base-value>
 							<tag name="constant">
 								<value>
 									<string>ID_DSD_BLOCK</string>
@@ -176,7 +218,10 @@
 								</value>
 							</tag>
 						</element>
-						<element base-value="33" valid="true">
+						<element valid="true">
+							<base-value>
+								<unsigned-integer-8bit>33</unsigned-integer-8bit>
+							</base-value>
 							<tag name="constant">
 								<value>
 									<string>ID_RIFF_HEADER</string>
@@ -193,7 +238,10 @@
 								</value>
 							</tag>
 						</element>
-						<element base-value="34" valid="true">
+						<element valid="true">
+							<base-value>
+								<unsigned-integer-8bit>34</unsigned-integer-8bit>
+							</base-value>
 							<tag name="constant">
 								<value>
 									<string>ID_RIFF_TRAILER</string>
@@ -210,7 +258,10 @@
 								</value>
 							</tag>
 						</element>
-						<element base-value="37" valid="true">
+						<element valid="true">
+							<base-value>
+								<unsigned-integer-8bit>37</unsigned-integer-8bit>
+							</base-value>
 							<tag name="constant">
 								<value>
 									<string>ID_CONFIG_BLOCK</string>
@@ -227,7 +278,10 @@
 								</value>
 							</tag>
 						</element>
-						<element base-value="38" valid="true">
+						<element valid="true">
+							<base-value>
+								<unsigned-integer-8bit>38</unsigned-integer-8bit>
+							</base-value>
 							<tag name="constant">
 								<value>
 									<string>ID_MD5_CHECKSUM</string>
@@ -244,7 +298,10 @@
 								</value>
 							</tag>
 						</element>
-						<element base-value="39" valid="true">
+						<element valid="true">
+							<base-value>
+								<unsigned-integer-8bit>39</unsigned-integer-8bit>
+							</base-value>
 							<tag name="constant">
 								<value>
 									<string>ID_SAMPLE_RATE</string>
@@ -261,7 +318,10 @@
 								</value>
 							</tag>
 						</element>
-						<element base-value="35" valid="true">
+						<element valid="true">
+							<base-value>
+								<unsigned-integer-8bit>35</unsigned-integer-8bit>
+							</base-value>
 							<tag name="constant">
 								<value>
 									<string>ID_ALT_HEADER</string>
@@ -288,7 +348,10 @@
 								</tag>
 							</tag>
 						</element>
-						<element base-value="36" valid="true">
+						<element valid="true">
+							<base-value>
+								<unsigned-integer-8bit>36</unsigned-integer-8bit>
+							</base-value>
 							<tag name="constant">
 								<value>
 									<string>ID_ALT_TRAILER</string>
@@ -315,7 +378,10 @@
 								</tag>
 							</tag>
 						</element>
-						<element base-value="40" valid="true">
+						<element valid="true">
+							<base-value>
+								<unsigned-integer-8bit>40</unsigned-integer-8bit>
+							</base-value>
 							<tag name="constant">
 								<value>
 									<string>ID_ALT_EXTENSION</string>
@@ -342,7 +408,10 @@
 								</tag>
 							</tag>
 						</element>
-						<element base-value="41" valid="true">
+						<element valid="true">
+							<base-value>
+								<unsigned-integer-8bit>41</unsigned-integer-8bit>
+							</base-value>
 							<tag name="constant">
 								<value>
 									<string>ID_ALT_MD5_CHECKSUM</string>
@@ -369,7 +438,10 @@
 								</tag>
 							</tag>
 						</element>
-						<element base-value="42" valid="true">
+						<element valid="true">
+							<base-value>
+								<unsigned-integer-8bit>42</unsigned-integer-8bit>
+							</base-value>
 							<tag name="constant">
 								<value>
 									<string>ID_NEW_CONFIG_BLOCK</string>
@@ -396,7 +468,10 @@
 								</tag>
 							</tag>
 						</element>
-						<element base-value="43" valid="true">
+						<element valid="true">
+							<base-value>
+								<unsigned-integer-8bit>43</unsigned-integer-8bit>
+							</base-value>
 							<tag name="constant">
 								<value>
 									<string>ID_CHANNEL_IDENTITIES</string>
@@ -423,7 +498,10 @@
 								</tag>
 							</tag>
 						</element>
-						<element base-value="47" valid="true">
+						<element valid="true">
+							<base-value>
+								<unsigned-integer-8bit>47</unsigned-integer-8bit>
+							</base-value>
 							<tag name="constant">
 								<value>
 									<string>ID_BLOCK_CHECKSUM</string>
@@ -456,14 +534,20 @@
 			<bit name="PaddedData" index="6" as-data-type="boolean">
 				<apply-enumeration>
 					<enumeration base-data-type="boolean">
-						<element base-value="false" valid="true">
+						<element valid="true">
+							<base-value>
+								<boolean>false</boolean>
+							</base-value>
 							<tag name="interpretation">
 								<value>
 									<string>data is not padded</string>
 								</value>
 							</tag>
 						</element>
-						<element base-value="true" valid="true">
+						<element valid="true">
+							<base-value>
+								<boolean>true</boolean>
+							</base-value>
 							<tag name="interpretation">
 								<value>
 									<string>actual data byte length is 1 less</string>
@@ -476,14 +560,20 @@
 			<bit name="LargeData" index="7" as-data-type="boolean">
 				<apply-enumeration>
 					<enumeration base-data-type="boolean">
-						<element base-value="false" valid="true">
+						<element valid="true">
+							<base-value>
+								<boolean>false</boolean>
+							</base-value>
 							<tag name="interpretation">
 								<value>
 									<string>this subblock is small (&lt;= 255 words)</string>
 								</value>
 							</tag>
 						</element>
-						<element base-value="true" valid="true">
+						<element valid="true">
+							<base-value>
+								<boolean>true</boolean>
+							</base-value>
 							<tag name="interpretation">
 								<value>
 									<string>this subblock is large (&gt; 255 words)</string>

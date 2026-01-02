@@ -8,42 +8,60 @@
 		</type-reference>
 		<apply-enumeration>
 			<enumeration base-data-type="unsigned integer 16bit">
-				<element base-value="23" valid="true">
+				<element valid="true">
+					<base-value>
+						<unsigned-integer-16bit>23</unsigned-integer-16bit>
+					</base-value>
 					<tag name="interpretation">
 						<value>
 							<string>secp256r1</string>
 						</value>
 					</tag>
 				</element>
-				<element base-value="24" valid="true">
+				<element valid="true">
+					<base-value>
+						<unsigned-integer-16bit>24</unsigned-integer-16bit>
+					</base-value>
 					<tag name="interpretation">
 						<value>
 							<string>secp384r1</string>
 						</value>
 					</tag>
 				</element>
-				<element base-value="25" valid="true">
+				<element valid="true">
+					<base-value>
+						<unsigned-integer-16bit>25</unsigned-integer-16bit>
+					</base-value>
 					<tag name="interpretation">
 						<value>
 							<string>secp256r1</string>
 						</value>
 					</tag>
 				</element>
-				<element base-value="29" valid="true">
+				<element valid="true">
+					<base-value>
+						<unsigned-integer-16bit>29</unsigned-integer-16bit>
+					</base-value>
 					<tag name="interpretation">
 						<value>
 							<string>x25519</string>
 						</value>
 					</tag>
 				</element>
-				<element base-value="256" valid="true">
+				<element valid="true">
+					<base-value>
+						<unsigned-integer-16bit>256</unsigned-integer-16bit>
+					</base-value>
 					<tag name="interpretation">
 						<value>
 							<string>ffdhe2048</string>
 						</value>
 					</tag>
 				</element>
-				<element base-value="257" valid="true">
+				<element valid="true">
+					<base-value>
+						<unsigned-integer-16bit>257</unsigned-integer-16bit>
+					</base-value>
 					<tag name="interpretation">
 						<value>
 							<string>ffdhe3072</string>

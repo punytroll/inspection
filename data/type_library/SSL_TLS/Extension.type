@@ -9,98 +9,140 @@
 			</type-reference>
 			<apply-enumeration>
 				<enumeration base-data-type="unsigned integer 16bit">
-					<element base-value="0" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-16bit>0</unsigned-integer-16bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>server_name</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="1" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-16bit>1</unsigned-integer-16bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>max_fragment_length</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="5" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-16bit>5</unsigned-integer-16bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>status_request</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="10" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-16bit>10</unsigned-integer-16bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>supported_groups</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="11" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-16bit>11</unsigned-integer-16bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>ec_point_formats</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="13" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-16bit>13</unsigned-integer-16bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>signature_algorithms</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="14" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-16bit>14</unsigned-integer-16bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>use_srtp</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="15" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-16bit>15</unsigned-integer-16bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>heartbeat</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="16" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-16bit>16</unsigned-integer-16bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>application_layer_protocol_negotiation</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="18" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-16bit>18</unsigned-integer-16bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>signed_certificate_timestamp</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="19" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-16bit>19</unsigned-integer-16bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>client_certificate_type</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="20" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-16bit>20</unsigned-integer-16bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>server_certificate_type</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="21" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-16bit>21</unsigned-integer-16bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>padding</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="23" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-16bit>23</unsigned-integer-16bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>extended_master_secret</string>
@@ -112,7 +154,10 @@
 							</value>
 						</tag>
 					</element>
-					<element base-value="28" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-16bit>28</unsigned-integer-16bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>record_size_limit</string>
@@ -124,14 +169,20 @@
 							</value>
 						</tag>
 					</element>
-					<element base-value="34" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-16bit>34</unsigned-integer-16bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>delegated_credential</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="35" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-16bit>35</unsigned-integer-16bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>session_ticket</string>
@@ -143,77 +194,110 @@
 							</value>
 						</tag>
 					</element>
-					<element base-value="41" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-16bit>41</unsigned-integer-16bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>pre_shared_key</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="42" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-16bit>42</unsigned-integer-16bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>early_data</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="43" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-16bit>43</unsigned-integer-16bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>supported_versions</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="44" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-16bit>44</unsigned-integer-16bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>cookie</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="45" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-16bit>45</unsigned-integer-16bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>psk_key_exchange_modes</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="47" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-16bit>47</unsigned-integer-16bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>certificate_authorities</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="48" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-16bit>48</unsigned-integer-16bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>oid_filters</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="49" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-16bit>49</unsigned-integer-16bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>post_handshake_auth</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="50" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-16bit>50</unsigned-integer-16bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>signature_algorithms_cert</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="51" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-16bit>51</unsigned-integer-16bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>key_share</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="65281" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-16bit>65281</unsigned-integer-16bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>renegotiation_info</string>
@@ -548,7 +632,10 @@
 						</type-reference>
 						<apply-enumeration>
 							<enumeration base-data-type="unsigned integer 8bit">
-								<element base-value="1" valid="true">
+								<element valid="true">
+									<base-value>
+										<unsigned-integer-8bit>1</unsigned-integer-8bit>
+									</base-value>
 									<tag name="interpretation">
 										<value>
 											<string>OCSP</string>

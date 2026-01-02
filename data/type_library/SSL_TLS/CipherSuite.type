@@ -8,133 +8,190 @@
 		</type-reference>
 		<apply-enumeration>
 			<enumeration base-data-type="unsigned integer 16bit">
-				<element base-value="10" valid="true">
+				<element valid="true">
+					<base-value>
+						<unsigned-integer-16bit>10</unsigned-integer-16bit>
+					</base-value>
 					<tag name="interpretation">
 						<value>
 							<string>TLS_RSA_WITH_3DES_EDE_CBC_SHA</string>
 						</value>
 					</tag>
 				</element>
-				<element base-value="47" valid="true">
+				<element valid="true">
+					<base-value>
+						<unsigned-integer-16bit>47</unsigned-integer-16bit>
+					</base-value>
 					<tag name="interpretation">
 						<value>
 							<string>TLS_RSA_WITH_AES_128_CBC_SHA</string>
 						</value>
 					</tag>
 				</element>
-				<element base-value="53" valid="true">
+				<element valid="true">
+					<base-value>
+						<unsigned-integer-16bit>53</unsigned-integer-16bit>
+					</base-value>
 					<tag name="interpretation">
 						<value>
 							<string>TLS_RSA_WITH_AES_256_CBC_SHA</string>
 						</value>
 					</tag>
 				</element>
-				<element base-value="156" valid="true">
+				<element valid="true">
+					<base-value>
+						<unsigned-integer-16bit>156</unsigned-integer-16bit>
+					</base-value>
 					<tag name="interpretation">
 						<value>
 							<string>TLS_RSA_WITH_AES_128_GCM_SHA256</string>
 						</value>
 					</tag>
 				</element>
-				<element base-value="157" valid="true">
+				<element valid="true">
+					<base-value>
+						<unsigned-integer-16bit>157</unsigned-integer-16bit>
+					</base-value>
 					<tag name="interpretation">
 						<value>
 							<string>TLS_RSA_WITH_AES_256_GCM_SHA384</string>
 						</value>
 					</tag>
 				</element>
-				<element base-value="4865" valid="true">
+				<element valid="true">
+					<base-value>
+						<unsigned-integer-16bit>4865</unsigned-integer-16bit>
+					</base-value>
 					<tag name="interpretation">
 						<value>
 							<string>TLS_AES_128_GCM_SHA256</string>
 						</value>
 					</tag>
 				</element>
-				<element base-value="4866" valid="true">
+				<element valid="true">
+					<base-value>
+						<unsigned-integer-16bit>4866</unsigned-integer-16bit>
+					</base-value>
 					<tag name="interpretation">
 						<value>
 							<string>TLS_AES_256_GCM_SHA384</string>
 						</value>
 					</tag>
 				</element>
-				<element base-value="4867" valid="true">
+				<element valid="true">
+					<base-value>
+						<unsigned-integer-16bit>4867</unsigned-integer-16bit>
+					</base-value>
 					<tag name="interpretation">
 						<value>
 							<string>TLS_CHACHA20_POLY1305_SHA256</string>
 						</value>
 					</tag>
 				</element>
-				<element base-value="49161" valid="true">
+				<element valid="true">
+					<base-value>
+						<unsigned-integer-16bit>49161</unsigned-integer-16bit>
+					</base-value>
 					<tag name="interpretation">
 						<value>
 							<string>TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA</string>
 						</value>
 					</tag>
 				</element>
-				<element base-value="49162" valid="true">
+				<element valid="true">
+					<base-value>
+						<unsigned-integer-16bit>49162</unsigned-integer-16bit>
+					</base-value>
 					<tag name="interpretation">
 						<value>
 							<string>TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA</string>
 						</value>
 					</tag>
 				</element>
-				<element base-value="49170" valid="true">
+				<element valid="true">
+					<base-value>
+						<unsigned-integer-16bit>49170</unsigned-integer-16bit>
+					</base-value>
 					<tag name="interpretation">
 						<value>
 							<string>TLS_ECDHE_RSA_WITH_3DES_EDE_CBC_SHA</string>
 						</value>
 					</tag>
 				</element>
-				<element base-value="49171" valid="true">
+				<element valid="true">
+					<base-value>
+						<unsigned-integer-16bit>49171</unsigned-integer-16bit>
+					</base-value>
 					<tag name="interpretation">
 						<value>
 							<string>TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA</string>
 						</value>
 					</tag>
 				</element>
-				<element base-value="49172" valid="true">
+				<element valid="true">
+					<base-value>
+						<unsigned-integer-16bit>49172</unsigned-integer-16bit>
+					</base-value>
 					<tag name="interpretation">
 						<value>
 							<string>TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA</string>
 						</value>
 					</tag>
 				</element>
-				<element base-value="49195" valid="true">
+				<element valid="true">
+					<base-value>
+						<unsigned-integer-16bit>49195</unsigned-integer-16bit>
+					</base-value>
 					<tag name="interpretation">
 						<value>
 							<string>TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256</string>
 						</value>
 					</tag>
 				</element>
-				<element base-value="49196" valid="true">
+				<element valid="true">
+					<base-value>
+						<unsigned-integer-16bit>49196</unsigned-integer-16bit>
+					</base-value>
 					<tag name="interpretation">
 						<value>
 							<string>TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384</string>
 						</value>
 					</tag>
 				</element>
-				<element base-value="49199" valid="true">
+				<element valid="true">
+					<base-value>
+						<unsigned-integer-16bit>49199</unsigned-integer-16bit>
+					</base-value>
 					<tag name="interpretation">
 						<value>
 							<string>TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256</string>
 						</value>
 					</tag>
 				</element>
-				<element base-value="49200" valid="true">
+				<element valid="true">
+					<base-value>
+						<unsigned-integer-16bit>49200</unsigned-integer-16bit>
+					</base-value>
 					<tag name="interpretation">
 						<value>
 							<string>TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384</string>
 						</value>
 					</tag>
 				</element>
-				<element base-value="52392" valid="true">
+				<element valid="true">
+					<base-value>
+						<unsigned-integer-16bit>52392</unsigned-integer-16bit>
+					</base-value>
 					<tag name="interpretation">
 						<value>
 							<string>TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256</string>
 						</value>
 					</tag>
 				</element>
-				<element base-value="52393" valid="true">
+				<element valid="true">
+					<base-value>
+						<unsigned-integer-16bit>52393</unsigned-integer-16bit>
+					</base-value>
 					<tag name="interpretation">
 						<value>
 							<string>TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256</string>

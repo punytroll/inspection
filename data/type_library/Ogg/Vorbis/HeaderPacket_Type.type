@@ -8,21 +8,30 @@
 		</type-reference>
 		<apply-enumeration>
 			<enumeration base-data-type="unsigned integer 8bit">
-				<element base-value="1" valid="true">
+				<element valid="true">
+					<base-value>
+						<unsigned-integer-8bit>1</unsigned-integer-8bit>
+					</base-value>
 					<tag name="interpretation">
 						<value>
 							<string>Vorbis Identification Header</string>
 						</value>
 					</tag>
 				</element>
-				<element base-value="3" valid="true">
+				<element valid="true">
+					<base-value>
+						<unsigned-integer-8bit>3</unsigned-integer-8bit>
+					</base-value>
 					<tag name="interpretation">
 						<value>
 							<string>Vorbis Comment Header</string>
 						</value>
 					</tag>
 				</element>
-				<element base-value="5" valid="true">
+				<element valid="true">
+					<base-value>
+						<unsigned-integer-8bit>5</unsigned-integer-8bit>
+					</base-value>
 					<tag name="interpretation">
 						<value>
 							<string>Vorbis Setup Header</string>

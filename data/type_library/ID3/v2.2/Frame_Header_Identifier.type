@@ -15,7 +15,10 @@
 		</length>
 		<apply-enumeration>
 			<enumeration base-data-type="string">
-				<element base-value="BUF" valid="true">
+				<element valid="true">
+					<base-value>
+						<string>BUF</string>
+					</base-value>
 					<tag name="standard">
 						<value>
 							<string>ID3 2.2</string>
@@ -27,7 +30,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="CNT" valid="true">
+				<element valid="true">
+					<base-value>
+						<string>CNT</string>
+					</base-value>
 					<tag name="standard">
 						<value>
 							<string>ID3 2.2</string>
@@ -39,7 +45,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="COM" valid="true">
+				<element valid="true">
+					<base-value>
+						<string>COM</string>
+					</base-value>
 					<tag name="standard">
 						<value>
 							<string>ID3 2.2</string>
@@ -51,7 +60,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="CRA" valid="true">
+				<element valid="true">
+					<base-value>
+						<string>CRA</string>
+					</base-value>
 					<tag name="standard">
 						<value>
 							<string>ID3 2.2</string>
@@ -63,7 +75,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="CRM" valid="true">
+				<element valid="true">
+					<base-value>
+						<string>CRM</string>
+					</base-value>
 					<tag name="standard">
 						<value>
 							<string>ID3 2.2</string>
@@ -75,7 +90,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="ETC" valid="true">
+				<element valid="true">
+					<base-value>
+						<string>ETC</string>
+					</base-value>
 					<tag name="standard">
 						<value>
 							<string>ID3 2.2</string>
@@ -87,7 +105,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="EQU" valid="true">
+				<element valid="true">
+					<base-value>
+						<string>EQU</string>
+					</base-value>
 					<tag name="standard">
 						<value>
 							<string>ID3 2.2</string>
@@ -99,7 +120,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="GEO" valid="true">
+				<element valid="true">
+					<base-value>
+						<string>GEO</string>
+					</base-value>
 					<tag name="standard">
 						<value>
 							<string>ID3 2.2</string>
@@ -111,7 +135,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="IPL" valid="true">
+				<element valid="true">
+					<base-value>
+						<string>IPL</string>
+					</base-value>
 					<tag name="standard">
 						<value>
 							<string>ID3 2.2</string>
@@ -123,7 +150,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="LNK" valid="true">
+				<element valid="true">
+					<base-value>
+						<string>LNK</string>
+					</base-value>
 					<tag name="standard">
 						<value>
 							<string>ID3 2.2</string>
@@ -135,7 +165,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="MCI" valid="true">
+				<element valid="true">
+					<base-value>
+						<string>MCI</string>
+					</base-value>
 					<tag name="standard">
 						<value>
 							<string>ID3 2.2</string>
@@ -147,7 +180,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="MLL" valid="true">
+				<element valid="true">
+					<base-value>
+						<string>MLL</string>
+					</base-value>
 					<tag name="standard">
 						<value>
 							<string>ID3 2.2</string>
@@ -159,7 +195,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="PIC" valid="true">
+				<element valid="true">
+					<base-value>
+						<string>PIC</string>
+					</base-value>
 					<tag name="standard">
 						<value>
 							<string>ID3 2.2</string>
@@ -171,7 +210,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="POP" valid="true">
+				<element valid="true">
+					<base-value>
+						<string>POP</string>
+					</base-value>
 					<tag name="standard">
 						<value>
 							<string>ID3 2.2</string>
@@ -183,7 +225,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="REV" valid="true">
+				<element valid="true">
+					<base-value>
+						<string>REV</string>
+					</base-value>
 					<tag name="standard">
 						<value>
 							<string>ID3 2.2</string>
@@ -195,7 +240,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="RVA" valid="true">
+				<element valid="true">
+					<base-value>
+						<string>RVA</string>
+					</base-value>
 					<tag name="standard">
 						<value>
 							<string>ID3 2.2</string>
@@ -207,7 +255,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="SLT" valid="true">
+				<element valid="true">
+					<base-value>
+						<string>SLT</string>
+					</base-value>
 					<tag name="standard">
 						<value>
 							<string>ID3 2.2</string>
@@ -219,7 +270,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="STC" valid="true">
+				<element valid="true">
+					<base-value>
+						<string>STC</string>
+					</base-value>
 					<tag name="standard">
 						<value>
 							<string>ID3 2.2</string>
@@ -231,7 +285,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="TAL" valid="true">
+				<element valid="true">
+					<base-value>
+						<string>TAL</string>
+					</base-value>
 					<tag name="standard">
 						<value>
 							<string>ID3 2.2</string>
@@ -243,7 +300,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="TBP" valid="true">
+				<element valid="true">
+					<base-value>
+						<string>TBP</string>
+					</base-value>
 					<tag name="standard">
 						<value>
 							<string>ID3 2.2</string>
@@ -255,7 +315,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="TCM" valid="true">
+				<element valid="true">
+					<base-value>
+						<string>TCM</string>
+					</base-value>
 					<tag name="standard">
 						<value>
 							<string>ID3 2.2</string>
@@ -267,7 +330,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="TCO" valid="true">
+				<element valid="true">
+					<base-value>
+						<string>TCO</string>
+					</base-value>
 					<tag name="standard">
 						<value>
 							<string>ID3 2.2</string>
@@ -279,7 +345,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="TCP" valid="false">
+				<element valid="false">
+					<base-value>
+						<string>TCP</string>
+					</base-value>
 					<tag name="standard">
 						<value>
 							<string>from the internet</string>
@@ -296,7 +365,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="TCR" valid="true">
+				<element valid="true">
+					<base-value>
+						<string>TCR</string>
+					</base-value>
 					<tag name="standard">
 						<value>
 							<string>ID3 2.2</string>
@@ -308,7 +380,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="TDA" valid="true">
+				<element valid="true">
+					<base-value>
+						<string>TDA</string>
+					</base-value>
 					<tag name="standard">
 						<value>
 							<string>ID3 2.2</string>
@@ -320,7 +395,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="TDY" valid="true">
+				<element valid="true">
+					<base-value>
+						<string>TDY</string>
+					</base-value>
 					<tag name="standard">
 						<value>
 							<string>ID3 2.2</string>
@@ -332,7 +410,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="TEN" valid="true">
+				<element valid="true">
+					<base-value>
+						<string>TEN</string>
+					</base-value>
 					<tag name="standard">
 						<value>
 							<string>ID3 2.2</string>
@@ -344,7 +425,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="TFT" valid="true">
+				<element valid="true">
+					<base-value>
+						<string>TFT</string>
+					</base-value>
 					<tag name="standard">
 						<value>
 							<string>ID3 2.2</string>
@@ -356,7 +440,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="TIM" valid="true">
+				<element valid="true">
+					<base-value>
+						<string>TIM</string>
+					</base-value>
 					<tag name="standard">
 						<value>
 							<string>ID3 2.2</string>
@@ -368,7 +455,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="TKE" valid="true">
+				<element valid="true">
+					<base-value>
+						<string>TKE</string>
+					</base-value>
 					<tag name="standard">
 						<value>
 							<string>ID3 2.2</string>
@@ -380,7 +470,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="TLA" valid="true">
+				<element valid="true">
+					<base-value>
+						<string>TLA</string>
+					</base-value>
 					<tag name="standard">
 						<value>
 							<string>ID3 2.2</string>
@@ -392,7 +485,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="TLE" valid="true">
+				<element valid="true">
+					<base-value>
+						<string>TLE</string>
+					</base-value>
 					<tag name="standard">
 						<value>
 							<string>ID3 2.2</string>
@@ -404,7 +500,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="TMT" valid="true">
+				<element valid="true">
+					<base-value>
+						<string>TMT</string>
+					</base-value>
 					<tag name="standard">
 						<value>
 							<string>ID3 2.2</string>
@@ -416,7 +515,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="TOA" valid="true">
+				<element valid="true">
+					<base-value>
+						<string>TOA</string>
+					</base-value>
 					<tag name="standard">
 						<value>
 							<string>ID3 2.2</string>
@@ -428,7 +530,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="TOF" valid="true">
+				<element valid="true">
+					<base-value>
+						<string>TOF</string>
+					</base-value>
 					<tag name="standard">
 						<value>
 							<string>ID3 2.2</string>
@@ -440,7 +545,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="TOL" valid="true">
+				<element valid="true">
+					<base-value>
+						<string>TOL</string>
+					</base-value>
 					<tag name="standard">
 						<value>
 							<string>ID3 2.2</string>
@@ -452,7 +560,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="TOR" valid="true">
+				<element valid="true">
+					<base-value>
+						<string>TOR</string>
+					</base-value>
 					<tag name="standard">
 						<value>
 							<string>ID3 2.2</string>
@@ -464,7 +575,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="TOT" valid="true">
+				<element valid="true">
+					<base-value>
+						<string>TOT</string>
+					</base-value>
 					<tag name="standard">
 						<value>
 							<string>ID3 2.2</string>
@@ -476,7 +590,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="TP1" valid="true">
+				<element valid="true">
+					<base-value>
+						<string>TP1</string>
+					</base-value>
 					<tag name="standard">
 						<value>
 							<string>ID3 2.2</string>
@@ -488,7 +605,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="TP2" valid="true">
+				<element valid="true">
+					<base-value>
+						<string>TP2</string>
+					</base-value>
 					<tag name="standard">
 						<value>
 							<string>ID3 2.2</string>
@@ -500,7 +620,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="TP3" valid="true">
+				<element valid="true">
+					<base-value>
+						<string>TP3</string>
+					</base-value>
 					<tag name="standard">
 						<value>
 							<string>ID3 2.2</string>
@@ -512,7 +635,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="TP4" valid="true">
+				<element valid="true">
+					<base-value>
+						<string>TP4</string>
+					</base-value>
 					<tag name="standard">
 						<value>
 							<string>ID3 2.2</string>
@@ -524,7 +650,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="TPA" valid="true">
+				<element valid="true">
+					<base-value>
+						<string>TPA</string>
+					</base-value>
 					<tag name="standard">
 						<value>
 							<string>ID3 2.2</string>
@@ -536,7 +665,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="TPB" valid="true">
+				<element valid="true">
+					<base-value>
+						<string>TPB</string>
+					</base-value>
 					<tag name="standard">
 						<value>
 							<string>ID3 2.2</string>
@@ -548,7 +680,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="TRC" valid="true">
+				<element valid="true">
+					<base-value>
+						<string>TRC</string>
+					</base-value>
 					<tag name="standard">
 						<value>
 							<string>ID3 2.2</string>
@@ -560,7 +695,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="TRD" valid="true">
+				<element valid="true">
+					<base-value>
+						<string>TRD</string>
+					</base-value>
 					<tag name="standard">
 						<value>
 							<string>ID3 2.2</string>
@@ -572,7 +710,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="TRK" valid="true">
+				<element valid="true">
+					<base-value>
+						<string>TRK</string>
+					</base-value>
 					<tag name="standard">
 						<value>
 							<string>ID3 2.2</string>
@@ -584,7 +725,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="TSI" valid="true">
+				<element valid="true">
+					<base-value>
+						<string>TSI</string>
+					</base-value>
 					<tag name="standard">
 						<value>
 							<string>ID3 2.2</string>
@@ -596,7 +740,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="TSS" valid="true">
+				<element valid="true">
+					<base-value>
+						<string>TSS</string>
+					</base-value>
 					<tag name="standard">
 						<value>
 							<string>ID3 2.2</string>
@@ -608,7 +755,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="TT1" valid="true">
+				<element valid="true">
+					<base-value>
+						<string>TT1</string>
+					</base-value>
 					<tag name="standard">
 						<value>
 							<string>ID3 2.2</string>
@@ -620,7 +770,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="TT2" valid="true">
+				<element valid="true">
+					<base-value>
+						<string>TT2</string>
+					</base-value>
 					<tag name="standard">
 						<value>
 							<string>ID3 2.2</string>
@@ -632,7 +785,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="TT3" valid="true">
+				<element valid="true">
+					<base-value>
+						<string>TT3</string>
+					</base-value>
 					<tag name="standard">
 						<value>
 							<string>ID3 2.2</string>
@@ -644,7 +800,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="TXT" valid="true">
+				<element valid="true">
+					<base-value>
+						<string>TXT</string>
+					</base-value>
 					<tag name="standard">
 						<value>
 							<string>ID3 2.2</string>
@@ -656,7 +815,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="TXX" valid="true">
+				<element valid="true">
+					<base-value>
+						<string>TXX</string>
+					</base-value>
 					<tag name="standard">
 						<value>
 							<string>ID3 2.2</string>
@@ -668,7 +830,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="TYE" valid="true">
+				<element valid="true">
+					<base-value>
+						<string>TYE</string>
+					</base-value>
 					<tag name="standard">
 						<value>
 							<string>ID3 2.2</string>
@@ -680,7 +845,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="UFI" valid="true">
+				<element valid="true">
+					<base-value>
+						<string>UFI</string>
+					</base-value>
 					<tag name="standard">
 						<value>
 							<string>ID3 2.2</string>
@@ -692,7 +860,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="ULT" valid="true">
+				<element valid="true">
+					<base-value>
+						<string>ULT</string>
+					</base-value>
 					<tag name="standard">
 						<value>
 							<string>ID3 2.2</string>
@@ -704,7 +875,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="WAF" valid="true">
+				<element valid="true">
+					<base-value>
+						<string>WAF</string>
+					</base-value>
 					<tag name="standard">
 						<value>
 							<string>ID3 2.2</string>
@@ -716,7 +890,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="WAR" valid="true">
+				<element valid="true">
+					<base-value>
+						<string>WAR</string>
+					</base-value>
 					<tag name="standard">
 						<value>
 							<string>ID3 2.2</string>
@@ -728,7 +905,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="WAS" valid="true">
+				<element valid="true">
+					<base-value>
+						<string>WAS</string>
+					</base-value>
 					<tag name="standard">
 						<value>
 							<string>ID3 2.2</string>
@@ -740,7 +920,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="WCM" valid="true">
+				<element valid="true">
+					<base-value>
+						<string>WCM</string>
+					</base-value>
 					<tag name="standard">
 						<value>
 							<string>ID3 2.2</string>
@@ -752,7 +935,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="WCP" valid="true">
+				<element valid="true">
+					<base-value>
+						<string>WCP</string>
+					</base-value>
 					<tag name="standard">
 						<value>
 							<string>ID3 2.2</string>
@@ -764,7 +950,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="WPB" valid="true">
+				<element valid="true">
+					<base-value>
+						<string>WPB</string>
+					</base-value>
 					<tag name="standard">
 						<value>
 							<string>ID3 2.2</string>
@@ -776,7 +965,10 @@
 						</value>
 					</tag>
 				</element>
-				<element base-value="WXX" valid="true">
+				<element valid="true">
+					<base-value>
+						<string>WXX</string>
+					</base-value>
 					<tag name="standard">
 						<value>
 							<string>ID3 2.2</string>

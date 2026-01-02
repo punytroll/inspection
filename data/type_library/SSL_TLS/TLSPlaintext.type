@@ -9,42 +9,60 @@
 			</type-reference>
 			<apply-enumeration>
 				<enumeration base-data-type="unsigned integer 8bit">
-					<element base-value="0" valid="false">
+					<element valid="false">
+						<base-value>
+							<unsigned-integer-8bit>0</unsigned-integer-8bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>Invalid</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="20" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>20</unsigned-integer-8bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>ChangeCipherSpec</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="21" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>21</unsigned-integer-8bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>Alert</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="22" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>22</unsigned-integer-8bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>Handshake</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="23" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>23</unsigned-integer-8bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>Application</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="24" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>24</unsigned-integer-8bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>Heartbeat</string>

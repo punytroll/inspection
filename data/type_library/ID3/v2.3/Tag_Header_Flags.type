@@ -12,14 +12,20 @@
 			</tag>
 			<apply-enumeration>
 				<enumeration base-data-type="boolean">
-					<element base-value="true" valid="true">
+					<element valid="true">
+						<base-value>
+							<boolean>true</boolean>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>Unsynchronisation is used.</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="false" valid="true">
+					<element valid="true">
+						<base-value>
+							<boolean>false</boolean>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>Unsynchronisation is NOT used.</string>
@@ -37,14 +43,20 @@
 			</tag>
 			<apply-enumeration>
 				<enumeration base-data-type="boolean">
-					<element base-value="true" valid="true">
+					<element valid="true">
+						<base-value>
+							<boolean>true</boolean>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>The header is followed by an extended header.</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="false" valid="true">
+					<element valid="true">
+						<base-value>
+							<boolean>false</boolean>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>The header is NOT followed by an extended header.,</string>
@@ -62,14 +74,20 @@
 			</tag>
 			<apply-enumeration>
 				<enumeration base-data-type="boolean">
-					<element base-value="true" valid="true">
+					<element valid="true">
+						<base-value>
+							<boolean>true</boolean>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>The tag is in an experimental stage.</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="false" valid="true">
+					<element valid="true">
+						<base-value>
+							<boolean>false</boolean>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>The tag is NOT in an experimental stage.</string>

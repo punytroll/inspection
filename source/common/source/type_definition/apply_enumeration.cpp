@@ -28,8 +28,10 @@
 #include "apply_enumeration.h"
 #include "data_type.h"
 #include "enumeration.h"
+#include "equals.h"
 #include "expression.h"
 #include "tag.h"
+#include "value.h"
 
 static auto m_ApplyTags(Inspection::ExecutionContext & ExecutionContext, std::vector<std::unique_ptr<Inspection::TypeDefinition::Tag>> const & Tags, Inspection::Value * Target) -> void
 {
@@ -45,10 +47,12 @@ template<typename DataType>
 static auto m_ApplyEnumeration(Inspection::ExecutionContext & ExecutionContext, Inspection::TypeDefinition::Enumeration const & Enumeration, Inspection::Value * Target) -> bool
 {
     auto Result = false;
-    auto BaseValueString = std::format("{}", std::any_cast<DataType const &>(Target->GetData()));
-    auto ElementIterator = std::find_if(Enumeration.GetElements().begin(), Enumeration.GetElements().end(), [&BaseValueString](auto & Element)
+    auto const & BaseValue = std::any_cast<DataType const &>(Target->GetData());
+    auto ElementIterator = std::find_if(Enumeration.GetElements().begin(), Enumeration.GetElements().end(), [&BaseValue, &ExecutionContext](auto & Element)
                                                                                                             {
-                                                                                                                return Element.BaseValue == BaseValueString;
+                                                                                                                ASSERTION(Element.BaseValue != nullptr);
+                                                                                                                
+                                                                                                                return Inspection::TypeDefinition::CompareEquals(BaseValue, Element.BaseValue->GetAny(ExecutionContext));
                                                                                                             });
     
     if(ElementIterator != Enumeration.GetElements().end())
@@ -63,13 +67,13 @@ static auto m_ApplyEnumeration(Inspection::ExecutionContext & ExecutionContext, 
             ::m_ApplyTags(ExecutionContext, Enumeration.GetFallbackElement()->Tags, Target);
             if(Enumeration.GetFallbackElement()->Valid == false)
             {
-                Target->AddTag("error", "Could find no enumeration element for the base value \"" + BaseValueString + "\".");
+                Target->AddTag("error", std::format("Could find no enumeration element for the base value \"{}\".", BaseValue));
             }
             Result = Enumeration.GetFallbackElement()->Valid;
         }
         else
         {
-            Target->AddTag("error", "Could find neither an enumeration element nor an enumeration fallback element for the base value \"" + BaseValueString + "\".");
+            Target->AddTag("error", std::format("Could find neither an enumeration element nor an enumeration fallback element for the base value \"{}\".", BaseValue));
             Result = false;
         }
     }

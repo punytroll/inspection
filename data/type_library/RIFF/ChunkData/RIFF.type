@@ -14,7 +14,7 @@
 					<unsigned-integer-64bit>0</unsigned-integer-64bit>
 				</bits>
 			</length>
-		</field>>
+		</field>&gt;
 		<array name="Chunks">
 			<iterate type="until-length"/>
 			<element-type>

@@ -9,49 +9,70 @@
 			</type-reference>
 			<apply-enumeration>
 				<enumeration base-data-type="unsigned integer 8bit">
-					<element base-value="0" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>0</unsigned-integer-8bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>None</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="1" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>1</unsigned-integer-8bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>MD5</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="2" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>2</unsigned-integer-8bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>SHA1</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="3" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>3</unsigned-integer-8bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>SHA224</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="4" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>4</unsigned-integer-8bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>SHA256</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="5" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>5</unsigned-integer-8bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>SHA384</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="6" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>6</unsigned-integer-8bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>SHA512</string>
@@ -77,7 +98,10 @@
 			</type-reference>
 			<apply-enumeration>
 				<enumeration base-data-type="unsigned integer 8bit">
-					<element base-value="0" valid="false">
+					<element valid="false">
+						<base-value>
+							<unsigned-integer-8bit>0</unsigned-integer-8bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>Anonymous</string>
@@ -89,21 +113,30 @@
 							</value>
 						</tag>
 					</element>
-					<element base-value="1" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>1</unsigned-integer-8bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>RSA</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="2" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>2</unsigned-integer-8bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>DSA</string>
 							</value>
 						</tag>
 					</element>
-					<element base-value="3" valid="true">
+					<element valid="true">
+						<base-value>
+							<unsigned-integer-8bit>3</unsigned-integer-8bit>
+						</base-value>
 						<tag name="interpretation">
 							<value>
 								<string>ECDSA</string>
