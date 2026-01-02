@@ -69,7 +69,7 @@ auto Inspection::TypeDefinition::Array::Get(Inspection::ExecutionContext & Execu
                 
                 ElementParameters["ElementIndexInArray"] = ElementIndexInArray;
                 
-                auto ElementResult = ElementType->Get(ExecutionContext, ElementReader, ElementParameters);
+                auto ElementResult = ElementType->Get(ElementReader, ElementParameters);
                 
                 Continue = ElementResult->GetSuccess();
                 if(Continue == true)
@@ -150,7 +150,7 @@ auto Inspection::TypeDefinition::Array::Get(Inspection::ExecutionContext & Execu
                 ASSERTION(ExecutionContext.GetCurrentReader().GetReadPositionInInput() == Properties.first);
                 
                 auto ElementReader = Inspection::Reader{ExecutionContext.GetCurrentReader(), Properties.second};
-                auto ElementResult = ElementType->Get(ExecutionContext, ElementReader, ElementParameters);
+                auto ElementResult = ElementType->Get(ElementReader, ElementParameters);
                 
                 Continue = ElementResult->GetSuccess();
                 if(Continue == true)
@@ -215,7 +215,7 @@ auto Inspection::TypeDefinition::Array::Get(Inspection::ExecutionContext & Execu
                     
                     ElementParameters["ElementIndexInArray"] = ElementIndexInArray;
                     
-                    auto ElementResult = ElementType->Get(ExecutionContext, ElementReader, ElementParameters);
+                    auto ElementResult = ElementType->Get(ElementReader, ElementParameters);
                     
                     Continue = ElementResult->GetSuccess();
                     ElementResult->GetValue()->AddTag("element index in array", ElementIndexInArray++);
@@ -270,7 +270,7 @@ auto Inspection::TypeDefinition::Array::Get(Inspection::ExecutionContext & Execu
                 
                 ElementParameters["ElementIndexInArray"] = ElementIndexInArray;
                 
-                auto ElementResult = ElementType->Get(ExecutionContext, ElementReader, ElementParameters);
+                auto ElementResult = ElementType->Get(ElementReader, ElementParameters);
                 
                 Continue = ElementResult->GetSuccess();
                 if(Continue == true)
@@ -329,7 +329,7 @@ auto Inspection::TypeDefinition::Array::Get(Inspection::ExecutionContext & Execu
                 
                 ElementParameters["ElementIndexInArray"] = ElementIndexInArray;
                 
-                auto ElementResult = ElementType->Get(ExecutionContext, ElementReader, ElementParameters);
+                auto ElementResult = ElementType->Get(ElementReader, ElementParameters);
                 
                 Continue = ElementResult->GetSuccess();
                 ElementResult->GetValue()->AddTag("element index in array", ElementIndexInArray++);
