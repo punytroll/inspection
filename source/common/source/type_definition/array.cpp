@@ -371,6 +371,11 @@ auto Inspection::TypeDefinition::Array::Get(Inspection::ExecutionContext & Execu
     return Result;
 }
 
+auto Inspection::TypeDefinition::Array::GetFieldName() const -> std::optional<std::string> const &
+{
+    return m_FieldName;
+}
+
 auto Inspection::TypeDefinition::Array::Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::Array>
 {
     auto Result = std::unique_ptr<Inspection::TypeDefinition::Array>{new Inspection::TypeDefinition::Array{}};

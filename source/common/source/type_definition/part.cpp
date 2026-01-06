@@ -68,13 +68,6 @@ auto Inspection::TypeDefinition::Part::ApplyInterpretations(Inspection::Executio
     return Result;
 }
 
-auto Inspection::TypeDefinition::Part::GetFieldName() const -> std::string const &
-{
-    ASSERTION(m_FieldName.has_value() == true);
-    
-    return m_FieldName.value();
-}
-
 auto Inspection::TypeDefinition::Part::GetLengthAny(Inspection::ExecutionContext & ExecutionContext) const -> std::any
 {
     ASSERTION(m_Length != nullptr);
@@ -109,11 +102,6 @@ auto Inspection::TypeDefinition::Part::GetTypeFromTypeReference(Inspection::Exec
     ASSERTION(m_TypeReference != nullptr);
     
     return m_TypeReference->GetType(ExecutionContext);
-}
-
-auto Inspection::TypeDefinition::Part::HasFieldName() const -> bool
-{
-    return m_FieldName.has_value();
 }
 
 auto Inspection::TypeDefinition::Part::HasLength() const -> bool
@@ -167,6 +155,8 @@ auto Inspection::TypeDefinition::Part::Load(XML::Element const * Element) -> std
 
 auto Inspection::TypeDefinition::Part::m_AddPartResult(Inspection::Result & Result, Inspection::TypeDefinition::Part const & Part, Inspection::Result * PartResult) const -> void
 {
+    auto FieldName = std::optional<std::string>{};
+    
     switch(Part.GetPartType())
     {
     case Inspection::TypeDefinition::PartType::Alternative:
@@ -174,22 +164,23 @@ auto Inspection::TypeDefinition::Part::m_AddPartResult(Inspection::Result & Resu
     case Inspection::TypeDefinition::PartType::Select:
     case Inspection::TypeDefinition::PartType::Sequence:
         {
-            ASSERTION(Part.HasFieldName() == false);
-            Result.GetValue()->Extend(PartResult->ExtractValue());
-            
             break;
         }
     case Inspection::TypeDefinition::PartType::Array:
+        {
+            auto Array = dynamic_cast<Inspection::TypeDefinition::Array const *>(std::addressof(Part));
+            
+            ASSERTION(Array != nullptr);
+            FieldName = Array->GetFieldName();
+            
+            break;
+        }
     case Inspection::TypeDefinition::PartType::Field:
         {
-            if(Part.HasFieldName() == true)
-            {
-                Result.GetValue()->AppendField(Part.GetFieldName(), PartResult->ExtractValue());
-            }
-            else
-            {
-                Result.GetValue()->Extend(PartResult->ExtractValue());
-            }
+            auto Field = dynamic_cast<Inspection::TypeDefinition::Field const *>(std::addressof(Part));
+            
+            ASSERTION(Field != nullptr);
+            FieldName = Field->GetFieldName();
             
             break;
         }
@@ -197,6 +188,14 @@ auto Inspection::TypeDefinition::Part::m_AddPartResult(Inspection::Result & Resu
         {
             IMPOSSIBLE_CODE_REACHED("a \"type\" should not be possible inside of a part");
         }
+    }
+    if(FieldName.has_value() == true)
+    {
+        Result.GetValue()->AppendField(FieldName.value(), PartResult->ExtractValue());
+    }
+    else
+    {
+        Result.GetValue()->Extend(PartResult->ExtractValue());
     }
 }
 

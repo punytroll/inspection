@@ -47,12 +47,15 @@ namespace Inspection
             ~Field() override = default;
             auto Get(Inspection::ExecutionContext & ExecutionContext) const -> void override;
             auto Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result> override;
+            auto GetFieldName() const -> std::optional<std::string> const &;
         private:
             Field();
             Field(Inspection::TypeDefinition::Field const & Field) = delete;
             Field(Inspection::TypeDefinition::Field && Field) = delete;
             auto operator=(Inspection::TypeDefinition::Field const & Field) -> Inspection::TypeDefinition::Field & = delete;
             auto operator=(Inspection::TypeDefinition::Field && Field) -> Inspection::TypeDefinition::Field & = delete;
+            
+            std::optional<std::string> m_FieldName;
         };
     }
 }
