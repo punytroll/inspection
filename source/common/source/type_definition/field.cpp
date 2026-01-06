@@ -65,7 +65,7 @@ auto Inspection::TypeDefinition::Field::Get(Inspection::ExecutionContext & Execu
         auto PartResult = Part->Get(ExecutionContext, *PartReader, PartParameters);
         
         Continue = PartResult->GetSuccess();
-        ExecutionContext.GetCurrentResult().GetValue()->Extend(PartResult->ExtractValue());
+        m_AddPartResult(ExecutionContext.GetCurrentResult(), *Part, PartResult.get());
         ExecutionContext.GetCurrentReader().AdvancePosition(PartReader->GetConsumedLength());
     }
     // interpretation
