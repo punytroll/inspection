@@ -48,9 +48,12 @@ auto Inspection::TypeDefinition::Alternative::Get(Inspection::ExecutionContext &
         }
         
         auto PartParameters = Part->GetParameters(ExecutionContext);
-        auto PartResult = Part->Get(ExecutionContext, *PartReader, PartParameters);
+        auto PartResult = std::make_unique<Inspection::Result>();
         
+        ExecutionContext.Push(*PartResult, *PartReader, PartParameters);
+        Part->Get(ExecutionContext);
         FoundAlternative = PartResult->GetSuccess();
+        ExecutionContext.Pop();
         if(FoundAlternative == true)
         {
             m_AddPartResult(ExecutionContext.GetCurrentResult(), *Part, PartResult.get());

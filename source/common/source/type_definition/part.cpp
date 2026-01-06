@@ -69,17 +69,6 @@ auto Inspection::TypeDefinition::Part::ApplyInterpretations(Inspection::Executio
     return Result;
 }
 
-auto Inspection::TypeDefinition::Part::Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result>
-{
-    auto Result = std::make_unique<Inspection::Result>();
-    
-    ExecutionContext.Push(*Result, Reader, Parameters);
-    Get(ExecutionContext);
-    ExecutionContext.Pop();
-    
-    return Result;
-}
-
 auto Inspection::TypeDefinition::Part::GetLengthAny(Inspection::ExecutionContext & ExecutionContext) const -> std::any
 {
     ASSERTION(m_Length != nullptr);

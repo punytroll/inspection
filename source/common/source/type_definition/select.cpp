@@ -60,9 +60,12 @@ auto Inspection::TypeDefinition::Select::Get(Inspection::ExecutionContext & Exec
                 }
                 
                 auto PartParameters = Case.Part->GetParameters(ExecutionContext);
-                auto PartResult = Case.Part->Get(ExecutionContext, *PartReader, PartParameters);
+                auto PartResult = std::make_unique<Inspection::Result>();
                 
+                ExecutionContext.Push(*PartResult, *PartReader, PartParameters);
+                Case.Part->Get(ExecutionContext);
                 Continue = PartResult->GetSuccess();
+                ExecutionContext.Pop();
                 m_AddPartResult(ExecutionContext.GetCurrentResult(), *(Case.Part), PartResult.get());
                 ExecutionContext.GetCurrentReader().AdvancePosition(PartReader->GetConsumedLength());
             }
@@ -87,9 +90,12 @@ auto Inspection::TypeDefinition::Select::Get(Inspection::ExecutionContext & Exec
         }
         
         auto PartParameters = m_ElsePart->GetParameters(ExecutionContext);
-        auto PartResult = m_ElsePart->Get(ExecutionContext, *PartReader, PartParameters);
+        auto PartResult = std::make_unique<Inspection::Result>();
         
+        ExecutionContext.Push(*PartResult, *PartReader, PartParameters);
+        m_ElsePart->Get(ExecutionContext);
         Continue = PartResult->GetSuccess();
+        ExecutionContext.Pop();
         m_AddPartResult(ExecutionContext.GetCurrentResult(), *m_ElsePart, PartResult.get());
         ExecutionContext.GetCurrentReader().AdvancePosition(PartReader->GetConsumedLength());
     }

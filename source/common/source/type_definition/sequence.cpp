@@ -49,9 +49,12 @@ auto Inspection::TypeDefinition::Sequence::Get(Inspection::ExecutionContext & Ex
         }
         
         auto PartParameters = Part->GetParameters(ExecutionContext);
-        auto PartResult = Part->Get(ExecutionContext, *PartReader, PartParameters);
+        auto PartResult = std::make_unique<Inspection::Result>();
         
+        ExecutionContext.Push(*PartResult, *PartReader, PartParameters);
+        Part->Get(ExecutionContext);
         Continue = PartResult->GetSuccess();
+        ExecutionContext.Pop();
         m_AddPartResult(ExecutionContext.GetCurrentResult(), *Part, PartResult.get());
         ExecutionContext.GetCurrentReader().AdvancePosition(PartReader->GetConsumedLength());
     }
