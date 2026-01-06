@@ -60,7 +60,7 @@ namespace Inspection
             auto Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result> override;
             auto GetElementParameters(Inspection::ExecutionContext & ExecutionContext) const -> std::unordered_map<std::string, std::any>;
         protected:
-            auto _LoadProperty(XML::Element const * Element) -> void override;
+            auto m_LoadProperty(XML::Element const * Element) -> void override;
         private:
             Array(void);
             Array(Inspection::TypeDefinition::Array const & Array) = delete;

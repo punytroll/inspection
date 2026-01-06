@@ -113,7 +113,7 @@ auto Inspection::TypeDefinition::Select::Load(XML::Element const * Element) -> s
     return std::unique_ptr<Inspection::TypeDefinition::Select>{new Inspection::TypeDefinition::Select{}};
 }
 
-auto Inspection::TypeDefinition::Select::_LoadProperty(XML::Element const * Element) -> void
+auto Inspection::TypeDefinition::Select::m_LoadProperty(XML::Element const * Element) -> void
 {
     if(Element->GetName() == "case")
     {
@@ -150,6 +150,6 @@ auto Inspection::TypeDefinition::Select::_LoadProperty(XML::Element const * Elem
     }
     else
     {
-        Inspection::TypeDefinition::Part::_LoadProperty(Element);
+        Inspection::TypeDefinition::Part::m_LoadProperty(Element);
     }
 }

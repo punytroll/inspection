@@ -381,7 +381,7 @@ auto Inspection::TypeDefinition::Array::Load(XML::Element const * Element) -> st
     return Result;
 }
 
-auto Inspection::TypeDefinition::Array::_LoadProperty(XML::Element const * Element) -> void
+auto Inspection::TypeDefinition::Array::m_LoadProperty(XML::Element const * Element) -> void
 {
     if(Element->GetName() == "iterate")
     {
@@ -442,7 +442,7 @@ auto Inspection::TypeDefinition::Array::_LoadProperty(XML::Element const * Eleme
     }
     else
     {
-        Inspection::TypeDefinition::Part::_LoadProperty(Element);
+        Inspection::TypeDefinition::Part::m_LoadProperty(Element);
     }
 }
 

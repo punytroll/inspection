@@ -57,7 +57,7 @@ namespace Inspection
                 std::unique_ptr<Inspection::TypeDefinition::Expression> When;
             };
         protected:
-            auto _LoadProperty(XML::Element const * Element) -> void override;
+            auto m_LoadProperty(XML::Element const * Element) -> void override;
         private:
             Select();
             Select(Inspection::TypeDefinition::Select const & Select) = delete;

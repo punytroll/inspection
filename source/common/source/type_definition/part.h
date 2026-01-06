@@ -67,8 +67,8 @@ namespace Inspection
             auto HasLength() const -> bool;
             auto HasTypeReference() const -> bool;
         protected:
-            auto _LoadProperties(XML::Element const * Element) -> void;
-            virtual auto _LoadProperty(XML::Element const * Element) -> void;
+            auto m_LoadProperties(XML::Element const * Element) -> void;
+            virtual auto m_LoadProperty(XML::Element const * Element) -> void;
             auto m_AddPartResult(Inspection::Result & Result, Inspection::TypeDefinition::Part const & Part, Inspection::Result * PartResult) const -> void;
             std::optional<std::string> m_FieldName;
         private:

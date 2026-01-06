@@ -160,7 +160,7 @@ auto Inspection::TypeDefinition::Part::Load(XML::Element const * Element) -> std
     {
         UNEXPECTED_CASE("Element->GetName() == " + Element->GetName());
     }
-    Result->_LoadProperties(Element);
+    Result->m_LoadProperties(Element);
     
     return Result;
 }
@@ -200,17 +200,17 @@ auto Inspection::TypeDefinition::Part::m_AddPartResult(Inspection::Result & Resu
     }
 }
 
-auto Inspection::TypeDefinition::Part::_LoadProperties(XML::Element const * Element) -> void
+auto Inspection::TypeDefinition::Part::m_LoadProperties(XML::Element const * Element) -> void
 {
     ASSERTION(Element != nullptr);
     for(auto const & ChildElement : Element->GetChildElements())
     {
         ASSERTION(ChildElement != nullptr);
-        _LoadProperty(ChildElement);
+        m_LoadProperty(ChildElement);
     }
 }
 
-auto Inspection::TypeDefinition::Part::_LoadProperty(XML::Element const * Element) -> void
+auto Inspection::TypeDefinition::Part::m_LoadProperty(XML::Element const * Element) -> void
 {
     ASSERTION(Element != nullptr);
     if(Element->GetName() == "type-reference")
