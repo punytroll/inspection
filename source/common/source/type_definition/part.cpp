@@ -19,6 +19,7 @@
 #include <xml_puny_dom/xml_puny_dom.h>
 
 #include <common/assertion.h>
+#include <common/execution_context.h>
 #include <common/result.h>
 
 #include "add_tag.h"
@@ -64,6 +65,17 @@ auto Inspection::TypeDefinition::Part::ApplyInterpretations(Inspection::Executio
             break;
         }
     }
+    
+    return Result;
+}
+
+auto Inspection::TypeDefinition::Part::Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result>
+{
+    auto Result = std::make_unique<Inspection::Result>();
+    
+    ExecutionContext.Push(*Result, Reader, Parameters);
+    Get(ExecutionContext);
+    ExecutionContext.Pop();
     
     return Result;
 }
