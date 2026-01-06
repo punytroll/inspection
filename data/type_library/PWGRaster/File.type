@@ -1,6 +1,9 @@
 <type>
 	<sequence>
-		<field name="SynchronizationWord">
+		<field>
+			<name>
+				<string>SynchronizationWord</string>
+			</name>
 			<type-reference>
 				<part>String</part>
 				<part>ASCII</part>

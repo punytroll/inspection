@@ -1,5 +1,8 @@
 <type>
-	<field name="NumberOfSamples">
+	<field>
+		<name>
+			<string>NumberOfSamples</string>
+		</name>
 		<type-reference>
 			<part>Number</part>
 			<part>Integer</part>

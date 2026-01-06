@@ -53,13 +53,19 @@ auto Inspection::TypeDefinition::Alternative::Get(Inspection::ExecutionContext &
         ExecutionContext.Push(*PartResult, *PartReader, PartParameters);
         Part->Get(ExecutionContext);
         FoundAlternative = PartResult->GetSuccess();
-        ExecutionContext.Pop();
         if(FoundAlternative == true)
         {
-            m_AddPartResult(ExecutionContext.GetCurrentResult(), *Part, PartResult.get());
+            auto PartName = Part->GetName(ExecutionContext);
+            
+            ExecutionContext.Pop();
+            m_AddPartResult(ExecutionContext, PartName, PartResult.get());
             ExecutionContext.GetCurrentReader().AdvancePosition(PartReader->GetConsumedLength());
             
             break;
+        }
+        else
+        {
+            ExecutionContext.Pop();
         }
     }
     // finalization

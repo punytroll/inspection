@@ -1,6 +1,9 @@
 <type>
 	<sequence>
-		<field name="EntryID">
+		<field>
+			<name>
+				<string>EntryID</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -231,7 +234,10 @@
 				</enumeration>
 			</apply-enumeration>
 		</field>
-		<field name="Offset">
+		<field>
+			<name>
+				<string>Offset</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -239,7 +245,10 @@
 				<part>32Bit_BigEndian</part>
 			</type-reference>
 		</field>
-		<field name="Length">
+		<field>
+			<name>
+				<string>Length</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>

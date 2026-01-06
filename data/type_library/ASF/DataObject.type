@@ -14,7 +14,10 @@
 				</equals>
 			</verification>
 		</forward>
-		<field name="Data">
+		<field>
+			<name>
+				<string>Data</string>
+			</name>
 			<type-reference>
 				<part>Data</part>
 				<part>SetOrUnset_EndedByLength</part>

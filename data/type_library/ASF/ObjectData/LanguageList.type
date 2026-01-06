@@ -1,6 +1,9 @@
 <type>
 	<sequence>
-		<field name="LanguageIDRecordsCount">
+		<field>
+			<name>
+				<string>LanguageIDRecordsCount</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>

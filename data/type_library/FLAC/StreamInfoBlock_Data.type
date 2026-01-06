@@ -1,6 +1,9 @@
 <type>
 	<sequence>
-		<field name="MinimumBlockSize">
+		<field>
+			<name>
+				<string>MinimumBlockSize</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -8,7 +11,10 @@
 				<part>16Bit_BigEndian</part>
 			</type-reference>
 		</field>
-		<field name="MaximumBlockSize">
+		<field>
+			<name>
+				<string>MaximumBlockSize</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -16,7 +22,10 @@
 				<part>16Bit_BigEndian</part>
 			</type-reference>
 		</field>
-		<field name="MinimumFrameSize">
+		<field>
+			<name>
+				<string>MinimumFrameSize</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -24,7 +33,10 @@
 				<part>24Bit_BigEndian</part>
 			</type-reference>
 		</field>
-		<field name="MaximumFrameSize">
+		<field>
+			<name>
+				<string>MaximumFrameSize</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -32,7 +44,10 @@
 				<part>24Bit_BigEndian</part>
 			</type-reference>
 		</field>
-		<field name="SampleRate">
+		<field>
+			<name>
+				<string>SampleRate</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -40,7 +55,10 @@
 				<part>20Bit_BigEndian</part>
 			</type-reference>
 		</field>
-		<field name="NumberOfChannels">
+		<field>
+			<name>
+				<string>NumberOfChannels</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -56,7 +74,10 @@
 				</value>
 			</tag>
 		</field>
-		<field name="BitsPerSample">
+		<field>
+			<name>
+				<string>BitsPerSample</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -72,7 +93,10 @@
 				</value>
 			</tag>
 		</field>
-		<field name="TotalSamplesPerChannel">
+		<field>
+			<name>
+				<string>TotalSamplesPerChannel</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -80,7 +104,10 @@
 				<part>36Bit_BigEndian</part>
 			</type-reference>
 		</field>
-		<field name="MD5SignatureOfUnencodedAudioData">
+		<field>
+			<name>
+				<string>MD5SignatureOfUnencodedAudioData</string>
+			</name>
 			<length>
 				<bytes>
 					<unsigned-integer-64bit>16</unsigned-integer-64bit>

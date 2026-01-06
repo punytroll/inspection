@@ -1,6 +1,9 @@
 <type>
 	<sequence>
-		<field name="Span">
+		<field>
+			<name>
+				<string>Span</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -8,7 +11,10 @@
 				<part>8Bit</part>
 			</type-reference>
 		</field>
-		<field name="VirtualPacketLength">
+		<field>
+			<name>
+				<string>VirtualPacketLength</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -16,7 +22,10 @@
 				<part>16Bit_LittleEndian</part>
 			</type-reference>
 		</field>
-		<field name="VirtualChunkLength">
+		<field>
+			<name>
+				<string>VirtualChunkLength</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -24,7 +33,10 @@
 				<part>16Bit_LittleEndian</part>
 			</type-reference>
 		</field>
-		<field name="SilenceDataLength">
+		<field>
+			<name>
+				<string>SilenceDataLength</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -32,7 +44,10 @@
 				<part>16Bit_LittleEndian</part>
 			</type-reference>
 		</field>
-		<field name="SilenceData">
+		<field>
+			<name>
+				<string>SilenceData</string>
+			</name>
 			<type-reference>
 				<part>Buffer</part>
 				<part>UnsignedInteger_8Bit_EndedByLength</part>

@@ -1,6 +1,9 @@
 <type>
 	<sequence>
-		<field name="DIBHeader">
+		<field>
+			<name>
+				<string>DIBHeader</string>
+			</name>
 			<alternative>
 				<sequence>
 					<tag name="type name">
@@ -8,7 +11,10 @@
 							<string>BITMAPINFOHEADER</string>
 						</value>
 					</tag>
-					<field name="Size">
+					<field>
+						<name>
+							<string>Size</string>
+						</name>
 						<type-reference>
 							<part>Number</part>
 							<part>Integer</part>
@@ -22,7 +28,10 @@
 							</equals>
 						</verification>
 					</field>
-					<field name="Width">
+					<field>
+						<name>
+							<string>Width</string>
+						</name>
 						<type-reference>
 							<part>Number</part>
 							<part>Integer</part>
@@ -30,7 +39,10 @@
 							<part>32Bit_LittleEndian</part>
 						</type-reference>
 					</field>
-					<field name="Height">
+					<field>
+						<name>
+							<string>Height</string>
+						</name>
 						<type-reference>
 							<part>Number</part>
 							<part>Integer</part>
@@ -38,7 +50,10 @@
 							<part>32Bit_LittleEndian</part>
 						</type-reference>
 					</field>
-					<field name="Planes">
+					<field>
+						<name>
+							<string>Planes</string>
+						</name>
 						<type-reference>
 							<part>Number</part>
 							<part>Integer</part>
@@ -52,7 +67,10 @@
 							</equals>
 						</verification>
 					</field>
-					<field name="BitCount">
+					<field>
+						<name>
+							<string>BitCount</string>
+						</name>
 						<type-reference>
 							<part>Number</part>
 							<part>Integer</part>
@@ -60,7 +78,10 @@
 							<part>16Bit_LittleEndian</part>
 						</type-reference>
 					</field>
-					<field name="Compression">
+					<field>
+						<name>
+							<string>Compression</string>
+						</name>
 						<type-reference>
 							<part>Number</part>
 							<part>Integer</part>
@@ -114,7 +135,10 @@
 							</enumeration>
 						</apply-enumeration>
 					</field>
-					<field name="SizeImage">
+					<field>
+						<name>
+							<string>SizeImage</string>
+						</name>
 						<type-reference>
 							<part>Number</part>
 							<part>Integer</part>
@@ -122,7 +146,10 @@
 							<part>32Bit_LittleEndian</part>
 						</type-reference>
 					</field>
-					<field name="XPelsPerMeter">
+					<field>
+						<name>
+							<string>XPelsPerMeter</string>
+						</name>
 						<type-reference>
 							<part>Number</part>
 							<part>Integer</part>
@@ -130,7 +157,10 @@
 							<part>32Bit_LittleEndian</part>
 						</type-reference>
 					</field>
-					<field name="YPelsPerMeter">
+					<field>
+						<name>
+							<string>YPelsPerMeter</string>
+						</name>
 						<type-reference>
 							<part>Number</part>
 							<part>Integer</part>
@@ -138,7 +168,10 @@
 							<part>32Bit_LittleEndian</part>
 						</type-reference>
 					</field>
-					<field name="ClrUsed">
+					<field>
+						<name>
+							<string>ClrUsed</string>
+						</name>
 						<type-reference>
 							<part>Number</part>
 							<part>Integer</part>
@@ -146,7 +179,10 @@
 							<part>32Bit_LittleEndian</part>
 						</type-reference>
 					</field>
-					<field name="ClrImportant">
+					<field>
+						<name>
+							<string>ClrImportant</string>
+						</name>
 						<type-reference>
 							<part>Number</part>
 							<part>Integer</part>
@@ -161,7 +197,10 @@
 							<string>BITMAPV5HEADER</string>
 						</value>
 					</tag>
-					<field name="Size">
+					<field>
+						<name>
+							<string>Size</string>
+						</name>
 						<type-reference>
 							<part>Number</part>
 							<part>Integer</part>
@@ -175,7 +214,10 @@
 							</equals>
 						</verification>
 					</field>
-					<field name="Width">
+					<field>
+						<name>
+							<string>Width</string>
+						</name>
 						<type-reference>
 							<part>Number</part>
 							<part>Integer</part>
@@ -183,7 +225,10 @@
 							<part>32Bit_LittleEndian</part>
 						</type-reference>
 					</field>
-					<field name="Height">
+					<field>
+						<name>
+							<string>Height</string>
+						</name>
 						<type-reference>
 							<part>Number</part>
 							<part>Integer</part>
@@ -191,7 +236,10 @@
 							<part>32Bit_LittleEndian</part>
 						</type-reference>
 					</field>
-					<field name="Planes">
+					<field>
+						<name>
+							<string>Planes</string>
+						</name>
 						<type-reference>
 							<part>Number</part>
 							<part>Integer</part>
@@ -205,7 +253,10 @@
 							</equals>
 						</verification>
 					</field>
-					<field name="BitCount">
+					<field>
+						<name>
+							<string>BitCount</string>
+						</name>
 						<type-reference>
 							<part>Number</part>
 							<part>Integer</part>
@@ -213,7 +264,10 @@
 							<part>16Bit_LittleEndian</part>
 						</type-reference>
 					</field>
-					<field name="Compression">
+					<field>
+						<name>
+							<string>Compression</string>
+						</name>
 						<type-reference>
 							<part>Number</part>
 							<part>Integer</part>
@@ -267,7 +321,10 @@
 							</enumeration>
 						</apply-enumeration>
 					</field>
-					<field name="SizeImage">
+					<field>
+						<name>
+							<string>SizeImage</string>
+						</name>
 						<type-reference>
 							<part>Number</part>
 							<part>Integer</part>
@@ -275,7 +332,10 @@
 							<part>32Bit_LittleEndian</part>
 						</type-reference>
 					</field>
-					<field name="XPelsPerMeter">
+					<field>
+						<name>
+							<string>XPelsPerMeter</string>
+						</name>
 						<type-reference>
 							<part>Number</part>
 							<part>Integer</part>
@@ -283,7 +343,10 @@
 							<part>32Bit_LittleEndian</part>
 						</type-reference>
 					</field>
-					<field name="YPelsPerMeter">
+					<field>
+						<name>
+							<string>YPelsPerMeter</string>
+						</name>
 						<type-reference>
 							<part>Number</part>
 							<part>Integer</part>
@@ -291,7 +354,10 @@
 							<part>32Bit_LittleEndian</part>
 						</type-reference>
 					</field>
-					<field name="ClrUsed">
+					<field>
+						<name>
+							<string>ClrUsed</string>
+						</name>
 						<type-reference>
 							<part>Number</part>
 							<part>Integer</part>
@@ -299,7 +365,10 @@
 							<part>32Bit_LittleEndian</part>
 						</type-reference>
 					</field>
-					<field name="ClrImportant">
+					<field>
+						<name>
+							<string>ClrImportant</string>
+						</name>
 						<type-reference>
 							<part>Number</part>
 							<part>Integer</part>
@@ -307,7 +376,10 @@
 							<part>32Bit_LittleEndian</part>
 						</type-reference>
 					</field>
-					<field name="RedMask">
+					<field>
+						<name>
+							<string>RedMask</string>
+						</name>
 						<type-reference>
 							<part>Number</part>
 							<part>Integer</part>
@@ -315,7 +387,10 @@
 							<part>32Bit_LittleEndian</part>
 						</type-reference>
 					</field>
-					<field name="GreenMask">
+					<field>
+						<name>
+							<string>GreenMask</string>
+						</name>
 						<type-reference>
 							<part>Number</part>
 							<part>Integer</part>
@@ -323,7 +398,10 @@
 							<part>32Bit_LittleEndian</part>
 						</type-reference>
 					</field>
-					<field name="BlueMask">
+					<field>
+						<name>
+							<string>BlueMask</string>
+						</name>
 						<type-reference>
 							<part>Number</part>
 							<part>Integer</part>
@@ -331,7 +409,10 @@
 							<part>32Bit_LittleEndian</part>
 						</type-reference>
 					</field>
-					<field name="AlphaMask">
+					<field>
+						<name>
+							<string>AlphaMask</string>
+						</name>
 						<type-reference>
 							<part>Number</part>
 							<part>Integer</part>
@@ -339,7 +420,10 @@
 							<part>32Bit_LittleEndian</part>
 						</type-reference>
 					</field>
-					<field name="CSType">
+					<field>
+						<name>
+							<string>CSType</string>
+						</name>
 						<type-reference>
 							<part>Number</part>
 							<part>Integer</part>
@@ -347,21 +431,30 @@
 							<part>32Bit_LittleEndian</part>
 						</type-reference>
 					</field>
-					<field name="Endpoints">
+					<field>
+						<name>
+							<string>Endpoints</string>
+						</name>
 						<tag name="type name">
 							<value>
 								<string>CIEXYZTRIPLE</string>
 							</value>
 						</tag>
 						<sequence>
-							<field name="Red">
+							<field>
+								<name>
+									<string>Red</string>
+								</name>
 								<sequence>
 									<tag name="type name">
 										<value>
 											<string>CIEXYZ</string>
 										</value>
 									</tag>
-									<field name="X">
+									<field>
+										<name>
+											<string>X</string>
+										</name>
 										<type-reference>
 											<part>Number</part>
 											<part>Integer</part>
@@ -370,7 +463,10 @@
 										</type-reference>
 										<tag name="fixed point 2.30"/>
 									</field>
-									<field name="Y">
+									<field>
+										<name>
+											<string>Y</string>
+										</name>
 										<type-reference>
 											<part>Number</part>
 											<part>Integer</part>
@@ -379,7 +475,10 @@
 										</type-reference>
 										<tag name="fixed point 2.30"/>
 									</field>
-									<field name="Z">
+									<field>
+										<name>
+											<string>Z</string>
+										</name>
 										<type-reference>
 											<part>Number</part>
 											<part>Integer</part>
@@ -390,14 +489,20 @@
 									</field>
 								</sequence>
 							</field>
-							<field name="Green">
+							<field>
+								<name>
+									<string>Green</string>
+								</name>
 								<sequence>
 									<tag name="type name">
 										<value>
 											<string>CIEXYZ</string>
 										</value>
 									</tag>
-									<field name="X">
+									<field>
+										<name>
+											<string>X</string>
+										</name>
 										<type-reference>
 											<part>Number</part>
 											<part>Integer</part>
@@ -406,7 +511,10 @@
 										</type-reference>
 										<tag name="fixed point 2.30"/>
 									</field>
-									<field name="Y">
+									<field>
+										<name>
+											<string>Y</string>
+										</name>
 										<type-reference>
 											<part>Number</part>
 											<part>Integer</part>
@@ -415,7 +523,10 @@
 										</type-reference>
 										<tag name="fixed point 2.30"/>
 									</field>
-									<field name="Z">
+									<field>
+										<name>
+											<string>Z</string>
+										</name>
 										<type-reference>
 											<part>Number</part>
 											<part>Integer</part>
@@ -426,14 +537,20 @@
 									</field>
 								</sequence>
 							</field>
-							<field name="Blue">
+							<field>
+								<name>
+									<string>Blue</string>
+								</name>
 								<sequence>
 									<tag name="type name">
 										<value>
 											<string>CIEXYZ</string>
 										</value>
 									</tag>
-									<field name="X">
+									<field>
+										<name>
+											<string>X</string>
+										</name>
 										<type-reference>
 											<part>Number</part>
 											<part>Integer</part>
@@ -442,7 +559,10 @@
 										</type-reference>
 										<tag name="fixed point 2.30"/>
 									</field>
-									<field name="Y">
+									<field>
+										<name>
+											<string>Y</string>
+										</name>
 										<type-reference>
 											<part>Number</part>
 											<part>Integer</part>
@@ -451,7 +571,10 @@
 										</type-reference>
 										<tag name="fixed point 2.30"/>
 									</field>
-									<field name="Z">
+									<field>
+										<name>
+											<string>Z</string>
+										</name>
 										<type-reference>
 											<part>Number</part>
 											<part>Integer</part>
@@ -464,7 +587,10 @@
 							</field>
 						</sequence>
 					</field>
-					<field name="GammeRed">
+					<field>
+						<name>
+							<string>GammeRed</string>
+						</name>
 						<type-reference>
 							<part>Number</part>
 							<part>Integer</part>
@@ -473,7 +599,10 @@
 						</type-reference>
 						<tag name="fixed point 16.16"/>
 					</field>
-					<field name="GammaGreen">
+					<field>
+						<name>
+							<string>GammaGreen</string>
+						</name>
 						<type-reference>
 							<part>Number</part>
 							<part>Integer</part>
@@ -482,7 +611,10 @@
 						</type-reference>
 						<tag name="fixed point 16.16"/>
 					</field>
-					<field name="GammaBlue">
+					<field>
+						<name>
+							<string>GammaBlue</string>
+						</name>
 						<type-reference>
 							<part>Number</part>
 							<part>Integer</part>
@@ -491,7 +623,10 @@
 						</type-reference>
 						<tag name="fixed point 16.16"/>
 					</field>
-					<field name="Intent">
+					<field>
+						<name>
+							<string>Intent</string>
+						</name>
 						<type-reference>
 							<part>Number</part>
 							<part>Integer</part>
@@ -499,7 +634,10 @@
 							<part>32Bit_LittleEndian</part>
 						</type-reference>
 					</field>
-					<field name="ProfileData">
+					<field>
+						<name>
+							<string>ProfileData</string>
+						</name>
 						<type-reference>
 							<part>Number</part>
 							<part>Integer</part>
@@ -507,7 +645,10 @@
 							<part>32Bit_LittleEndian</part>
 						</type-reference>
 					</field>
-					<field name="ProfileSize">
+					<field>
+						<name>
+							<string>ProfileSize</string>
+						</name>
 						<type-reference>
 							<part>Number</part>
 							<part>Integer</part>
@@ -515,7 +656,10 @@
 							<part>32Bit_LittleEndian</part>
 						</type-reference>
 					</field>
-					<field name="Reserved">
+					<field>
+						<name>
+							<string>Reserved</string>
+						</name>
 						<type-reference>
 							<part>Number</part>
 							<part>Integer</part>
@@ -531,7 +675,10 @@
 					</field>
 				</sequence>
 				<sequence>
-					<field name="Size">
+					<field>
+						<name>
+							<string>Size</string>
+						</name>
 						<type-reference>
 							<part>Number</part>
 							<part>Integer</part>
@@ -563,9 +710,15 @@
 						</equals>
 					</and>
 				</when>
-				<field name="ExtraBitMasks">
+				<field>
+					<name>
+						<string>ExtraBitMasks</string>
+					</name>
 					<sequence>
-						<field name="RedMask">
+						<field>
+							<name>
+								<string>RedMask</string>
+							</name>
 							<type-reference>
 								<part>Number</part>
 								<part>Integer</part>
@@ -573,7 +726,10 @@
 								<part>32Bit_LittleEndian</part>
 							</type-reference>
 						</field>
-						<field name="GreenMask">
+						<field>
+							<name>
+								<string>GreenMask</string>
+							</name>
 							<type-reference>
 								<part>Number</part>
 								<part>Integer</part>
@@ -581,7 +737,10 @@
 								<part>32Bit_LittleEndian</part>
 							</type-reference>
 						</field>
-						<field name="BlueMask">
+						<field>
+							<name>
+								<string>BlueMask</string>
+							</name>
 							<type-reference>
 								<part>Number</part>
 								<part>Integer</part>
@@ -589,7 +748,10 @@
 								<part>32Bit_LittleEndian</part>
 							</type-reference>
 						</field>
-						<field name="AlphaMask">
+						<field>
+							<name>
+								<string>AlphaMask</string>
+							</name>
 							<type-reference>
 								<part>Number</part>
 								<part>Integer</part>

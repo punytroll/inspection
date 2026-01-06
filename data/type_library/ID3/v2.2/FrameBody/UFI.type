@@ -1,13 +1,19 @@
 <type>
 	<sequence>
-		<field name="OwnerIdentifier">
+		<field>
+			<name>
+				<string>OwnerIdentifier</string>
+			</name>
 			<type-reference>
 				<part>String</part>
 				<part>ASCII</part>
 				<part>Printable_EndedByTermination</part>
 			</type-reference>
 		</field>
-		<field name="Identifier">
+		<field>
+			<name>
+				<string>Identifier</string>
+			</name>
 			<type-reference>
 				<part>Buffer</part>
 				<part>UnsignedInteger_8Bit_EndedByLength</part>

@@ -67,8 +67,11 @@ auto Inspection::TypeDefinition::Field::Get(Inspection::ExecutionContext & Execu
         ExecutionContext.Push(*PartResult, *PartReader, PartParameters);
         Part->Get(ExecutionContext);
         Continue = PartResult->GetSuccess();
+        
+        auto PartName = Part->GetName(ExecutionContext);
+        
         ExecutionContext.Pop();
-        m_AddPartResult(ExecutionContext.GetCurrentResult(), *Part, PartResult.get());
+        m_AddPartResult(ExecutionContext, PartName, PartResult.get());
         ExecutionContext.GetCurrentReader().AdvancePosition(PartReader->GetConsumedLength());
     }
     // interpretation
@@ -79,19 +82,45 @@ auto Inspection::TypeDefinition::Field::Get(Inspection::ExecutionContext & Execu
     ExecutionContext.GetCurrentResult().SetSuccess(Continue);
 }
 
-auto Inspection::TypeDefinition::Field::GetFieldName() const -> std::optional<std::string> const &
+auto Inspection::TypeDefinition::Field::GetName(Inspection::ExecutionContext & ExecutionContext) const -> std::optional<std::string>
 {
-    return m_FieldName;
+    if(m_Name != nullptr)
+    {
+        auto NameAny = m_Name->GetAny(ExecutionContext);
+        
+        ASSERTION(NameAny.has_value() == true);
+        if(NameAny.type() == typeid(std::string))
+        {
+            return std::any_cast<std::string const &>(NameAny);
+        }
+        else if(NameAny.type() == typeid(std::nullptr_t))
+        {
+            return std::string{};
+        }
+        else
+        {
+            INVALID_INPUT("The \"name\" of a \"field\" must either be a string or nothing.");
+        }
+    }
+    else
+    {
+        return std::nullopt;
+    }
 }
 
 auto Inspection::TypeDefinition::Field::Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::Field>
 {
-    auto Result = std::unique_ptr<Inspection::TypeDefinition::Field>{new Inspection::TypeDefinition::Field{}};
-    
-    if(Element->HasAttribute("name") == true)
+    return std::unique_ptr<Inspection::TypeDefinition::Field>{new Inspection::TypeDefinition::Field{}};
+}
+
+auto Inspection::TypeDefinition::Field::m_LoadProperty(XML::Element const * Element) -> void
+{
+    if(Element->GetName() == "name")
     {
-        Result->m_FieldName = Element->GetAttribute("name");
+        m_Name = Inspection::TypeDefinition::Expression::LoadFromWithin(Element);
     }
-    
-    return Result;
+    else
+    {
+        Inspection::TypeDefinition::Part::m_LoadProperty(Element);
+    }
 }

@@ -1,6 +1,9 @@
 <type>
 	<sequence>
-		<field name="ContentDescriptorsCount">
+		<field>
+			<name>
+				<string>ContentDescriptorsCount</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>

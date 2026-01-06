@@ -1,12 +1,18 @@
 <type>
 	<sequence>
-		<field name="HeaderObject">
+		<field>
+			<name>
+				<string>HeaderObject</string>
+			</name>
 			<type-reference>
 				<part>ASF</part>
 				<part>HeaderObject</part>
 			</type-reference>
 		</field>
-		<field name="DataObject">
+		<field>
+			<name>
+				<string>DataObject</string>
+			</name>
 			<type-reference>
 				<part>ASF</part>
 				<part>DataObject</part>

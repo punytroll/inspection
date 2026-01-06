@@ -1,6 +1,9 @@
 <type>
 	<sequence>
-		<field name="PictureType">
+		<field>
+			<name>
+				<string>PictureType</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -222,7 +225,10 @@
 				</enumeration>
 			</apply-enumeration>
 		</field>
-		<field name="MIMETypeLength">
+		<field>
+			<name>
+				<string>MIMETypeLength</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -230,7 +236,10 @@
 				<part>32Bit_BigEndian</part>
 			</type-reference>
 		</field>
-		<field name="MIMEType">
+		<field>
+			<name>
+				<string>MIMEType</string>
+			</name>
 			<type-reference>
 				<part>String</part>
 				<part>ASCII</part>
@@ -249,7 +258,10 @@
 				</bits>
 			</length>
 		</field>
-		<field name="DescriptionLength">
+		<field>
+			<name>
+				<string>DescriptionLength</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -257,7 +269,10 @@
 				<part>32Bit_BigEndian</part>
 			</type-reference>
 		</field>
-		<field name="Description">
+		<field>
+			<name>
+				<string>Description</string>
+			</name>
 			<type-reference>
 				<part>String</part>
 				<part>ISO_IEC_10646_1_1993</part>
@@ -277,7 +292,10 @@
 				</bits>
 			</length>
 		</field>
-		<field name="PictureWidthInPixels">
+		<field>
+			<name>
+				<string>PictureWidthInPixels</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -285,7 +303,10 @@
 				<part>32Bit_BigEndian</part>
 			</type-reference>
 		</field>
-		<field name="PictureHeightInPixels">
+		<field>
+			<name>
+				<string>PictureHeightInPixels</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -293,7 +314,10 @@
 				<part>32Bit_BigEndian</part>
 			</type-reference>
 		</field>
-		<field name="BitsPerPixel">
+		<field>
+			<name>
+				<string>BitsPerPixel</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -301,7 +325,10 @@
 				<part>32Bit_BigEndian</part>
 			</type-reference>
 		</field>
-		<field name="NumberOfColors">
+		<field>
+			<name>
+				<string>NumberOfColors</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -309,7 +336,10 @@
 				<part>32Bit_BigEndian</part>
 			</type-reference>
 		</field>
-		<field name="PictureDataLength">
+		<field>
+			<name>
+				<string>PictureDataLength</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -317,7 +347,10 @@
 				<part>32Bit_BigEndian</part>
 			</type-reference>
 		</field>
-		<field name="PictureData">
+		<field>
+			<name>
+				<string>PictureData</string>
+			</name>
 			<type-reference>
 				<part>Data</part>
 				<part>SetOrUnset_EndedByLength</part>

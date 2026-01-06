@@ -1,6 +1,9 @@
 <type>
 	<sequence>
-		<field name="TitleLength">
+		<field>
+			<name>
+				<string>TitleLength</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -8,7 +11,10 @@
 				<part>16Bit_LittleEndian</part>
 			</type-reference>
 		</field>
-		<field name="AuthorLength">
+		<field>
+			<name>
+				<string>AuthorLength</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -16,7 +22,10 @@
 				<part>16Bit_LittleEndian</part>
 			</type-reference>
 		</field>
-		<field name="CopyrightLength">
+		<field>
+			<name>
+				<string>CopyrightLength</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -24,7 +33,10 @@
 				<part>16Bit_LittleEndian</part>
 			</type-reference>
 		</field>
-		<field name="DescriptionLength">
+		<field>
+			<name>
+				<string>DescriptionLength</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -32,7 +44,10 @@
 				<part>16Bit_LittleEndian</part>
 			</type-reference>
 		</field>
-		<field name="RatingLength">
+		<field>
+			<name>
+				<string>RatingLength</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -40,7 +55,10 @@
 				<part>16Bit_LittleEndian</part>
 			</type-reference>
 		</field>
-		<field name="Title">
+		<field>
+			<name>
+				<string>Title</string>
+			</name>
 			<type-reference>
 				<part>String</part>
 				<part>ISO_IEC_10646_1_1993</part>
@@ -60,7 +78,10 @@
 				</bits>
 			</length>
 		</field>
-		<field name="Author">
+		<field>
+			<name>
+				<string>Author</string>
+			</name>
 			<type-reference>
 				<part>String</part>
 				<part>ISO_IEC_10646_1_1993</part>
@@ -80,7 +101,10 @@
 				</bits>
 			</length>
 		</field>
-		<field name="Copyright">
+		<field>
+			<name>
+				<string>Copyright</string>
+			</name>
 			<type-reference>
 				<part>String</part>
 				<part>ISO_IEC_10646_1_1993</part>
@@ -100,7 +124,10 @@
 				</bits>
 			</length>
 		</field>
-		<field name="Description">
+		<field>
+			<name>
+				<string>Description</string>
+			</name>
 			<type-reference>
 				<part>String</part>
 				<part>ISO_IEC_10646_1_1993</part>
@@ -120,7 +147,10 @@
 				</bits>
 			</length>
 		</field>
-		<field name="Rating">
+		<field>
+			<name>
+				<string>Rating</string>
+			</name>
 			<type-reference>
 				<part>String</part>
 				<part>ISO_IEC_10646_1_1993</part>

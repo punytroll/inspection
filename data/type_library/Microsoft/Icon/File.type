@@ -1,8 +1,14 @@
 <type>
 	<sequence>
-		<field name="IconDirectory">
+		<field>
+			<name>
+				<string>IconDirectory</string>
+			</name>
 			<sequence>
-				<field name="Reserved">
+				<field>
+					<name>
+						<string>Reserved</string>
+					</name>
 					<type-reference>
 						<part>Number</part>
 						<part>Integer</part>
@@ -16,7 +22,10 @@
 						</equals>
 					</verification>
 				</field>
-				<field name="Type">
+				<field>
+					<name>
+						<string>Type</string>
+					</name>
 					<type-reference>
 						<part>Number</part>
 						<part>Integer</part>
@@ -48,7 +57,10 @@
 						</enumeration>
 					</apply-enumeration>
 				</field>
-				<field name="Count">
+				<field>
+					<name>
+						<string>Count</string>
+					</name>
 					<type-reference>
 						<part>Number</part>
 						<part>Integer</part>
@@ -67,7 +79,10 @@
 					<element-type>
 						<type>
 							<sequence>
-								<field name="Width">
+								<field>
+									<name>
+										<string>Width</string>
+									</name>
 									<type-reference>
 										<part>Number</part>
 										<part>Integer</part>
@@ -75,7 +90,10 @@
 										<part>8Bit</part>
 									</type-reference>
 								</field>
-								<field name="Height">
+								<field>
+									<name>
+										<string>Height</string>
+									</name>
 									<type-reference>
 										<part>Number</part>
 										<part>Integer</part>
@@ -83,7 +101,10 @@
 										<part>8Bit</part>
 									</type-reference>
 								</field>
-								<field name="ColorCount">
+								<field>
+									<name>
+										<string>ColorCount</string>
+									</name>
 									<type-reference>
 										<part>Number</part>
 										<part>Integer</part>
@@ -91,7 +112,10 @@
 										<part>8Bit</part>
 									</type-reference>
 								</field>
-								<field name="Reserved">
+								<field>
+									<name>
+										<string>Reserved</string>
+									</name>
 									<type-reference>
 										<part>Number</part>
 										<part>Integer</part>
@@ -105,7 +129,10 @@
 										</equals>
 									</verification>
 								</field>
-								<field name="Planes">
+								<field>
+									<name>
+										<string>Planes</string>
+									</name>
 									<type-reference>
 										<part>Number</part>
 										<part>Integer</part>
@@ -113,7 +140,10 @@
 										<part>16Bit_LittleEndian</part>
 									</type-reference>
 								</field>
-								<field name="BitCount">
+								<field>
+									<name>
+										<string>BitCount</string>
+									</name>
 									<type-reference>
 										<part>Number</part>
 										<part>Integer</part>
@@ -121,7 +151,10 @@
 										<part>16Bit_LittleEndian</part>
 									</type-reference>
 								</field>
-								<field name="BytesInRes">
+								<field>
+									<name>
+										<string>BytesInRes</string>
+									</name>
 									<type-reference>
 										<part>Number</part>
 										<part>Integer</part>
@@ -129,7 +162,10 @@
 										<part>32Bit_LittleEndian</part>
 									</type-reference>
 								</field>
-								<field name="ImageOffset">
+								<field>
+									<name>
+										<string>ImageOffset</string>
+									</name>
 									<type-reference>
 										<part>Number</part>
 										<part>Integer</part>
@@ -204,7 +240,10 @@
 								<part>BitmapFileRest</part>
 							</type-reference>
 						</forward>
-						<field name="Data">
+						<field>
+							<name>
+								<string>Data</string>
+							</name>
 							<type-reference>
 								<part>Buffer</part>
 								<part>UnsignedInteger_8Bit_EndedByLength</part>

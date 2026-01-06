@@ -1,12 +1,18 @@
 <type>
 	<sequence>
-		<field name="FInfo">
+		<field>
+			<name>
+				<string>FInfo</string>
+			</name>
 			<type-reference>
 				<part>Apple</part>
 				<part>FInfo</part>
 			</type-reference>
 		</field>
-		<field name="FXInfo">
+		<field>
+			<name>
+				<string>FXInfo</string>
+			</name>
 			<type-reference>
 				<part>Apple</part>
 				<part>FXInfo</part>

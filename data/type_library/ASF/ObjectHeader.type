@@ -1,12 +1,18 @@
 <type>
 	<sequence>
-		<field name="GUID">
+		<field>
+			<name>
+				<string>GUID</string>
+			</name>
 			<type-reference>
 				<part>ASF</part>
 				<part>GUID</part>
 			</type-reference>
 		</field>
-		<field name="Size">
+		<field>
+			<name>
+				<string>Size</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>

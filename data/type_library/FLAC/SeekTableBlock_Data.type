@@ -5,7 +5,10 @@
 		<element-type>
 			<type>
 				<sequence>
-					<field name="SampleNumberOfFirstSampleInTargetFrame">
+					<field>
+						<name>
+							<string>SampleNumberOfFirstSampleInTargetFrame</string>
+						</name>
 						<type-reference>
 							<part>Number</part>
 							<part>Integer</part>
@@ -13,7 +16,10 @@
 							<part>64Bit_BigEndian</part>
 						</type-reference>
 					</field>
-					<field name="ByteOffsetOfTargetFrame">
+					<field>
+						<name>
+							<string>ByteOffsetOfTargetFrame</string>
+						</name>
 						<type-reference>
 							<part>Number</part>
 							<part>Integer</part>
@@ -21,7 +27,10 @@
 							<part>64Bit_BigEndian</part>
 						</type-reference>
 					</field>
-					<field name="NumberOfSamplesInTargetFrame">
+					<field>
+						<name>
+							<string>NumberOfSamplesInTargetFrame</string>
+						</name>
 						<type-reference>
 							<part>Number</part>
 							<part>Integer</part>

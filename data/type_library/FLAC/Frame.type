@@ -1,6 +1,9 @@
 <type>
 	<sequence>
-		<field name="Header">
+		<field>
+			<name>
+				<string>Header</string>
+			</name>
 			<type-reference>
 				<part>FLAC</part>
 				<part>Frame_Header</part>
@@ -51,13 +54,19 @@
 				</parameter>
 			</element-parameters>
 		</array>
-		<field name="Padding">
+		<field>
+			<name>
+				<string>Padding</string>
+			</name>
 			<type-reference>
 				<part>Data</part>
 				<part>Unset_Until8BitAlignment</part>
 			</type-reference>
 		</field>
-		<field name="Footer">
+		<field>
+			<name>
+				<string>Footer</string>
+			</name>
 			<type-reference>
 				<part>FLAC</part>
 				<part>Frame_Footer</part>

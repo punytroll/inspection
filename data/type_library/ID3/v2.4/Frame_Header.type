@@ -1,19 +1,28 @@
 <type>
 	<sequence>
-		<field name="Identifier">
+		<field>
+			<name>
+				<string>Identifier</string>
+			</name>
 			<type-reference>
 				<part>ID3</part>
 				<part>v2.4</part>
 				<part>Frame_Header_Identifier</part>
 			</type-reference>
 		</field>
-		<field name="Size">
+		<field>
+			<name>
+				<string>Size</string>
+			</name>
 			<type-reference>
 				<part>ID3</part>
 				<part>UnsignedInteger_28Bit_SynchSafe_32Bit_BigEndian</part>
 			</type-reference>
 		</field>
-		<field name="Flags">
+		<field>
+			<name>
+				<string>Flags</string>
+			</name>
 			<type-reference>
 				<part>BitSet</part>
 				<part>16Bit_BigEndian_LeastSignificantBitFirstPerByte</part>

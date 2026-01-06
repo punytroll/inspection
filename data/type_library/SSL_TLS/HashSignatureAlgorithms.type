@@ -1,6 +1,9 @@
 <type>
 	<sequence>
-		<field name="HashAlgorithm">
+		<field>
+			<name>
+				<string>HashAlgorithm</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -114,7 +117,10 @@
 				</enumeration>
 			</apply-enumeration>
 		</field>
-		<field name="SignatureAlgorithm">
+		<field>
+			<name>
+				<string>SignatureAlgorithm</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>

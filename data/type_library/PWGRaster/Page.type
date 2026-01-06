@@ -1,8 +1,14 @@
 <type>
 	<sequence>
-		<field name="Header">
+		<field>
+			<name>
+				<string>Header</string>
+			</name>
 			<sequence>
-				<field name="MediaClass">
+				<field>
+					<name>
+						<string>MediaClass</string>
+					</name>
 					<type-reference>
 						<part>String</part>
 						<part>ASCII</part>
@@ -22,7 +28,10 @@
 						</bits>
 					</length>
 				</field>
-				<field name="MediaColor">
+				<field>
+					<name>
+						<string>MediaColor</string>
+					</name>
 					<type-reference>
 						<part>String</part>
 						<part>ASCII</part>
@@ -37,7 +46,10 @@
 						</bits>
 					</length>
 				</field>
-				<field name="MediaType">
+				<field>
+					<name>
+						<string>MediaType</string>
+					</name>
 					<type-reference>
 						<part>String</part>
 						<part>ASCII</part>
@@ -52,7 +64,10 @@
 						</bits>
 					</length>
 				</field>
-				<field name="PrintContentOptimize">
+				<field>
+					<name>
+						<string>PrintContentOptimize</string>
+					</name>
 					<type-reference>
 						<part>String</part>
 						<part>ASCII</part>
@@ -67,7 +82,10 @@
 						</bits>
 					</length>
 				</field>
-				<field name="Reserved">
+				<field>
+					<name>
+						<string>Reserved</string>
+					</name>
 					<type-reference>
 						<part>Data</part>
 						<part>Unset_EndedByLength</part>
@@ -81,7 +99,10 @@
 						</bits>
 					</length>
 				</field>
-				<field name="CutMedia">
+				<field>
+					<name>
+						<string>CutMedia</string>
+					</name>
 					<type-reference>
 						<part>Number</part>
 						<part>Integer</part>
@@ -175,7 +196,10 @@
 						</enumeration>
 					</apply-enumeration>
 				</field>
-				<field name="Duplex">
+				<field>
+					<name>
+						<string>Duplex</string>
+					</name>
 					<type-reference>
 						<part>Boolean</part>
 						<part>32Bit_BigEndian</part>
@@ -205,9 +229,15 @@
 						</enumeration>
 					</apply-enumeration>
 				</field>
-				<field name="HWResolution">
+				<field>
+					<name>
+						<string>HWResolution</string>
+					</name>
 					<sequence>
-						<field name="CrossFeedResolution">
+						<field>
+							<name>
+								<string>CrossFeedResolution</string>
+							</name>
 							<type-reference>
 								<part>Number</part>
 								<part>Integer</part>
@@ -220,7 +250,10 @@
 								</value>
 							</tag>
 						</field>
-						<field name="FeedResolution">
+						<field>
+							<name>
+								<string>FeedResolution</string>
+							</name>
 							<type-reference>
 								<part>Number</part>
 								<part>Integer</part>
@@ -236,7 +269,10 @@
 					</sequence>
 				</field>
 				<alternative>
-					<field name="Reserved">
+					<field>
+						<name>
+							<string>Reserved</string>
+						</name>
 						<type-reference>
 							<part>Data</part>
 							<part>Unset_EndedByLength</part>
@@ -250,9 +286,15 @@
 							</bits>
 						</length>
 					</field>
-					<field name="ImageBoundingBox">
+					<field>
+						<name>
+							<string>ImageBoundingBox</string>
+						</name>
 						<sequence>
-							<field name="Left">
+							<field>
+								<name>
+									<string>Left</string>
+								</name>
 								<type-reference>
 									<part>Number</part>
 									<part>Integer</part>
@@ -265,7 +307,10 @@
 									</value>
 								</tag>
 							</field>
-							<field name="Bottom">
+							<field>
+								<name>
+									<string>Bottom</string>
+								</name>
 								<type-reference>
 									<part>Number</part>
 									<part>Integer</part>
@@ -278,7 +323,10 @@
 									</value>
 								</tag>
 							</field>
-							<field name="Right">
+							<field>
+								<name>
+									<string>Right</string>
+								</name>
 								<type-reference>
 									<part>Number</part>
 									<part>Integer</part>
@@ -291,7 +339,10 @@
 									</value>
 								</tag>
 							</field>
-							<field name="Top">
+							<field>
+								<name>
+									<string>Top</string>
+								</name>
 								<type-reference>
 									<part>Number</part>
 									<part>Integer</part>
@@ -317,7 +368,10 @@
 						</tag>
 					</field>
 				</alternative>
-				<field name="InsertSheet">
+				<field>
+					<name>
+						<string>InsertSheet</string>
+					</name>
 					<type-reference>
 						<part>Boolean</part>
 						<part>32Bit_BigEndian</part>
@@ -347,7 +401,10 @@
 						</enumeration>
 					</apply-enumeration>
 				</field>
-				<field name="Jog">
+				<field>
+					<name>
+						<string>Jog</string>
+					</name>
 					<type-reference>
 						<part>Number</part>
 						<part>Integer</part>
@@ -441,7 +498,10 @@
 						</enumeration>
 					</apply-enumeration>
 				</field>
-				<field name="LeadingEdge">
+				<field>
+					<name>
+						<string>LeadingEdge</string>
+					</name>
 					<type-reference>
 						<part>Number</part>
 						<part>Integer</part>
@@ -490,7 +550,10 @@
 						</enumeration>
 					</apply-enumeration>
 				</field>
-				<field name="Reserved">
+				<field>
+					<name>
+						<string>Reserved</string>
+					</name>
 					<type-reference>
 						<part>Data</part>
 						<part>Unset_EndedByLength</part>
@@ -504,7 +567,10 @@
 						</bits>
 					</length>
 				</field>
-				<field name="MediaPosition">
+				<field>
+					<name>
+						<string>MediaPosition</string>
+					</name>
 					<type-reference>
 						<part>Number</part>
 						<part>Integer</part>
@@ -1273,7 +1339,10 @@
 						</enumeration>
 					</apply-enumeration>
 				</field>
-				<field name="MediaWeightMetric">
+				<field>
+					<name>
+						<string>MediaWeightMetric</string>
+					</name>
 					<type-reference>
 						<part>Number</part>
 						<part>Integer</part>
@@ -1281,7 +1350,10 @@
 						<part>32Bit_BigEndian</part>
 					</type-reference>
 				</field>
-				<field name="Reserved">
+				<field>
+					<name>
+						<string>Reserved</string>
+					</name>
 					<type-reference>
 						<part>Data</part>
 						<part>Unset_EndedByLength</part>
@@ -1295,7 +1367,10 @@
 						</bits>
 					</length>
 				</field>
-				<field name="NumCopies">
+				<field>
+					<name>
+						<string>NumCopies</string>
+					</name>
 					<type-reference>
 						<part>Number</part>
 						<part>Integer</part>
@@ -1303,7 +1378,10 @@
 						<part>32Bit_BigEndian</part>
 					</type-reference>
 				</field>
-				<field name="Orientation">
+				<field>
+					<name>
+						<string>Orientation</string>
+					</name>
 					<type-reference>
 						<part>Number</part>
 						<part>Integer</part>
@@ -1382,7 +1460,10 @@
 						</enumeration>
 					</apply-enumeration>
 				</field>
-				<field name="Reserved">
+				<field>
+					<name>
+						<string>Reserved</string>
+					</name>
 					<type-reference>
 						<part>Data</part>
 						<part>Unset_EndedByLength</part>
@@ -1396,9 +1477,15 @@
 						</bits>
 					</length>
 				</field>
-				<field name="PageSize">
+				<field>
+					<name>
+						<string>PageSize</string>
+					</name>
 					<sequence>
-						<field name="Width">
+						<field>
+							<name>
+								<string>Width</string>
+							</name>
 							<type-reference>
 								<part>Number</part>
 								<part>Integer</part>
@@ -1411,7 +1498,10 @@
 								</value>
 							</tag>
 						</field>
-						<field name="Length">
+						<field>
+							<name>
+								<string>Length</string>
+							</name>
 							<type-reference>
 								<part>Number</part>
 								<part>Integer</part>
@@ -1426,7 +1516,10 @@
 						</field>
 					</sequence>
 				</field>
-				<field name="Reserved">
+				<field>
+					<name>
+						<string>Reserved</string>
+					</name>
 					<type-reference>
 						<part>Data</part>
 						<part>Unset_EndedByLength</part>
@@ -1440,7 +1533,10 @@
 						</bits>
 					</length>
 				</field>
-				<field name="Tumble">
+				<field>
+					<name>
+						<string>Tumble</string>
+					</name>
 					<type-reference>
 						<part>Boolean</part>
 						<part>32Bit_BigEndian</part>
@@ -1470,7 +1566,10 @@
 						</enumeration>
 					</apply-enumeration>
 				</field>
-				<field name="Width">
+				<field>
+					<name>
+						<string>Width</string>
+					</name>
 					<type-reference>
 						<part>Number</part>
 						<part>Integer</part>
@@ -1478,7 +1577,10 @@
 						<part>32Bit_BigEndian</part>
 					</type-reference>
 				</field>
-				<field name="Height">
+				<field>
+					<name>
+						<string>Height</string>
+					</name>
 					<type-reference>
 						<part>Number</part>
 						<part>Integer</part>
@@ -1486,7 +1588,10 @@
 						<part>32Bit_BigEndian</part>
 					</type-reference>
 				</field>
-				<field name="Reserved">
+				<field>
+					<name>
+						<string>Reserved</string>
+					</name>
 					<type-reference>
 						<part>Data</part>
 						<part>Unset_EndedByLength</part>
@@ -1500,7 +1605,10 @@
 						</bits>
 					</length>
 				</field>
-				<field name="BitsPerColor">
+				<field>
+					<name>
+						<string>BitsPerColor</string>
+					</name>
 					<type-reference>
 						<part>Number</part>
 						<part>Integer</part>
@@ -1508,7 +1616,10 @@
 						<part>32Bit_BigEndian</part>
 					</type-reference>
 				</field>
-				<field name="BitsPerPixel">
+				<field>
+					<name>
+						<string>BitsPerPixel</string>
+					</name>
 					<type-reference>
 						<part>Number</part>
 						<part>Integer</part>
@@ -1516,7 +1627,10 @@
 						<part>32Bit_BigEndian</part>
 					</type-reference>
 				</field>
-				<field name="BytesPerLine">
+				<field>
+					<name>
+						<string>BytesPerLine</string>
+					</name>
 					<type-reference>
 						<part>Number</part>
 						<part>Integer</part>
@@ -1524,7 +1638,10 @@
 						<part>32Bit_BigEndian</part>
 					</type-reference>
 				</field>
-				<field name="ColorOrder">
+				<field>
+					<name>
+						<string>ColorOrder</string>
+					</name>
 					<type-reference>
 						<part>Number</part>
 						<part>Integer</part>
@@ -1558,7 +1675,10 @@
 						</enumeration>
 					</apply-enumeration>
 				</field>
-				<field name="ColorSpace">
+				<field>
+					<name>
+						<string>ColorSpace</string>
+					</name>
 					<type-reference>
 						<part>Number</part>
 						<part>Integer</part>
@@ -1892,7 +2012,10 @@
 						</enumeration>
 					</apply-enumeration>
 				</field>
-				<field name="Reserved">
+				<field>
+					<name>
+						<string>Reserved</string>
+					</name>
 					<type-reference>
 						<part>Data</part>
 						<part>Unset_EndedByLength</part>
@@ -1906,7 +2029,10 @@
 						</bits>
 					</length>
 				</field>
-				<field name="NumColors">
+				<field>
+					<name>
+						<string>NumColors</string>
+					</name>
 					<type-reference>
 						<part>Number</part>
 						<part>Integer</part>
@@ -1914,7 +2040,10 @@
 						<part>32Bit_BigEndian</part>
 					</type-reference>
 				</field>
-				<field name="Reserved">
+				<field>
+					<name>
+						<string>Reserved</string>
+					</name>
 					<type-reference>
 						<part>Data</part>
 						<part>Unset_EndedByLength</part>
@@ -1928,7 +2057,10 @@
 						</bits>
 					</length>
 				</field>
-				<field name="TotalPageCount">
+				<field>
+					<name>
+						<string>TotalPageCount</string>
+					</name>
 					<type-reference>
 						<part>Number</part>
 						<part>Integer</part>
@@ -1936,7 +2068,10 @@
 						<part>32Bit_BigEndian</part>
 					</type-reference>
 				</field>
-				<field name="CrossFeedTransform">
+				<field>
+					<name>
+						<string>CrossFeedTransform</string>
+					</name>
 					<type-reference>
 						<part>Number</part>
 						<part>Integer</part>
@@ -1944,7 +2079,10 @@
 						<part>32Bit_BigEndian</part>
 					</type-reference>
 				</field>
-				<field name="FeedTransform">
+				<field>
+					<name>
+						<string>FeedTransform</string>
+					</name>
 					<type-reference>
 						<part>Number</part>
 						<part>Integer</part>
@@ -1952,7 +2090,10 @@
 						<part>32Bit_BigEndian</part>
 					</type-reference>
 				</field>
-				<field name="ImageBoxLeft">
+				<field>
+					<name>
+						<string>ImageBoxLeft</string>
+					</name>
 					<type-reference>
 						<part>Number</part>
 						<part>Integer</part>
@@ -1960,7 +2101,10 @@
 						<part>32Bit_BigEndian</part>
 					</type-reference>
 				</field>
-				<field name="ImageBoxTop">
+				<field>
+					<name>
+						<string>ImageBoxTop</string>
+					</name>
 					<type-reference>
 						<part>Number</part>
 						<part>Integer</part>
@@ -1968,7 +2112,10 @@
 						<part>32Bit_BigEndian</part>
 					</type-reference>
 				</field>
-				<field name="ImageBoxRight">
+				<field>
+					<name>
+						<string>ImageBoxRight</string>
+					</name>
 					<type-reference>
 						<part>Number</part>
 						<part>Integer</part>
@@ -1976,7 +2123,10 @@
 						<part>32Bit_BigEndian</part>
 					</type-reference>
 				</field>
-				<field name="ImageBoxBottom">
+				<field>
+					<name>
+						<string>ImageBoxBottom</string>
+					</name>
 					<type-reference>
 						<part>Number</part>
 						<part>Integer</part>
@@ -1984,14 +2134,20 @@
 						<part>32Bit_BigEndian</part>
 					</type-reference>
 				</field>
-				<field name="AlternatePrimary">
+				<field>
+					<name>
+						<string>AlternatePrimary</string>
+					</name>
 					<tag name="type">
 						<value>
 							<string>sRGB</string>
 						</value>
 					</tag>
 					<sequence>
-						<field name="">
+						<field>
+							<name>
+								<nothing/>
+							</name>
 							<type-reference>
 								<part>Number</part>
 								<part>Integer</part>
@@ -1999,7 +2155,10 @@
 								<part>8Bit</part>
 							</type-reference>
 						</field>
-						<field name="Red">
+						<field>
+							<name>
+								<string>Red</string>
+							</name>
 							<type-reference>
 								<part>Number</part>
 								<part>Integer</part>
@@ -2007,7 +2166,10 @@
 								<part>8Bit</part>
 							</type-reference>
 						</field>
-						<field name="Green">
+						<field>
+							<name>
+								<string>Green</string>
+							</name>
 							<type-reference>
 								<part>Number</part>
 								<part>Integer</part>
@@ -2015,7 +2177,10 @@
 								<part>8Bit</part>
 							</type-reference>
 						</field>
-						<field name="Blue">
+						<field>
+							<name>
+								<string>Blue</string>
+							</name>
 							<type-reference>
 								<part>Number</part>
 								<part>Integer</part>
@@ -2025,7 +2190,10 @@
 						</field>
 					</sequence>
 				</field>
-				<field name="PrintQuality">
+				<field>
+					<name>
+						<string>PrintQuality</string>
+					</name>
 					<type-reference>
 						<part>Number</part>
 						<part>Integer</part>
@@ -2104,7 +2272,10 @@
 						</enumeration>
 					</apply-enumeration>
 				</field>
-				<field name="Reserved">
+				<field>
+					<name>
+						<string>Reserved</string>
+					</name>
 					<type-reference>
 						<part>Data</part>
 						<part>Unset_EndedByLength</part>
@@ -2118,7 +2289,10 @@
 						</bits>
 					</length>
 				</field>
-				<field name="VendorIdentifier">
+				<field>
+					<name>
+						<string>VendorIdentifier</string>
+					</name>
 					<type-reference>
 						<part>Number</part>
 						<part>Integer</part>
@@ -2126,7 +2300,10 @@
 						<part>32Bit_BigEndian</part>
 					</type-reference>
 				</field>
-				<field name="VendorLength">
+				<field>
+					<name>
+						<string>VendorLength</string>
+					</name>
 					<type-reference>
 						<part>Number</part>
 						<part>Integer</part>
@@ -2134,7 +2311,10 @@
 						<part>32Bit_BigEndian</part>
 					</type-reference>
 				</field>
-				<field name="VendorData">
+				<field>
+					<name>
+						<string>VendorData</string>
+					</name>
 					<type-reference>
 						<part>Buffer</part>
 						<part>UnsignedInteger_8Bit_EndedByLength</part>
@@ -2148,7 +2328,10 @@
 						</bits>
 					</length>
 				</field>
-				<field name="Reserved">
+				<field>
+					<name>
+						<string>Reserved</string>
+					</name>
 					<type-reference>
 						<part>Data</part>
 						<part>Unset_EndedByLength</part>
@@ -2162,7 +2345,10 @@
 						</bits>
 					</length>
 				</field>
-				<field name="RenderingIntent">
+				<field>
+					<name>
+						<string>RenderingIntent</string>
+					</name>
 					<type-reference>
 						<part>String</part>
 						<part>ASCII</part>
@@ -2177,7 +2363,10 @@
 						</bits>
 					</length>
 				</field>
-				<field name="PageSizeName">
+				<field>
+					<name>
+						<string>PageSizeName</string>
+					</name>
 					<type-reference>
 						<part>String</part>
 						<part>ASCII</part>
@@ -2215,7 +2404,10 @@
 						</equals>
 					</and>
 				</when>
-				<field name="Bitmap">
+				<field>
+					<name>
+						<string>Bitmap</string>
+					</name>
 					<type-reference>
 						<part>CUPS</part>
 						<part>v2_RasterData</part>
@@ -2262,7 +2454,10 @@
 						</equals>
 					</and>
 				</when>
-				<field name="Bitmap">
+				<field>
+					<name>
+						<string>Bitmap</string>
+					</name>
 					<type-reference>
 						<part>CUPS</part>
 						<part>v2_RasterData</part>

@@ -1,6 +1,9 @@
 <type>
 	<sequence>
-		<field name="NumberOfHeaderObjects">
+		<field>
+			<name>
+				<string>NumberOfHeaderObjects</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -8,7 +11,10 @@
 				<part>32Bit_LittleEndian</part>
 			</type-reference>
 		</field>
-		<field name="Reserved1">
+		<field>
+			<name>
+				<string>Reserved1</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -22,7 +28,10 @@
 				</equals>
 			</verification>
 		</field>
-		<field name="Reserved2">
+		<field>
+			<name>
+				<string>Reserved2</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>

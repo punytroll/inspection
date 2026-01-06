@@ -1,13 +1,19 @@
 <type>
 	<sequence>
-		<field name="FormatTag">
+		<field>
+			<name>
+				<string>FormatTag</string>
+			</name>
 			<type-reference>
 				<part>Microsoft</part>
 				<part>WAVE</part>
 				<part>WaveFormat_FormatTag</part>
 			</type-reference>
 		</field>
-		<field name="NumberOfChannels">
+		<field>
+			<name>
+				<string>NumberOfChannels</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -15,7 +21,10 @@
 				<part>16Bit_LittleEndian</part>
 			</type-reference>
 		</field>
-		<field name="SamplesPerSecond">
+		<field>
+			<name>
+				<string>SamplesPerSecond</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -23,7 +32,10 @@
 				<part>32Bit_LittleEndian</part>
 			</type-reference>
 		</field>
-		<field name="AverageBytesPerSecond">
+		<field>
+			<name>
+				<string>AverageBytesPerSecond</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -31,7 +43,10 @@
 				<part>32Bit_LittleEndian</part>
 			</type-reference>
 		</field>
-		<field name="BlockAlign">
+		<field>
+			<name>
+				<string>BlockAlign</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>

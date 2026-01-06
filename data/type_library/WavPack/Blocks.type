@@ -5,9 +5,15 @@
 			<element-type>
 				<type>
 					<sequence>
-						<field name="Header">
+						<field>
+							<name>
+								<string>Header</string>
+							</name>
 							<sequence>
-								<field name="Identifier">
+								<field>
+									<name>
+										<string>Identifier</string>
+									</name>
 									<type-reference>
 										<part>String</part>
 										<part>ASCII</part>
@@ -19,7 +25,10 @@
 										</parameter>
 									</parameters>
 								</field>
-								<field name="Size">
+								<field>
+									<name>
+										<string>Size</string>
+									</name>
 									<type-reference>
 										<part>Number</part>
 										<part>Integer</part>
@@ -27,7 +36,10 @@
 										<part>32Bit_LittleEndian</part>
 									</type-reference>
 								</field>
-								<field name="Version">
+								<field>
+									<name>
+										<string>Version</string>
+									</name>
 									<type-reference>
 										<part>Number</part>
 										<part>Integer</part>
@@ -35,7 +47,10 @@
 										<part>16Bit_LittleEndian</part>
 									</type-reference>
 								</field>
-								<field name="BlockIndexUpper8Bits">
+								<field>
+									<name>
+										<string>BlockIndexUpper8Bits</string>
+									</name>
 									<type-reference>
 										<part>Number</part>
 										<part>Integer</part>
@@ -43,7 +58,10 @@
 										<part>8Bit</part>
 									</type-reference>
 								</field>
-								<field name="TotalSamplesUpper8Bits">
+								<field>
+									<name>
+										<string>TotalSamplesUpper8Bits</string>
+									</name>
 									<type-reference>
 										<part>Number</part>
 										<part>Integer</part>
@@ -51,7 +69,10 @@
 										<part>8Bit</part>
 									</type-reference>
 								</field>
-								<field name="TotalSamples">
+								<field>
+									<name>
+										<string>TotalSamples</string>
+									</name>
 									<type-reference>
 										<part>Number</part>
 										<part>Integer</part>
@@ -59,7 +80,10 @@
 										<part>32Bit_LittleEndian</part>
 									</type-reference>
 								</field>
-								<field name="BlockIndex">
+								<field>
+									<name>
+										<string>BlockIndex</string>
+									</name>
 									<type-reference>
 										<part>Number</part>
 										<part>Integer</part>
@@ -67,7 +91,10 @@
 										<part>32Bit_LittleEndian</part>
 									</type-reference>
 								</field>
-								<field name="BlockSamples">
+								<field>
+									<name>
+										<string>BlockSamples</string>
+									</name>
 									<type-reference>
 										<part>Number</part>
 										<part>Integer</part>
@@ -75,7 +102,10 @@
 										<part>32Bit_LittleEndian</part>
 									</type-reference>
 								</field>
-								<field name="Flags">
+								<field>
+									<name>
+										<string>Flags</string>
+									</name>
 									<type-reference>
 										<part>BitSet</part>
 										<part>32Bit_LittleEndian_LeastSignificantBitFirstPerByte</part>
@@ -603,7 +633,10 @@
 										</apply-enumeration>
 									</bit>
 								</field>
-								<field name="CRC">
+								<field>
+									<name>
+										<string>CRC</string>
+									</name>
 									<type-reference>
 										<part>Number</part>
 										<part>Integer</part>

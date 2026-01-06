@@ -1,5 +1,8 @@
 <type>
-	<field name="URL">
+	<field>
+		<name>
+			<string>URL</string>
+		</name>
 		<type-reference>
 			<part>String</part>
 			<part>ISO_IEC_8859_1_1998</part>

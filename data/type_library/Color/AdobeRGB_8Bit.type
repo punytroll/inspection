@@ -2,7 +2,10 @@
 	<sequence>
 		<tag name="color"/>
 		<tag name="Adobe RGB"/>
-		<field name="Red">
+		<field>
+			<name>
+				<string>Red</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -10,7 +13,10 @@
 				<part>8Bit</part>
 			</type-reference>
 		</field>
-		<field name="Green">
+		<field>
+			<name>
+				<string>Green</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -18,7 +24,10 @@
 				<part>8Bit</part>
 			</type-reference>
 		</field>
-		<field name="Blue">
+		<field>
+			<name>
+				<string>Blue</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>

@@ -1,6 +1,9 @@
 <type>
 	<sequence>
-		<field name="LanguageListIndex">
+		<field>
+			<name>
+				<string>LanguageListIndex</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -8,7 +11,10 @@
 				<part>16Bit_LittleEndian</part>
 			</type-reference>
 		</field>
-		<field name="StreamNumber">
+		<field>
+			<name>
+				<string>StreamNumber</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -16,7 +22,10 @@
 				<part>16Bit_LittleEndian</part>
 			</type-reference>
 		</field>
-		<field name="NameLength">
+		<field>
+			<name>
+				<string>NameLength</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -24,14 +33,20 @@
 				<part>16Bit_LittleEndian</part>
 			</type-reference>
 		</field>
-		<field name="DataType">
+		<field>
+			<name>
+				<string>DataType</string>
+			</name>
 			<type-reference>
 				<part>ASF</part>
 				<part>MetadataLibrary</part>
 				<part>DescriptionRecord_DataType</part>
 			</type-reference>
 		</field>
-		<field name="DataLength">
+		<field>
+			<name>
+				<string>DataLength</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -39,7 +54,10 @@
 				<part>32Bit_LittleEndian</part>
 			</type-reference>
 		</field>
-		<field name="Name">
+		<field>
+			<name>
+				<string>Name</string>
+			</name>
 			<type-reference>
 				<part>String</part>
 				<part>ISO_IEC_10646_1_1993</part>
@@ -59,7 +77,10 @@
 				</bits>
 			</length>
 		</field>
-		<field name="Data">
+		<field>
+			<name>
+				<string>Data</string>
+			</name>
 			<type-reference>
 				<part>ASF</part>
 				<part>MetadataLibrary</part>

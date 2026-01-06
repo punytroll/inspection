@@ -1,6 +1,9 @@
 <type>
 	<sequence>
-		<field name="Type">
+		<field>
+			<name>
+				<string>Type</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -314,7 +317,10 @@
 				</enumeration>
 			</apply-enumeration>
 		</field>
-		<field name="DataLength">
+		<field>
+			<name>
+				<string>DataLength</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -334,7 +340,10 @@
 					</equals>
 				</when>
 				<sequence>
-					<field name="SupportedSignatureAlgorithmsDataLength">
+					<field>
+						<name>
+							<string>SupportedSignatureAlgorithmsDataLength</string>
+						</name>
 						<type-reference>
 							<part>Number</part>
 							<part>Integer</part>
@@ -377,7 +386,10 @@
 					</equals>
 				</when>
 				<sequence>
-					<field name="ECPointFormatListDataLength">
+					<field>
+						<name>
+							<string>ECPointFormatListDataLength</string>
+						</name>
 						<type-reference>
 							<part>Number</part>
 							<part>Integer</part>
@@ -419,7 +431,10 @@
 						<string>extended_master_secret</string>
 					</equals>
 				</when>
-				<field name="ExtendedMasterSecret">
+				<field>
+					<name>
+						<string>ExtendedMasterSecret</string>
+					</name>
 					<type-reference>
 						<part>Buffer</part>
 						<part>UnsignedInteger_8Bit_EndedByLength</part>
@@ -448,7 +463,10 @@
 						<string>record_size_limit</string>
 					</equals>
 				</when>
-				<field name="RecordSizeLimit">
+				<field>
+					<name>
+						<string>RecordSizeLimit</string>
+					</name>
 					<type-reference>
 						<part>Number</part>
 						<part>Integer</part>
@@ -468,7 +486,10 @@
 					</equals>
 				</when>
 				<sequence>
-					<field name="RenegotiatedConnectionDataLength">
+					<field>
+						<name>
+							<string>RenegotiatedConnectionDataLength</string>
+						</name>
 						<type-reference>
 							<part>Number</part>
 							<part>Integer</part>
@@ -476,7 +497,10 @@
 							<part>8Bit</part>
 						</type-reference>
 					</field>
-					<field name="RenegotiatedConnection">
+					<field>
+						<name>
+							<string>RenegotiatedConnection</string>
+						</name>
 						<type-reference>
 							<part>Buffer</part>
 							<part>UnsignedInteger_8Bit_EndedByLength</part>
@@ -539,7 +563,10 @@
 						<string>session_ticket</string>
 					</equals>
 				</when>
-				<field name="SessionTicket">
+				<field>
+					<name>
+						<string>SessionTicket</string>
+					</name>
 					<type-reference>
 						<part>Buffer</part>
 						<part>UnsignedInteger_8Bit_EndedByLength</part>
@@ -569,7 +596,10 @@
 					</equals>
 				</when>
 				<sequence>
-					<field name="AlgorithmsListDataLength">
+					<field>
+						<name>
+							<string>AlgorithmsListDataLength</string>
+						</name>
 						<type-reference>
 							<part>Number</part>
 							<part>Integer</part>
@@ -623,7 +653,10 @@
 					</equals>
 				</when>
 				<sequence>
-					<field name="CertificateStatusType">
+					<field>
+						<name>
+							<string>CertificateStatusType</string>
+						</name>
 						<type-reference>
 							<part>Number</part>
 							<part>Integer</part>
@@ -652,7 +685,10 @@
 							</enumeration>
 						</apply-enumeration>
 					</field>
-					<field name="ResponderIDDataLength">
+					<field>
+						<name>
+							<string>ResponderIDDataLength</string>
+						</name>
 						<type-reference>
 							<part>Number</part>
 							<part>Integer</part>
@@ -666,7 +702,10 @@
 							</equals>
 						</verification>
 					</field>
-					<field name="RequestExtensionsDataLength">
+					<field>
+						<name>
+							<string>RequestExtensionsDataLength</string>
+						</name>
 						<type-reference>
 							<part>Number</part>
 							<part>Integer</part>
@@ -693,7 +732,10 @@
 					</equals>
 				</when>
 				<sequence>
-					<field name="CurvesListDataLength">
+					<field>
+						<name>
+							<string>CurvesListDataLength</string>
+						</name>
 						<type-reference>
 							<part>Number</part>
 							<part>Integer</part>
@@ -736,7 +778,10 @@
 					</equals>
 				</when>
 				<sequence>
-					<field name="SupportedVersionsDataLength">
+					<field>
+						<name>
+							<string>SupportedVersionsDataLength</string>
+						</name>
 						<type-reference>
 							<part>Number</part>
 							<part>Integer</part>
@@ -772,7 +817,10 @@
 				<when>
 					<boolean>true</boolean>
 				</when>
-				<field name="Data">
+				<field>
+					<name>
+						<string>Data</string>
+					</name>
 					<type-reference>
 						<part>Buffer</part>
 						<part>UnsignedInteger_8Bit_EndedByLength</part>

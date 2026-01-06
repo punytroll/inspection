@@ -1,5 +1,8 @@
 <type>
-	<field name="Data">
+	<field>
+		<name>
+			<string>Data</string>
+		</name>
 		<type-reference>
 			<part>Data</part>
 			<part>Unset_EndedByLength</part>

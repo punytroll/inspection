@@ -1,19 +1,28 @@
 <type>
 	<sequence>
-		<field name="PeakAmplitude">
+		<field>
+			<name>
+				<string>PeakAmplitude</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Real</part>
 				<part>ISO_IEC_IEEE_60559_2011_binary32</part>
 			</type-reference>
 		</field>
-		<field name="TrackReplayGainAdjustment">
+		<field>
+			<name>
+				<string>TrackReplayGainAdjustment</string>
+			</name>
 			<type-reference>
 				<part>ID3</part>
 				<part>ReplayGainAdjustment</part>
 			</type-reference>
 		</field>
-		<field name="AlbumReplayGainAdjustment">
+		<field>
+			<name>
+				<string>AlbumReplayGainAdjustment</string>
+			</name>
 			<type-reference>
 				<part>ID3</part>
 				<part>ReplayGainAdjustment</part>

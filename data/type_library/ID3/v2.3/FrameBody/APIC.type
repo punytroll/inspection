@@ -1,20 +1,29 @@
 <type>
 	<sequence>
-		<field name="TextEncoding">
+		<field>
+			<name>
+				<string>TextEncoding</string>
+			</name>
 			<type-reference>
 				<part>ID3</part>
 				<part>v2.3</part>
 				<part>TextEncoding</part>
 			</type-reference>
 		</field>
-		<field name="MIMEType">
+		<field>
+			<name>
+				<string>MIMEType</string>
+			</name>
 			<type-reference>
 				<part>String</part>
 				<part>ASCII</part>
 				<part>Printable_EndedByTermination</part>
 			</type-reference>
 		</field>
-		<field name="PictureType">
+		<field>
+			<name>
+				<string>PictureType</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -341,7 +350,10 @@
 				</enumeration>
 			</apply-enumeration>
 		</field>
-		<field name="Description">
+		<field>
+			<name>
+				<string>Description</string>
+			</name>
 			<type-reference>
 				<part>ID3</part>
 				<part>v2.3</part>
@@ -355,7 +367,10 @@
 				</parameter>
 			</parameters>
 		</field>
-		<field name="PictureData">
+		<field>
+			<name>
+				<string>PictureData</string>
+			</name>
 			<type-reference>
 				<part>Data</part>
 				<part>SetOrUnset_EndedByLength</part>

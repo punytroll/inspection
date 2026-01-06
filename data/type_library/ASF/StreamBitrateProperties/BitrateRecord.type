@@ -1,13 +1,19 @@
 <type>
 	<sequence>
-		<field name="Flags">
+		<field>
+			<name>
+				<string>Flags</string>
+			</name>
 			<type-reference>
 				<part>ASF</part>
 				<part>StreamBitrateProperties</part>
 				<part>BitrateRecord_Flags</part>
 			</type-reference>
 		</field>
-		<field name="AverageBitrate">
+		<field>
+			<name>
+				<string>AverageBitrate</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>

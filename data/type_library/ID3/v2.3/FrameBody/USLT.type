@@ -1,20 +1,29 @@
 <type>
 	<sequence>
-		<field name="TextEncoding">
+		<field>
+			<name>
+				<string>TextEncoding</string>
+			</name>
 			<type-reference>
 				<part>ID3</part>
 				<part>v2.3</part>
 				<part>TextEncoding</part>
 			</type-reference>
 		</field>
-		<field name="Language">
+		<field>
+			<name>
+				<string>Language</string>
+			</name>
 			<type-reference>
 				<part>ID3</part>
 				<part>v2.3</part>
 				<part>Language</part>
 			</type-reference>
 		</field>
-		<field name="ContentDescriptor">
+		<field>
+			<name>
+				<string>ContentDescriptor</string>
+			</name>
 			<type-reference>
 				<part>ID3</part>
 				<part>v2.3</part>
@@ -28,7 +37,10 @@
 				</parameter>
 			</parameters>
 		</field>
-		<field name="Lyrics/Text">
+		<field>
+			<name>
+				<string>Lyrics/Text</string>
+			</name>
 			<type-reference>
 				<part>ID3</part>
 				<part>v2.3</part>

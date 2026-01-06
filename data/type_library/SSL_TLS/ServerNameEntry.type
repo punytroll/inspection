@@ -1,6 +1,9 @@
 <type>
 	<sequence>
-		<field name="Length">
+		<field>
+			<name>
+				<string>Length</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -8,7 +11,10 @@
 				<part>16Bit_BigEndian</part>
 			</type-reference>
 		</field>
-		<field name="Type">
+		<field>
+			<name>
+				<string>Type</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -37,7 +43,10 @@
 				</enumeration>
 			</apply-enumeration>
 		</field>
-		<field name="NameLength">
+		<field>
+			<name>
+				<string>NameLength</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -45,7 +54,10 @@
 				<part>16Bit_BigEndian</part>
 			</type-reference>
 		</field>
-		<field name="Name">
+		<field>
+			<name>
+				<string>Name</string>
+			</name>
 			<type-reference>
 				<part>String</part>
 				<part>ASCII</part>

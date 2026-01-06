@@ -1,6 +1,9 @@
 <type>
 	<sequence>
-		<field name="SamplesPerBlock">
+		<field>
+			<name>
+				<string>SamplesPerBlock</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -8,7 +11,10 @@
 				<part>32Bit_LittleEndian</part>
 			</type-reference>
 		</field>
-		<field name="EncodeOptions">
+		<field>
+			<name>
+				<string>EncodeOptions</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -16,7 +22,10 @@
 				<part>16Bit_LittleEndian</part>
 			</type-reference>
 		</field>
-		<field name="SuperBlockAlign">
+		<field>
+			<name>
+				<string>SuperBlockAlign</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>

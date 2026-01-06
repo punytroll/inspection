@@ -15,7 +15,10 @@
 				</equals>
 			</verification>
 		</forward>
-		<field name="TotalFrameCRC">
+		<field>
+			<name>
+				<string>TotalFrameCRC</string>
+			</name>
 			<type-reference>
 				<part>ID3</part>
 				<part>UnsignedInteger_35Bit_SynchSafe_40Bit_BigEndian</part>

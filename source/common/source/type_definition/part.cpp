@@ -69,6 +69,11 @@ auto Inspection::TypeDefinition::Part::ApplyInterpretations(Inspection::Executio
     return Result;
 }
 
+auto Inspection::TypeDefinition::Part::GetName(Inspection::ExecutionContext & ExecutionContext) const -> std::optional<std::string>
+{
+    return std::nullopt;
+}
+
 auto Inspection::TypeDefinition::Part::GetLengthAny(Inspection::ExecutionContext & ExecutionContext) const -> std::any
 {
     ASSERTION(m_Length != nullptr);
@@ -154,49 +159,15 @@ auto Inspection::TypeDefinition::Part::Load(XML::Element const * Element) -> std
     return Result;
 }
 
-auto Inspection::TypeDefinition::Part::m_AddPartResult(Inspection::Result & Result, Inspection::TypeDefinition::Part const & Part, Inspection::Result * PartResult) const -> void
+auto Inspection::TypeDefinition::Part::m_AddPartResult(Inspection::ExecutionContext & ExecutionContext, std::optional<std::string> const & PartName, Inspection::Result * PartResult) const -> void
 {
-    auto FieldName = std::optional<std::string>{};
-    
-    switch(Part.GetPartType())
+    if(PartName.has_value() == true)
     {
-    case Inspection::TypeDefinition::PartType::Alternative:
-    case Inspection::TypeDefinition::PartType::Forward:
-    case Inspection::TypeDefinition::PartType::Select:
-    case Inspection::TypeDefinition::PartType::Sequence:
-        {
-            break;
-        }
-    case Inspection::TypeDefinition::PartType::Array:
-        {
-            auto Array = dynamic_cast<Inspection::TypeDefinition::Array const *>(std::addressof(Part));
-            
-            ASSERTION(Array != nullptr);
-            FieldName = Array->GetFieldName();
-            
-            break;
-        }
-    case Inspection::TypeDefinition::PartType::Field:
-        {
-            auto Field = dynamic_cast<Inspection::TypeDefinition::Field const *>(std::addressof(Part));
-            
-            ASSERTION(Field != nullptr);
-            FieldName = Field->GetFieldName();
-            
-            break;
-        }
-    case Inspection::TypeDefinition::PartType::Type:
-        {
-            IMPOSSIBLE_CODE_REACHED("a \"type\" should not be possible inside of a part");
-        }
-    }
-    if(FieldName.has_value() == true)
-    {
-        Result.GetValue()->AppendField(FieldName.value(), PartResult->ExtractValue());
+        ExecutionContext.GetCurrentResult().GetValue()->AppendField(PartName.value(), PartResult->ExtractValue());
     }
     else
     {
-        Result.GetValue()->Extend(PartResult->ExtractValue());
+        ExecutionContext.GetCurrentResult().GetValue()->Extend(PartResult->ExtractValue());
     }
 }
 

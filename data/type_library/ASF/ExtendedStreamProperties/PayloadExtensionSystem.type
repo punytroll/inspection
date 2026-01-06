@@ -1,11 +1,17 @@
 <type>
 	<sequence>
-		<field name="ExtensionSystemID">
+		<field>
+			<name>
+				<string>ExtensionSystemID</string>
+			</name>
 			<type-reference>
 				<part>GUID_LittleEndian</part>
 			</type-reference>
 		</field>
-		<field name="ExtensionDataSize">
+		<field>
+			<name>
+				<string>ExtensionDataSize</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -13,7 +19,10 @@
 				<part>16Bit_LittleEndian</part>
 			</type-reference>
 		</field>
-		<field name="ExtensionSystemInfoLength">
+		<field>
+			<name>
+				<string>ExtensionSystemInfoLength</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -21,7 +30,10 @@
 				<part>32Bit_LittleEndian</part>
 			</type-reference>
 		</field>
-		<field name="ExtensionSystemInfo">
+		<field>
+			<name>
+				<string>ExtensionSystemInfo</string>
+			</name>
 			<type-reference>
 				<part>Buffer</part>
 				<part>UnsignedInteger_8Bit_EndedByLength</part>

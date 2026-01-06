@@ -1,6 +1,9 @@
 <type>
 	<sequence>
-		<field name="UnshiftedNote">
+		<field>
+			<name>
+				<string>UnshiftedNote</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -8,7 +11,10 @@
 				<part>8Bit</part>
 			</type-reference>
 		</field>
-		<field name="FineTune">
+		<field>
+			<name>
+				<string>FineTune</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -16,7 +22,10 @@
 				<part>8Bit</part>
 			</type-reference>
 		</field>
-		<field name="Gain">
+		<field>
+			<name>
+				<string>Gain</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -24,7 +33,10 @@
 				<part>8Bit</part>
 			</type-reference>
 		</field>
-		<field name="LowNote">
+		<field>
+			<name>
+				<string>LowNote</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -32,7 +44,10 @@
 				<part>8Bit</part>
 			</type-reference>
 		</field>
-		<field name="HighNote">
+		<field>
+			<name>
+				<string>HighNote</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -40,7 +55,10 @@
 				<part>8Bit</part>
 			</type-reference>
 		</field>
-		<field name="LowVelocity">
+		<field>
+			<name>
+				<string>LowVelocity</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -48,7 +66,10 @@
 				<part>8Bit</part>
 			</type-reference>
 		</field>
-		<field name="HighVelocity">
+		<field>
+			<name>
+				<string>HighVelocity</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>

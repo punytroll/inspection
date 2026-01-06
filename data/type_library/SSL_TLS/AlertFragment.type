@@ -1,6 +1,9 @@
 <type>
 	<sequence>
-		<field name="Level">
+		<field>
+			<name>
+				<string>Level</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -39,7 +42,10 @@
 				</enumeration>
 			</apply-enumeration>
 		</field>
-		<field name="Description">
+		<field>
+			<name>
+				<string>Description</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>

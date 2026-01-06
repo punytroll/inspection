@@ -58,7 +58,7 @@ namespace Inspection
             ~Array() override = default;
             auto Get(Inspection::ExecutionContext & ExecutionContext) const -> void override;
             auto GetElementParameters(Inspection::ExecutionContext & ExecutionContext) const -> std::unordered_map<std::string, std::any>;
-            auto GetFieldName() const -> std::optional<std::string> const &;
+            auto GetName(Inspection::ExecutionContext & ExecutionContext) const -> std::optional<std::string> override;
         protected:
             auto m_LoadProperty(XML::Element const * Element) -> void override;
         private:
@@ -71,10 +71,10 @@ namespace Inspection
             std::optional<std::string> m_ElementName;
             std::unique_ptr<Inspection::TypeDefinition::Parameters> m_ElementParameters;
             std::unique_ptr<Inspection::TypeDefinition::Expression> m_ElementType;
-            std::optional<std::string> m_FieldName;
             std::unique_ptr<Inspection::TypeDefinition::FieldReference> m_IterateForEachField;
             std::unique_ptr<Inspection::TypeDefinition::Expression> m_IterateNumberOfElements;
             Inspection::TypeDefinition::Array::IterateType m_IterateType;
+            std::optional<std::string> m_Name;
         };
     }
 }

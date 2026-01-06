@@ -1,6 +1,9 @@
 <type>
 	<sequence>
-		<field name="LanguageIDLength">
+		<field>
+			<name>
+				<string>LanguageIDLength</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -8,7 +11,10 @@
 				<part>8Bit</part>
 			</type-reference>
 		</field>
-		<field name="LanguageID">
+		<field>
+			<name>
+				<string>LanguageID</string>
+			</name>
 			<type-reference>
 				<part>String</part>
 				<part>ISO_IEC_10646_1_1993</part>

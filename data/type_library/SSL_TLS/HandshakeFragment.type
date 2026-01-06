@@ -1,6 +1,9 @@
 <type>
 	<sequence>
-		<field name="Type">
+		<field>
+			<name>
+				<string>Type</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -129,7 +132,10 @@
 				</enumeration>
 			</apply-enumeration>
 		</field>
-		<field name="Length">
+		<field>
+			<name>
+				<string>Length</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -149,13 +155,19 @@
 					</equals>
 				</when>
 				<sequence>
-					<field name="ProtocolVersion">
+					<field>
+						<name>
+							<string>ProtocolVersion</string>
+						</name>
 						<type-reference>
 							<part>SSL_TLS</part>
 							<part>Version</part>
 						</type-reference>
 					</field>
-					<field name="Random">
+					<field>
+						<name>
+							<string>Random</string>
+						</name>
 						<type-reference>
 							<part>Buffer</part>
 							<part>UnsignedInteger_8Bit_EndedByLength</part>
@@ -169,7 +181,10 @@
 							</bits>
 						</length>
 					</field>
-					<field name="SessionIDLength">
+					<field>
+						<name>
+							<string>SessionIDLength</string>
+						</name>
 						<type-reference>
 							<part>Number</part>
 							<part>Integer</part>
@@ -177,7 +192,10 @@
 							<part>8Bit</part>
 						</type-reference>
 					</field>
-					<field name="SessionID">
+					<field>
+						<name>
+							<string>SessionID</string>
+						</name>
 						<type-reference>
 							<part>Buffer</part>
 							<part>UnsignedInteger_8Bit_EndedByLength</part>
@@ -195,7 +213,10 @@
 							</bits>
 						</length>
 					</field>
-					<field name="CipherSuitesDataLength">
+					<field>
+						<name>
+							<string>CipherSuitesDataLength</string>
+						</name>
 						<type-reference>
 							<part>Number</part>
 							<part>Integer</part>
@@ -234,7 +255,10 @@
 						</element-type>
 						<element-name>CipherSuite</element-name>
 					</array>
-					<field name="CompressionMethodsDataLength">
+					<field>
+						<name>
+							<string>CompressionMethodsDataLength</string>
+						</name>
 						<type-reference>
 							<part>Number</part>
 							<part>Integer</part>
@@ -264,7 +288,10 @@
 						</element-type>
 						<element-name>CompressionMethod</element-name>
 					</array>
-					<field name="ExtensionsDataLength">
+					<field>
+						<name>
+							<string>ExtensionsDataLength</string>
+						</name>
 						<type-reference>
 							<part>Number</part>
 							<part>Integer</part>
@@ -307,13 +334,19 @@
 					</equals>
 				</when>
 				<sequence>
-					<field name="ProtocolVersion">
+					<field>
+						<name>
+							<string>ProtocolVersion</string>
+						</name>
 						<type-reference>
 							<part>SSL_TLS</part>
 							<part>Version</part>
 						</type-reference>
 					</field>
-					<field name="Random">
+					<field>
+						<name>
+							<string>Random</string>
+						</name>
 						<type-reference>
 							<part>Buffer</part>
 							<part>UnsignedInteger_8Bit_EndedByLength</part>
@@ -327,7 +360,10 @@
 							</bits>
 						</length>
 					</field>
-					<field name="SessionIDLength">
+					<field>
+						<name>
+							<string>SessionIDLength</string>
+						</name>
 						<type-reference>
 							<part>Number</part>
 							<part>Integer</part>
@@ -335,7 +371,10 @@
 							<part>8Bit</part>
 						</type-reference>
 					</field>
-					<field name="SessionID">
+					<field>
+						<name>
+							<string>SessionID</string>
+						</name>
 						<type-reference>
 							<part>Buffer</part>
 							<part>UnsignedInteger_8Bit_EndedByLength</part>
@@ -353,19 +392,28 @@
 							</bits>
 						</length>
 					</field>
-					<field name="CipherSuite">
+					<field>
+						<name>
+							<string>CipherSuite</string>
+						</name>
 						<type-reference>
 							<part>SSL_TLS</part>
 							<part>CipherSuite</part>
 						</type-reference>
 					</field>
-					<field name="CompressionMethod">
+					<field>
+						<name>
+							<string>CompressionMethod</string>
+						</name>
 						<type-reference>
 							<part>SSL_TLS</part>
 							<part>CompressionMethod</part>
 						</type-reference>
 					</field>
-					<field name="ExtensionsDataLength">
+					<field>
+						<name>
+							<string>ExtensionsDataLength</string>
+						</name>
 						<type-reference>
 							<part>Number</part>
 							<part>Integer</part>
@@ -373,7 +421,10 @@
 							<part>16Bit_BigEndian</part>
 						</type-reference>
 					</field>
-					<field name="ExtensionsData">
+					<field>
+						<name>
+							<string>ExtensionsData</string>
+						</name>
 						<type-reference>
 							<part>Buffer</part>
 							<part>UnsignedInteger_8Bit_EndedByLength</part>

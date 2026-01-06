@@ -1,13 +1,19 @@
 <type>
 	<sequence>
-		<field name="BitmapFileHeader">
+		<field>
+			<name>
+				<string>BitmapFileHeader</string>
+			</name>
 			<sequence>
 				<tag name="type name">
 					<value>
 						<string>BITMAPFILEHEADER</string>
 					</value>
 				</tag>
-				<field name="Type">
+				<field>
+					<name>
+						<string>Type</string>
+					</name>
 					<type-reference>
 						<part>String</part>
 						<part>ASCII</part>
@@ -19,7 +25,10 @@
 						</parameter>
 					</parameters>
 				</field>
-				<field name="Size">
+				<field>
+					<name>
+						<string>Size</string>
+					</name>
 					<type-reference>
 						<part>Number</part>
 						<part>Integer</part>
@@ -27,7 +36,10 @@
 						<part>32Bit_LittleEndian</part>
 					</type-reference>
 				</field>
-				<field name="Reserved">
+				<field>
+					<name>
+						<string>Reserved</string>
+					</name>
 					<type-reference>
 						<part>Number</part>
 						<part>Integer</part>
@@ -35,7 +47,10 @@
 						<part>16Bit_LittleEndian</part>
 					</type-reference>
 				</field>
-				<field name="Reserved">
+				<field>
+					<name>
+						<string>Reserved</string>
+					</name>
 					<type-reference>
 						<part>Number</part>
 						<part>Integer</part>
@@ -43,7 +58,10 @@
 						<part>16Bit_LittleEndian</part>
 					</type-reference>
 				</field>
-				<field name="OffBits">
+				<field>
+					<name>
+						<string>OffBits</string>
+					</name>
 					<type-reference>
 						<part>Number</part>
 						<part>Integer</part>

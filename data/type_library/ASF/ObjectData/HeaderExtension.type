@@ -1,6 +1,9 @@
 <type>
 	<sequence>
-		<field name="ReservedField1">
+		<field>
+			<name>
+				<string>ReservedField1</string>
+			</name>
 			<type-reference>
 				<part>ASF</part>
 				<part>GUID</part>
@@ -12,7 +15,10 @@
 				</equals>
 			</verification>
 		</field>
-		<field name="ReservedField2">
+		<field>
+			<name>
+				<string>ReservedField2</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -26,7 +32,10 @@
 				</equals>
 			</verification>
 		</field>
-		<field name="HeaderExtensionDataSize">
+		<field>
+			<name>
+				<string>HeaderExtensionDataSize</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>

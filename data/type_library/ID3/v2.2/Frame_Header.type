@@ -1,13 +1,19 @@
 <type>
 	<sequence>
-		<field name="Identifier">
+		<field>
+			<name>
+				<string>Identifier</string>
+			</name>
 			<type-reference>
 				<part>ID3</part>
 				<part>v2.2</part>
 				<part>Frame_Header_Identifier</part>
 			</type-reference>
 		</field>
-		<field name="Size">
+		<field>
+			<name>
+				<string>Size</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>

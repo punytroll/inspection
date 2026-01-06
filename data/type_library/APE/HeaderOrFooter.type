@@ -1,6 +1,9 @@
 <type>
 	<sequence>
-		<field name="Identifier">
+		<field>
+			<name>
+				<string>Identifier</string>
+			</name>
 			<type-reference>
 				<part>String</part>
 				<part>ASCII</part>
@@ -12,7 +15,10 @@
 				</parameter>
 			</parameters>
 		</field>
-		<field name="VersionNumber">
+		<field>
+			<name>
+				<string>VersionNumber</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -51,7 +57,10 @@
 				</enumeration>
 			</apply-enumeration>
 		</field>
-		<field name="TagSize">
+		<field>
+			<name>
+				<string>TagSize</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -59,7 +68,10 @@
 				<part>32Bit_LittleEndian</part>
 			</type-reference>
 		</field>
-		<field name="ItemCount">
+		<field>
+			<name>
+				<string>ItemCount</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -67,13 +79,19 @@
 				<part>32Bit_LittleEndian</part>
 			</type-reference>
 		</field>
-		<field name="TagsFlags">
+		<field>
+			<name>
+				<string>TagsFlags</string>
+			</name>
 			<type-reference>
 				<part>APE</part>
 				<part>Flags</part>
 			</type-reference>
 		</field>
-		<field name="Reserved">
+		<field>
+			<name>
+				<string>Reserved</string>
+			</name>
 			<type-reference>
 				<part>Data</part>
 				<part>Unset_EndedByLength</part>

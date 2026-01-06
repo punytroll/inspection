@@ -1,6 +1,9 @@
 <type>
 	<sequence>
-		<field name="ContentType">
+		<field>
+			<name>
+				<string>ContentType</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -79,13 +82,19 @@
 				</enumeration>
 			</apply-enumeration>
 		</field>
-		<field name="ProtocolVersion">
+		<field>
+			<name>
+				<string>ProtocolVersion</string>
+			</name>
 			<type-reference>
 				<part>SSL_TLS</part>
 				<part>Version</part>
 			</type-reference>
 		</field>
-		<field name="Length">
+		<field>
+			<name>
+				<string>Length</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -110,7 +119,10 @@
 						<string>Handshake</string>
 					</equals>
 				</when>
-				<field name="Fragment">
+				<field>
+					<name>
+						<string>Fragment</string>
+					</name>
 					<type-reference>
 						<part>SSL_TLS</part>
 						<part>HandshakeFragment</part>
@@ -135,7 +147,10 @@
 						<string>Alert</string>
 					</equals>
 				</when>
-				<field name="Fragment">
+				<field>
+					<name>
+						<string>Fragment</string>
+					</name>
 					<type-reference>
 						<part>SSL_TLS</part>
 						<part>AlertFragment</part>
@@ -154,7 +169,10 @@
 				<when>
 					<boolean>true</boolean>
 				</when>
-				<field name="FragmentData">
+				<field>
+					<name>
+						<string>FragmentData</string>
+					</name>
 					<type-reference>
 						<part>Buffer</part>
 						<part>UnsignedInteger_8Bit_EndedByLength</part>

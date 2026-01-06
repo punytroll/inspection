@@ -1,7 +1,10 @@
 <type>
 	<alternative>
 		<sequence>
-			<field name="Identifier">
+			<field>
+				<name>
+					<string>Identifier</string>
+				</name>
 				<type-reference>
 					<part>String</part>
 					<part>ASCII</part>
@@ -13,7 +16,10 @@
 					</parameter>
 				</parameters>
 			</field>
-			<field name="Title">
+			<field>
+				<name>
+					<string>Title</string>
+				</name>
 				<type-reference>
 					<part>String</part>
 					<part>ISO_IEC_8859_1_1998</part>
@@ -28,7 +34,10 @@
 					</bits>
 				</length>
 			</field>
-			<field name="Artist">
+			<field>
+				<name>
+					<string>Artist</string>
+				</name>
 				<type-reference>
 					<part>String</part>
 					<part>ISO_IEC_8859_1_1998</part>
@@ -43,7 +52,10 @@
 					</bits>
 				</length>
 			</field>
-			<field name="Album">
+			<field>
+				<name>
+					<string>Album</string>
+				</name>
 				<type-reference>
 					<part>String</part>
 					<part>ISO_IEC_8859_1_1998</part>
@@ -58,7 +70,10 @@
 					</bits>
 				</length>
 			</field>
-			<field name="Year">
+			<field>
+				<name>
+					<string>Year</string>
+				</name>
 				<length>
 					<bytes>
 						<unsigned-integer-64bit>4</unsigned-integer-64bit>
@@ -86,14 +101,20 @@
 								<string>ID3v1</string>
 							</value>
 						</tag>
-						<field name="String">
+						<field>
+							<name>
+								<string>String</string>
+							</name>
 							<type-reference>
 								<part>String</part>
 								<part>ISO_IEC_8859_1_1998</part>
 								<part>EndedByTermination</part>
 							</type-reference>
 						</field>
-						<field name="Rest">
+						<field>
+							<name>
+								<string>Rest</string>
+							</name>
 							<type-reference>
 								<part>Data</part>
 								<part>SetOrUnset_EndedByLength</part>
@@ -102,7 +123,10 @@
 					</sequence>
 				</alternative>
 			</field>
-			<field name="Comment">
+			<field>
+				<name>
+					<string>Comment</string>
+				</name>
 				<type-reference>
 					<part>String</part>
 					<part>ISO_IEC_8859_1_1998</part>
@@ -117,7 +141,10 @@
 					</bits>
 				</length>
 			</field>
-			<field name="Genre">
+			<field>
+				<name>
+					<string>Genre</string>
+				</name>
 				<type-reference>
 					<part>ID3</part>
 					<part>v1</part>
@@ -131,7 +158,10 @@
 			</tag>
 		</sequence>
 		<sequence>
-			<field name="Identifier">
+			<field>
+				<name>
+					<string>Identifier</string>
+				</name>
 				<type-reference>
 					<part>String</part>
 					<part>ASCII</part>
@@ -143,7 +173,10 @@
 					</parameter>
 				</parameters>
 			</field>
-			<field name="Title">
+			<field>
+				<name>
+					<string>Title</string>
+				</name>
 				<type-reference>
 					<part>String</part>
 					<part>ISO_IEC_8859_1_1998</part>
@@ -158,7 +191,10 @@
 					</bits>
 				</length>
 			</field>
-			<field name="Artist">
+			<field>
+				<name>
+					<string>Artist</string>
+				</name>
 				<type-reference>
 					<part>String</part>
 					<part>ISO_IEC_8859_1_1998</part>
@@ -173,7 +209,10 @@
 					</bits>
 				</length>
 			</field>
-			<field name="Album">
+			<field>
+				<name>
+					<string>Album</string>
+				</name>
 				<type-reference>
 					<part>String</part>
 					<part>ISO_IEC_8859_1_1998</part>
@@ -188,7 +227,10 @@
 					</bits>
 				</length>
 			</field>
-			<field name="Year">
+			<field>
+				<name>
+					<string>Year</string>
+				</name>
 				<length>
 					<bytes>
 						<unsigned-integer-64bit>4</unsigned-integer-64bit>
@@ -216,14 +258,20 @@
 								<string>ID3v1</string>
 							</value>
 						</tag>
-						<field name="String">
+						<field>
+							<name>
+								<string>String</string>
+							</name>
 							<type-reference>
 								<part>String</part>
 								<part>ISO_IEC_8859_1_1998</part>
 								<part>EndedByTermination</part>
 							</type-reference>
 						</field>
-						<field name="Rest">
+						<field>
+							<name>
+								<string>Rest</string>
+							</name>
 							<type-reference>
 								<part>Data</part>
 								<part>SetOrUnset_EndedByLength</part>
@@ -232,7 +280,10 @@
 					</sequence>
 				</alternative>
 			</field>
-			<field name="Comment">
+			<field>
+				<name>
+					<string>Comment</string>
+				</name>
 				<type-reference>
 					<part>String</part>
 					<part>ISO_IEC_8859_1_1998</part>
@@ -247,7 +298,10 @@
 					</bits>
 				</length>
 			</field>
-			<field name="AlbumTrack">
+			<field>
+				<name>
+					<string>AlbumTrack</string>
+				</name>
 				<type-reference>
 					<part>Number</part>
 					<part>Integer</part>
@@ -255,7 +309,10 @@
 					<part>8Bit</part>
 				</type-reference>
 			</field>
-			<field name="Genre">
+			<field>
+				<name>
+					<string>Genre</string>
+				</name>
 				<type-reference>
 					<part>ID3</part>
 					<part>v1</part>

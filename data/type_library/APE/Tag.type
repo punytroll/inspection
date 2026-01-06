@@ -1,6 +1,9 @@
 <type>
 	<sequence>
-		<field name="APETagsHeader">
+		<field>
+			<name>
+				<string>APETagsHeader</string>
+			</name>
 			<type-reference>
 				<part>APE</part>
 				<part>HeaderOrFooter</part>
@@ -23,7 +26,10 @@
 			</element-type>
 			<element-name>APETagsItem</element-name>
 		</array>
-		<field name="APETagsFooter">
+		<field>
+			<name>
+				<string>APETagsFooter</string>
+			</name>
 			<type-reference>
 				<part>APE</part>
 				<part>HeaderOrFooter</part>

@@ -1,6 +1,9 @@
 <type>
 	<sequence>
-		<field name="TextEncoding">
+		<field>
+			<name>
+				<string>TextEncoding</string>
+			</name>
 			<type-reference>
 				<part>ID3</part>
 				<part>v2.4</part>

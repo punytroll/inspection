@@ -56,6 +56,7 @@ namespace Inspection
             virtual ~Part();
             auto ApplyInterpretations(Inspection::ExecutionContext & ExecutionContext, Inspection::Value * Target) const -> bool;
             virtual auto Get(Inspection::ExecutionContext & ExecutionContext) const -> void = 0;
+            virtual auto GetName(Inspection::ExecutionContext & ExecutionContext) const -> std::optional<std::string>;
             auto GetLengthAny(Inspection::ExecutionContext & ExecutionContext) const -> std::any;
             auto GetParameters(Inspection::ExecutionContext & ExecutionContext) const -> std::unordered_map<std::string, std::any>;
             auto GetParts() const -> std::vector<std::unique_ptr<Inspection::TypeDefinition::Part>> const &;
@@ -66,7 +67,8 @@ namespace Inspection
         protected:
             auto m_LoadProperties(XML::Element const * Element) -> void;
             virtual auto m_LoadProperty(XML::Element const * Element) -> void;
-            auto m_AddPartResult(Inspection::Result & Result, Inspection::TypeDefinition::Part const & Part, Inspection::Result * PartResult) const -> void;
+            auto m_AddPartResult(Inspection::ExecutionContext & ExecutionContext, std::optional<std::string> const & PartName, Inspection::Result * PartResult) const -> void;
+            auto m_AppendInterpretation(std::unique_ptr<Inspection::TypeDefinition::Interpretation> Interpretation) -> void;
         private:
             Part(Inspection::TypeDefinition::Part const & Part) = delete;
             Part(Inspection::TypeDefinition::Part && Part) = delete;

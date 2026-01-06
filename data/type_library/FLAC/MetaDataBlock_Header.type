@@ -1,12 +1,18 @@
 <type>
 	<sequence>
-		<field name="LastMetaDataBlock">
+		<field>
+			<name>
+				<string>LastMetaDataBlock</string>
+			</name>
 			<type-reference>
 				<part>Boolean</part>
 				<part>1Bit</part>
 			</type-reference>
 		</field>
-		<field name="BlockType">
+		<field>
+			<name>
+				<string>BlockType</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -105,7 +111,10 @@
 				</enumeration>
 			</apply-enumeration>
 		</field>
-		<field name="Length">
+		<field>
+			<name>
+				<string>Length</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>

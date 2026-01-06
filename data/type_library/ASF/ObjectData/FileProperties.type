@@ -1,11 +1,17 @@
 <type>
 	<sequence>
-		<field name="FileID">
+		<field>
+			<name>
+				<string>FileID</string>
+			</name>
 			<type-reference>
 				<part>GUID_LittleEndian</part>
 			</type-reference>
 		</field>
-		<field name="FileSize">
+		<field>
+			<name>
+				<string>FileSize</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -13,13 +19,19 @@
 				<part>64Bit_LittleEndian</part>
 			</type-reference>
 		</field>
-		<field name="CreationDate">
+		<field>
+			<name>
+				<string>CreationDate</string>
+			</name>
 			<type-reference>
 				<part>Microsoft</part>
 				<part>FileTime</part>
 			</type-reference>
 		</field>
-		<field name="DataPacketsCount">
+		<field>
+			<name>
+				<string>DataPacketsCount</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -27,7 +39,10 @@
 				<part>64Bit_LittleEndian</part>
 			</type-reference>
 		</field>
-		<field name="PlayDuration">
+		<field>
+			<name>
+				<string>PlayDuration</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -35,7 +50,10 @@
 				<part>64Bit_LittleEndian</part>
 			</type-reference>
 		</field>
-		<field name="SendDuration">
+		<field>
+			<name>
+				<string>SendDuration</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -43,7 +61,10 @@
 				<part>64Bit_LittleEndian</part>
 			</type-reference>
 		</field>
-		<field name="Preroll">
+		<field>
+			<name>
+				<string>Preroll</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -51,13 +72,19 @@
 				<part>64Bit_LittleEndian</part>
 			</type-reference>
 		</field>
-		<field name="Flags">
+		<field>
+			<name>
+				<string>Flags</string>
+			</name>
 			<type-reference>
 				<part>ASF</part>
 				<part>FileProperties_Flags</part>
 			</type-reference>
 		</field>
-		<field name="MinimumDataPacketSize">
+		<field>
+			<name>
+				<string>MinimumDataPacketSize</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -65,7 +92,10 @@
 				<part>32Bit_LittleEndian</part>
 			</type-reference>
 		</field>
-		<field name="MaximumDataPacketSize">
+		<field>
+			<name>
+				<string>MaximumDataPacketSize</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -73,7 +103,10 @@
 				<part>32Bit_LittleEndian</part>
 			</type-reference>
 		</field>
-		<field name="MaximumBitrate">
+		<field>
+			<name>
+				<string>MaximumBitrate</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>

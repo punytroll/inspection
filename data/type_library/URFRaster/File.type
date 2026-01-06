@@ -1,6 +1,9 @@
 <type>
 	<sequence>
-		<field name="MagicWord">
+		<field>
+			<name>
+				<string>MagicWord</string>
+			</name>
 			<type-reference>
 				<part>String</part>
 				<part>ASCII</part>
@@ -12,7 +15,10 @@
 				</parameter>
 			</parameters>
 		</field>
-		<field name="NumberOfPages">
+		<field>
+			<name>
+				<string>NumberOfPages</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>

@@ -20,7 +20,10 @@
 				</parameter>
 			</element-parameters>
 		</array>
-		<field name="Residual">
+		<field>
+			<name>
+				<string>Residual</string>
+			</name>
 			<type-reference>
 				<part>FLAC</part>
 				<part>Subframe_Residual</part>

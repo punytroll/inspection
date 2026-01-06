@@ -1,6 +1,9 @@
 <type>
 	<sequence>
-		<field name="FormType">
+		<field>
+			<name>
+				<string>FormType</string>
+			</name>
 			<type-reference>
 				<part>String</part>
 				<part>ASCII</part>

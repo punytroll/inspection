@@ -1,6 +1,9 @@
 <type>
 	<sequence>
-		<field name="Header">
+		<field>
+			<name>
+				<string>Header</string>
+			</name>
 			<type-reference>
 				<part>FLAC</part>
 				<part>MetaDataBlock_Header</part>
@@ -15,7 +18,10 @@
 				</equals>
 			</verification>
 		</field>
-		<field name="Data">
+		<field>
+			<name>
+				<string>Data</string>
+			</name>
 			<type-reference>
 				<part>FLAC</part>
 				<part>StreamInfoBlock_Data</part>

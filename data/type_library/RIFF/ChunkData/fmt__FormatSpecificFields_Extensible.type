@@ -1,6 +1,9 @@
 <type>
 	<sequence>
-		<field name="BitsPerSample">
+		<field>
+			<name>
+				<string>BitsPerSample</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -8,7 +11,10 @@
 				<part>16Bit_LittleEndian</part>
 			</type-reference>
 		</field>
-		<field name="ExtensionSize">
+		<field>
+			<name>
+				<string>ExtensionSize</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -16,7 +22,10 @@
 				<part>16Bit_LittleEndian</part>
 			</type-reference>
 		</field>
-		<field name="ValidBitsPerSample">
+		<field>
+			<name>
+				<string>ValidBitsPerSample</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -24,14 +33,20 @@
 				<part>16Bit_LittleEndian</part>
 			</type-reference>
 		</field>
-		<field name="ChannelMask">
+		<field>
+			<name>
+				<string>ChannelMask</string>
+			</name>
 			<type-reference>
 				<part>RIFF</part>
 				<part>ChunkData</part>
 				<part>fmt__FormatSpecificFields_Extensible_ChannelMask</part>
 			</type-reference>
 		</field>
-		<field name="SubFormat">
+		<field>
+			<name>
+				<string>SubFormat</string>
+			</name>
 			<type-reference>
 				<part>RIFF</part>
 				<part>ChunkData</part>

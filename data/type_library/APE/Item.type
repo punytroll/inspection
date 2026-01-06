@@ -1,6 +1,9 @@
 <type>
 	<sequence>
-		<field name="ItemValueSize">
+		<field>
+			<name>
+				<string>ItemValueSize</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -8,13 +11,19 @@
 				<part>32Bit_LittleEndian</part>
 			</type-reference>
 		</field>
-		<field name="ItemFlags">
+		<field>
+			<name>
+				<string>ItemFlags</string>
+			</name>
 			<type-reference>
 				<part>APE</part>
 				<part>Flags</part>
 			</type-reference>
 		</field>
-		<field name="ItemKey">
+		<field>
+			<name>
+				<string>ItemKey</string>
+			</name>
 			<type-reference>
 				<part>String</part>
 				<part>ASCII</part>
@@ -32,7 +41,10 @@
 						<unsigned-integer-8bit>0</unsigned-integer-8bit>
 					</equals>
 				</when>
-				<field name="ItemValue">
+				<field>
+					<name>
+						<string>ItemValue</string>
+					</name>
 					<type-reference>
 						<part>String</part>
 						<part>ISO_IEC_10646_1_1993</part>
@@ -63,7 +75,10 @@
 						<unsigned-integer-8bit>1</unsigned-integer-8bit>
 					</equals>
 				</when>
-				<field name="ItemValue">
+				<field>
+					<name>
+						<string>ItemValue</string>
+					</name>
 					<type-reference>
 						<part>Buffer</part>
 						<part>UnsignedInteger_8Bit_EndedByLength</part>

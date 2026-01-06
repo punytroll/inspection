@@ -1,5 +1,8 @@
 <type>
-	<field name="CRC-16">
+	<field>
+		<name>
+			<string>CRC-16</string>
+		</name>
 		<type-reference>
 			<part>Number</part>
 			<part>Integer</part>

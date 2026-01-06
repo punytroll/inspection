@@ -1,5 +1,8 @@
 <type>
-	<field name="BitsPerSample">
+	<field>
+		<name>
+			<string>BitsPerSample</string>
+		</name>
 		<type-reference>
 			<part>Number</part>
 			<part>Integer</part>

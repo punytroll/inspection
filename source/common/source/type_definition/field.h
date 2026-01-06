@@ -46,15 +46,16 @@ namespace Inspection
         public:
             ~Field() override = default;
             auto Get(Inspection::ExecutionContext & ExecutionContext) const -> void override;
-            auto GetFieldName() const -> std::optional<std::string> const &;
+            auto GetName(Inspection::ExecutionContext & ExecutionContext) const -> std::optional<std::string> override;
+        protected:
+            auto m_LoadProperty(XML::Element const * Element) -> void override;
         private:
             Field();
             Field(Inspection::TypeDefinition::Field const & Field) = delete;
             Field(Inspection::TypeDefinition::Field && Field) = delete;
             auto operator=(Inspection::TypeDefinition::Field const & Field) -> Inspection::TypeDefinition::Field & = delete;
             auto operator=(Inspection::TypeDefinition::Field && Field) -> Inspection::TypeDefinition::Field & = delete;
-            
-            std::optional<std::string> m_FieldName;
+            std::unique_ptr<Inspection::TypeDefinition::Expression> m_Name;
         };
     }
 }

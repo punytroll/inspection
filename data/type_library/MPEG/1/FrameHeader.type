@@ -1,6 +1,9 @@
 <type>
 	<sequence>
-		<field name="FrameSync">
+		<field>
+			<name>
+				<string>FrameSync</string>
+			</name>
 			<type-reference>
 				<part>Data</part>
 				<part>Set_EndedByLength</part>
@@ -14,7 +17,10 @@
 				</bits>
 			</length>
 		</field>
-		<field name="AudioVersionID">
+		<field>
+			<name>
+				<string>AudioVersionID</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -56,7 +62,10 @@
 				</enumeration>
 			</apply-enumeration>
 		</field>
-		<field name="LayerDescription">
+		<field>
+			<name>
+				<string>LayerDescription</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -113,7 +122,10 @@
 				</enumeration>
 			</apply-enumeration>
 		</field>
-		<field name="ProtectionBit">
+		<field>
+			<name>
+				<string>ProtectionBit</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -145,7 +157,10 @@
 				</enumeration>
 			</apply-enumeration>
 		</field>
-		<field name="BitRateIndex">
+		<field>
+			<name>
+				<string>BitRateIndex</string>
+			</name>
 			<type-reference>
 				<part>MPEG</part>
 				<part>1</part>
@@ -159,7 +174,10 @@
 				</parameter>
 			</parameters>
 		</field>
-		<field name="SamplingFrequency">
+		<field>
+			<name>
+				<string>SamplingFrequency</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -246,7 +264,10 @@
 				</enumeration>
 			</apply-enumeration>
 		</field>
-		<field name="PaddingBit">
+		<field>
+			<name>
+				<string>PaddingBit</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -278,7 +299,10 @@
 				</enumeration>
 			</apply-enumeration>
 		</field>
-		<field name="PrivateBit">
+		<field>
+			<name>
+				<string>PrivateBit</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -286,7 +310,10 @@
 				<part>1Bit</part>
 			</type-reference>
 		</field>
-		<field name="Mode">
+		<field>
+			<name>
+				<string>Mode</string>
+			</name>
 			<type-reference>
 				<part>MPEG</part>
 				<part>1</part>
@@ -300,7 +327,10 @@
 				</parameter>
 			</parameters>
 		</field>
-		<field name="ModeExtension">
+		<field>
+			<name>
+				<string>ModeExtension</string>
+			</name>
 			<type-reference>
 				<part>MPEG</part>
 				<part>1</part>
@@ -319,7 +349,10 @@
 				</parameter>
 			</parameters>
 		</field>
-		<field name="Copyright">
+		<field>
+			<name>
+				<string>Copyright</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -351,7 +384,10 @@
 				</enumeration>
 			</apply-enumeration>
 		</field>
-		<field name="Original/Home">
+		<field>
+			<name>
+				<string>Original/Home</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -383,7 +419,10 @@
 				</enumeration>
 			</apply-enumeration>
 		</field>
-		<field name="Emphasis">
+		<field>
+			<name>
+				<string>Emphasis</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>

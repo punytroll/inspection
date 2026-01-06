@@ -65,8 +65,11 @@ auto Inspection::TypeDefinition::Select::Get(Inspection::ExecutionContext & Exec
                 ExecutionContext.Push(*PartResult, *PartReader, PartParameters);
                 Case.Part->Get(ExecutionContext);
                 Continue = PartResult->GetSuccess();
+                
+                auto PartName = Case.Part->GetName(ExecutionContext);
+                
                 ExecutionContext.Pop();
-                m_AddPartResult(ExecutionContext.GetCurrentResult(), *(Case.Part), PartResult.get());
+                m_AddPartResult(ExecutionContext, PartName, PartResult.get());
                 ExecutionContext.GetCurrentReader().AdvancePosition(PartReader->GetConsumedLength());
             }
             
@@ -95,8 +98,11 @@ auto Inspection::TypeDefinition::Select::Get(Inspection::ExecutionContext & Exec
         ExecutionContext.Push(*PartResult, *PartReader, PartParameters);
         m_ElsePart->Get(ExecutionContext);
         Continue = PartResult->GetSuccess();
+        
+        auto PartName = m_ElsePart->GetName(ExecutionContext);
+        
         ExecutionContext.Pop();
-        m_AddPartResult(ExecutionContext.GetCurrentResult(), *m_ElsePart, PartResult.get());
+        m_AddPartResult(ExecutionContext, PartName, PartResult.get());
         ExecutionContext.GetCurrentReader().AdvancePosition(PartReader->GetConsumedLength());
     }
     // finalization

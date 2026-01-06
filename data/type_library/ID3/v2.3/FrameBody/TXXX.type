@@ -1,13 +1,19 @@
 <type>
 	<sequence>
-		<field name="TextEncoding">
+		<field>
+			<name>
+				<string>TextEncoding</string>
+			</name>
 			<type-reference>
 				<part>ID3</part>
 				<part>v2.3</part>
 				<part>TextEncoding</part>
 			</type-reference>
 		</field>
-		<field name="Description">
+		<field>
+			<name>
+				<string>Description</string>
+			</name>
 			<type-reference>
 				<part>ID3</part>
 				<part>v2.3</part>
@@ -21,7 +27,10 @@
 				</parameter>
 			</parameters>
 		</field>
-		<field name="Information">
+		<field>
+			<name>
+				<string>Information</string>
+			</name>
 			<type-reference>
 				<part>ID3</part>
 				<part>v2.3</part>

@@ -1,6 +1,9 @@
 <type>
 	<sequence>
-		<field name="Identifier">
+		<field>
+			<name>
+				<string>Identifier</string>
+			</name>
 			<type-reference>
 				<part>BitSet</part>
 				<part>8Bit_LeastSignificantBitFirst</part>
@@ -595,7 +598,10 @@
 						<boolean>false</boolean>
 					</equals>
 				</when>
-				<field name="WordSize">
+				<field>
+					<name>
+						<string>WordSize</string>
+					</name>
 					<type-reference>
 						<part>Number</part>
 						<part>Integer</part>
@@ -621,7 +627,10 @@
 						<boolean>true</boolean>
 					</equals>
 				</when>
-				<field name="WordSize">
+				<field>
+					<name>
+						<string>WordSize</string>
+					</name>
 					<type-reference>
 						<part>Number</part>
 						<part>Integer</part>
@@ -663,7 +672,10 @@
 						<boolean>false</boolean>
 					</equals>
 				</when>
-				<field name="Data">
+				<field>
+					<name>
+						<string>Data</string>
+					</name>
 					<type-reference>
 						<part>Buffer</part>
 						<part>UnsignedInteger_8Bit_EndedByLength</part>
@@ -671,7 +683,10 @@
 				</field>
 			</case>
 			<else>
-				<field name="Data">
+				<field>
+					<name>
+						<string>Data</string>
+					</name>
 					<type-reference>
 						<part>Data</part>
 						<part>SetOrUnset_EndedByLength</part>

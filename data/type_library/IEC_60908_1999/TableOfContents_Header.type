@@ -1,6 +1,9 @@
 <type>
 	<sequence>
-		<field name="DataLength">
+		<field>
+			<name>
+				<string>DataLength</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -8,7 +11,10 @@
 				<part>16Bit_BigEndian</part>
 			</type-reference>
 		</field>
-		<field name="FirstTrackNumber">
+		<field>
+			<name>
+				<string>FirstTrackNumber</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -16,7 +22,10 @@
 				<part>8Bit</part>
 			</type-reference>
 		</field>
-		<field name="LastTrackNumber">
+		<field>
+			<name>
+				<string>LastTrackNumber</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>

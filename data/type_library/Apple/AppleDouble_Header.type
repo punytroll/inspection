@@ -1,6 +1,9 @@
 <type>
 	<sequence>
-		<field name="MagicNumber">
+		<field>
+			<name>
+				<string>MagicNumber</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -14,7 +17,10 @@
 				</equals>
 			</verification>
 		</field>
-		<field name="VersionNumber">
+		<field>
+			<name>
+				<string>VersionNumber</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>
@@ -28,7 +34,10 @@
 				</equals>
 			</verification>
 		</field>
-		<field name="Filler">
+		<field>
+			<name>
+				<string>Filler</string>
+			</name>
 			<type-reference>
 				<part>Data</part>
 				<part>Unset_EndedByLength</part>
@@ -42,7 +51,10 @@
 				</bits>
 			</length>
 		</field>
-		<field name="NumberOfEntries">
+		<field>
+			<name>
+				<string>NumberOfEntries</string>
+			</name>
 			<type-reference>
 				<part>Number</part>
 				<part>Integer</part>

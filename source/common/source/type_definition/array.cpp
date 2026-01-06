@@ -360,9 +360,9 @@ auto Inspection::TypeDefinition::Array::Get(Inspection::ExecutionContext & Execu
     ExecutionContext.GetCurrentResult().SetSuccess(Continue);
 }
 
-auto Inspection::TypeDefinition::Array::GetFieldName() const -> std::optional<std::string> const &
+auto Inspection::TypeDefinition::Array::GetName(Inspection::ExecutionContext & ExecutionContext) const -> std::optional<std::string>
 {
-    return m_FieldName;
+    return m_Name;
 }
 
 auto Inspection::TypeDefinition::Array::Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::Array>
@@ -370,7 +370,7 @@ auto Inspection::TypeDefinition::Array::Load(XML::Element const * Element) -> st
     auto Result = std::unique_ptr<Inspection::TypeDefinition::Array>{new Inspection::TypeDefinition::Array{}};
     
     ASSERTION(Element->HasAttribute("name") == true);
-    Result->m_FieldName = Element->GetAttribute("name");
+    Result->m_Name = Element->GetAttribute("name");
     
     return Result;
 }

@@ -1,5 +1,8 @@
 <type>
-	<field name="Size">
+	<field>
+		<name>
+			<string>Size</string>
+		</name>
 		<type-reference>
 			<part>ID3</part>
 			<part>UnsignedInteger_7Bit_SynchSafe_8Bit</part>
