@@ -14,12 +14,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Check out repository with submodules
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
     - name: Install ninja
       run: pip install ninja
     - name: Install meson
       run: pip install meson
     - name: Setup project build directory
+      env:
+        CC: gcc-14
+        CXX: g++-14
       run: meson setup build
     - name: Compile project
       run: meson compile -C build
