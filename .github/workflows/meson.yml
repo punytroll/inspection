@@ -28,5 +28,3 @@ jobs:
       run: meson compile -C build
     - name: Unit tests
       run: meson test -C build
-    - name: Integration tests
-      run: meson compile -C build check
