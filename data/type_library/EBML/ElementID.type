@@ -5,6 +5,38 @@
 			<element valid="true">
 				<base-value>
 					<unsigned-integer-8bit-buffer>
+						<unsigned-integer-8bit>236</unsigned-integer-8bit>
+					</unsigned-integer-8bit-buffer>
+				</base-value>
+				<tag name="interpretation">
+					<value>
+						<string>Void</string>
+					</value>
+					<tag name="type">
+						<value>
+							<string>binary</string>
+						</value>
+					</tag>
+					<tag name="min occurs">
+						<value>
+							<unsigned-integer-64bit>0</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>Used to void data or to avoid unexpected behaviors when using damaged data. The content is discarded. Also used to reserve space in a subelement for later use.</string>
+						</value>
+					</tag>
+					<tag name="standard">
+						<value>
+							<string>RFC 8794 (EBML)</string>
+						</value>
+					</tag>
+				</tag>
+			</element>
+			<element valid="true">
+				<base-value>
+					<unsigned-integer-8bit-buffer>
 						<unsigned-integer-8bit>26</unsigned-integer-8bit>
 						<unsigned-integer-8bit>69</unsigned-integer-8bit>
 						<unsigned-integer-8bit>223</unsigned-integer-8bit>
@@ -1773,6 +1805,38 @@
 					<tag name="description">
 						<value>
 							<string>The Segment Position of the Cluster containing the associated Block.</string>
+						</value>
+					</tag>
+					<tag name="standard">
+						<value>
+							<string>RFC 9559 (Matroska)</string>
+						</value>
+					</tag>
+				</tag>
+			</element>
+			<element valid="true">
+				<base-value>
+					<unsigned-integer-8bit-buffer>
+						<unsigned-integer-8bit>240</unsigned-integer-8bit>
+					</unsigned-integer-8bit-buffer>
+				</base-value>
+				<tag name="interpretation">
+					<value>
+						<string>CueRelativePosition</string>
+					</value>
+					<tag name="type">
+						<value>
+							<string>unsigned integer</string>
+						</value>
+					</tag>
+					<tag name="max occurs">
+						<value>
+							<unsigned-integer-64bit>1</unsigned-integer-64bit>
+						</value>
+					</tag>
+					<tag name="description">
+						<value>
+							<string>The relative position inside the Cluster of the referenced SimpleBlock or BlockGroup with 0 being the first possible position for an element inside that Cluster.</string>
 						</value>
 					</tag>
 					<tag name="standard">

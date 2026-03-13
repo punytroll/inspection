@@ -9,50 +9,40 @@
 				<sequence>
 					<field>
 						<name>
-							<string>Header</string>
+							<string>EBML</string>
 						</name>
-						<field>
-							<name>
-								<string>EBML</string>
-							</name>
-							<type-reference>
-								<part>EBML</part>
-								<part>Element</part>
-							</type-reference>
-							<verification>
-								<equals>
-									<data-reference root="current">
-										<field>ID</field>
-									</data-reference>
-									<unsigned-integer-8bit-buffer>
-										<unsigned-integer-8bit>26</unsigned-integer-8bit>
-										<unsigned-integer-8bit>69</unsigned-integer-8bit>
-										<unsigned-integer-8bit>223</unsigned-integer-8bit>
-										<unsigned-integer-8bit>163</unsigned-integer-8bit>
-									</unsigned-integer-8bit-buffer>
-								</equals>
-							</verification>
-						</field>
+						<type-reference>
+							<part>EBML</part>
+							<part>Element</part>
+						</type-reference>
+						<verification>
+							<equals>
+								<data-reference root="current">
+									<field>ID</field>
+								</data-reference>
+								<unsigned-integer-8bit-buffer>
+									<unsigned-integer-8bit>26</unsigned-integer-8bit>
+									<unsigned-integer-8bit>69</unsigned-integer-8bit>
+									<unsigned-integer-8bit>223</unsigned-integer-8bit>
+									<unsigned-integer-8bit>163</unsigned-integer-8bit>
+								</unsigned-integer-8bit-buffer>
+							</equals>
+						</verification>
 					</field>
 					<field>
 						<name>
-							<string>Body</string>
+							<data-reference root="current">
+								<field>ID</field>
+								<tag>name</tag>
+								<fallback>
+									<string>Element</string>
+								</fallback>
+							</data-reference>
 						</name>
-						<field>
-							<name>
-								<data-reference root="current">
-									<field>ID</field>
-									<tag>name</tag>
-									<fallback>
-										<string>Element</string>
-									</fallback>
-								</data-reference>
-							</name>
-							<type-reference>
-								<part>EBML</part>
-								<part>Element</part>
-							</type-reference>
-						</field>
+						<type-reference>
+							<part>EBML</part>
+							<part>Element</part>
+						</type-reference>
 					</field>
 				</sequence>
 			</type>
