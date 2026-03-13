@@ -5,7 +5,6 @@ apeinspector_executable = executable(
   sources: ['ape/apeinspector.cpp'],
   dependencies: [
     common_library_dependency,
-    xml_parser_dependency,
     xml_puny_dom_dependency
   ]
 )
@@ -16,7 +15,6 @@ asfinspector_executable = executable(
   sources: ['asf/asfinspector.cpp'],
   dependencies: [
     common_library_dependency,
-    xml_parser_dependency,
     xml_puny_dom_dependency
   ]
 )
@@ -27,7 +25,6 @@ flacinspector_executable = executable(
   sources: ['flac/flacinspector.cpp'],
   dependencies: [
     common_library_dependency,
-    xml_parser_dependency,
     xml_puny_dom_dependency
   ]
 )
@@ -38,7 +35,6 @@ generalinspector_executable = executable(
   sources: ['general/generalinspector.cpp'],
   dependencies: [
     common_library_dependency,
-    xml_parser_dependency,
     xml_puny_dom_dependency
   ]
 )
@@ -49,7 +45,6 @@ id3inspector_executable = executable(
   sources: ['id3/id3inspector.cpp'],
   dependencies: [
     common_library_dependency,
-    xml_parser_dependency,
     xml_puny_dom_dependency
   ]
 )
@@ -60,7 +55,6 @@ mpeginspector_executable = executable(
   sources: ['mpeg/mpeginspector.cpp'],
   dependencies: [
     common_library_dependency,
-    xml_parser_dependency,
     xml_puny_dom_dependency
   ]
 )
@@ -71,7 +65,6 @@ riffinspector_executable = executable(
   sources: ['riff/riffinspector.cpp'],
   dependencies: [
     common_library_dependency,
-    xml_parser_dependency,
     xml_puny_dom_dependency
   ]
 )
@@ -82,7 +75,6 @@ vorbisinspector_executable = executable(
   sources: ['vorbis/vorbisinspector.cpp'],
   dependencies: [
     common_library_dependency,
-    xml_parser_dependency,
     xml_puny_dom_dependency
   ]
 )

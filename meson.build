@@ -1,8 +1,8 @@
 project(
   'inspection',
   'cpp',
-  version: '0.1',
-  meson_version: '>=1.2.0',
+  version: '26.3.0',
+  meson_version: '>=1.10.0',
   default_options: {
     'cpp_std': 'c++23',
     'werror': 'true',
@@ -10,14 +10,9 @@ project(
   }
 )
 
-xml_parser_dependency = dependency(
-  'xml_parser',
-  version: '>=2.0.2'
-)
-
 xml_puny_dom_dependency = dependency(
   'xml_puny_dom',
-  version: '>=2.2.1'
+  version: '>=26.3.0'
 )
 
 python_program = import('python').find_installation('python3')

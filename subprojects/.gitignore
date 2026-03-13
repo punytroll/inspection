@@ -2,3 +2,5 @@
 .wraplock
 !packagefiles/
 !packagefiles/**
+
+xml_parser.wrap
