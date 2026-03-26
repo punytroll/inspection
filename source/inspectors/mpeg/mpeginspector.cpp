@@ -39,7 +39,7 @@ namespace Inspection
 				if(Continue == true)
 				{
 					auto PartReader = Inspection::Reader{Reader};
-					auto PartResult = Inspection::g_TypeRepository.Get({"MPEG", "1", "Stream"}, PartReader, {});
+					auto PartResult = Inspection::TypeRepository::GetInstance().Get({"MPEG", "1", "Stream"}, PartReader, {});
 					
 					Continue = PartResult->GetSuccess();
 					Result->GetValue()->AppendField("MPEG.1.Stream", PartResult->ExtractValue());
@@ -65,7 +65,7 @@ namespace Inspection
 						Found = true;
 						
 						auto PartReader = Inspection::Reader{Reader, Start, Buffer.GetLength() - Start};
-						auto PartResult = Inspection::g_TypeRepository.Get({"MPEG", "1", "Stream"}, PartReader, {});
+						auto PartResult = Inspection::TypeRepository::GetInstance().Get({"MPEG", "1", "Stream"}, PartReader, {});
 						
 						Continue = PartResult->GetSuccess();
 						Result->GetValue()->AppendField("MPEG.1.Stream", PartResult->ExtractValue());

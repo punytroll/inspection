@@ -23,17 +23,18 @@ namespace Inspection
     class TypeRepository
     {
     public:
-        TypeRepository(void);
-        ~TypeRepository(void);
+        static auto GetInstance() -> Inspection::TypeRepository &;
+    public:
+        TypeRepository();
+        ~TypeRepository();
         auto Get(std::vector<std::string> const & PathParts, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) -> std::unique_ptr<Inspection::Result>;
         auto GetType(std::vector<std::string> const & PathParts) -> Inspection::Type const *;
     private:
         auto m_GetOrLoadType(std::vector<std::string> const & PathParts) -> Inspection::TypeDefinition::Type *;
         auto m_GetOrLoadModule(std::vector<std::string> const & PathParts) -> Inspection::TypeDefinition::Module *;
+        static std::unique_ptr<Inspection::TypeRepository> m_Instance;
         std::unique_ptr<Inspection::TypeDefinition::Module> m_RootModule;
     };
-    
-    extern TypeRepository g_TypeRepository;
 }
 
 #endif

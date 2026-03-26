@@ -15,8 +15,6 @@
 
 namespace Inspection
 {
-    Inspection::TypeRepository g_TypeRepository;
-    
     namespace TypeDefinition
     {
         class Module
@@ -34,6 +32,8 @@ namespace Inspection
     }
 }
 
+std::unique_ptr<Inspection::TypeRepository> Inspection::TypeRepository::m_Instance;
+
 Inspection::TypeRepository::TypeRepository(void) :
     m_RootModule{std::make_unique<Inspection::TypeDefinition::Module>(g_TypeLibraryPath)}
 {
@@ -41,6 +41,16 @@ Inspection::TypeRepository::TypeRepository(void) :
 
 Inspection::TypeRepository::~TypeRepository(void)
 {
+}
+
+auto Inspection::TypeRepository::GetInstance() -> Inspection::TypeRepository &
+{
+    if(m_Instance == nullptr)
+    {
+        m_Instance = std::make_unique<Inspection::TypeRepository>();
+    }
+    
+    return *m_Instance;
 }
 
 auto Inspection::TypeRepository::Get(std::vector<std::string> const & PathParts, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) -> std::unique_ptr<Inspection::Result>

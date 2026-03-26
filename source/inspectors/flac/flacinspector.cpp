@@ -48,7 +48,7 @@ namespace Inspection
 					
 					if(_WithFrames == true)
 					{
-						auto PartResult = Inspection::g_TypeRepository.Get({"FLAC", "Stream"}, PartReader, {});
+						auto PartResult = Inspection::TypeRepository::GetInstance().Get({"FLAC", "Stream"}, PartReader, {});
 						
 						Continue = PartResult->GetSuccess();
 						Result->GetValue()->AppendField("FLACStream", PartResult->ExtractValue());
@@ -56,7 +56,7 @@ namespace Inspection
 					}
 					else
 					{
-						auto PartResult = Inspection::g_TypeRepository.Get({"FLAC", "Stream_Header"}, PartReader, {});
+						auto PartResult = Inspection::TypeRepository::GetInstance().Get({"FLAC", "Stream_Header"}, PartReader, {});
 						
 						Continue = PartResult->GetSuccess();
 						Result->GetValue()->AppendField("FLACStreamHeader", PartResult->ExtractValue());

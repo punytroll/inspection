@@ -101,7 +101,7 @@ auto Inspection::TypeDefinition::Type::Get(Inspection::ExecutionContext & Execut
 
 auto Inspection::TypeDefinition::Type::Get(Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result>
 {
-    auto ExecutionContext = Inspection::ExecutionContext{Inspection::g_TypeRepository};
+    auto ExecutionContext = Inspection::ExecutionContext{Inspection::TypeRepository::GetInstance()};
     auto Result = Get(ExecutionContext, Reader, Parameters);
     
     ASSERTION(ExecutionContext.GetStackSize() == 0);

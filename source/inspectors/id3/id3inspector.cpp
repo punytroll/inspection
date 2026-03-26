@@ -57,7 +57,7 @@ namespace Inspection
 							_AppendOtherData(Result->GetValue(), PartReader.GetReadPositionInInput());
 						}
 						
-						auto PartResult = Inspection::g_TypeRepository.Get({"ID3", "v1", "Tag"}, PartReader, {});
+						auto PartResult = Inspection::TypeRepository::GetInstance().Get({"ID3", "v1", "Tag"}, PartReader, {});
 						
 						Continue = PartResult->GetSuccess();
 						if(PartResult->GetValue()->HasField("AlbumTrack") == true)
@@ -119,7 +119,7 @@ namespace Inspection
 								_AppendOtherData(Result->GetValue(), PartReader.GetReadPositionInInput() - Reader.GetReadPositionInInput());
 							}
 							
-							auto PartResult = Inspection::g_TypeRepository.Get({"ID3", "v1", "Tag"}, PartReader, {});
+							auto PartResult = Inspection::TypeRepository::GetInstance().Get({"ID3", "v1", "Tag"}, PartReader, {});
 							
 							Continue = PartResult->GetSuccess();
 							if(Continue == true)

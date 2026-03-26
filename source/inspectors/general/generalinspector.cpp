@@ -112,7 +112,7 @@ namespace Inspection
             auto Result = std::make_unique<Inspection::Result>();
             auto MSBFReader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
             auto PartReader = Inspection::Reader{MSBFReader};
-            auto PartType = Inspection::g_TypeRepository.GetType({"ID3", "v2_Tag"});
+            auto PartType = Inspection::TypeRepository::GetInstance().GetType({"ID3", "v2_Tag"});
             auto PartResult = PartType->Get(PartReader, {});
             
             if(PartResult->GetSuccess() == true)
@@ -126,7 +126,7 @@ namespace Inspection
                 else
                 {
                     auto PartReader = Inspection::Reader{MSBFReader};
-                    auto PartType = Inspection::g_TypeRepository.GetType({"FLAC", "Stream"});
+                    auto PartType = Inspection::TypeRepository::GetInstance().GetType({"FLAC", "Stream"});
                     auto PartResult = PartType->Get(PartReader, {});
                     
                     if(PartResult->GetSuccess() == true)
@@ -140,7 +140,7 @@ namespace Inspection
                         else
                         {
                             auto PartReader = Inspection::Reader{MSBFReader};
-                            auto PartType = Inspection::g_TypeRepository.GetType({"ID3", "v1", "Tag"});
+                            auto PartType = Inspection::TypeRepository::GetInstance().GetType({"ID3", "v1", "Tag"});
                             auto PartResult = PartType->Get(PartReader, {});
                             
                             if(PartResult->GetSuccess() == true)
@@ -166,7 +166,7 @@ namespace Inspection
                     else
                     {
                         auto PartReader = Inspection::Reader{MSBFReader};
-                        auto PartType = Inspection::g_TypeRepository.GetType({"MPEG", "1", "Stream"});
+                        auto PartType = Inspection::TypeRepository::GetInstance().GetType({"MPEG", "1", "Stream"});
                         auto PartResult = PartType->Get(PartReader, {});
                         
                         if(PartResult->GetSuccess() == true)
@@ -180,7 +180,7 @@ namespace Inspection
                             else
                             {
                                 auto PartReader = Inspection::Reader{MSBFReader};
-                                auto PartType = Inspection::g_TypeRepository.GetType({"APE", "Tag"});
+                                auto PartType = Inspection::TypeRepository::GetInstance().GetType({"APE", "Tag"});
                                 auto PartResult = PartType->Get(PartReader, {});
                                 
                                 if(PartResult->GetSuccess() == true)
@@ -194,7 +194,7 @@ namespace Inspection
                                     else
                                     {
                                         auto PartReader = Inspection::Reader{MSBFReader};
-                                        auto PartType = Inspection::g_TypeRepository.GetType({"ID3", "v1", "Tag"});
+                                        auto PartType = Inspection::TypeRepository::GetInstance().GetType({"ID3", "v1", "Tag"});
                                         auto PartResult = PartType->Get(PartReader, {});
                                         
                                         if(PartResult->GetSuccess() == true)
@@ -219,7 +219,7 @@ namespace Inspection
                                 else
                                 {
                                     auto PartReader = Inspection::Reader{MSBFReader};
-                                    auto PartType = Inspection::g_TypeRepository.GetType({"ID3", "v1", "Tag"});
+                                    auto PartType = Inspection::TypeRepository::GetInstance().GetType({"ID3", "v1", "Tag"});
                                     auto PartResult = PartType->Get(PartReader, {});
                                     
                                     if(PartResult->GetSuccess() == true)
@@ -245,7 +245,7 @@ namespace Inspection
                         else
                         {
                             auto PartReader = Inspection::Reader{MSBFReader};
-                            auto PartType = Inspection::g_TypeRepository.GetType({"ID3", "v1", "Tag"});
+                            auto PartType = Inspection::TypeRepository::GetInstance().GetType({"ID3", "v1", "Tag"});
                             auto PartResult = PartType->Get(PartReader, {});
                             
                             if(PartResult->GetSuccess() == true)
@@ -272,7 +272,7 @@ namespace Inspection
             else
             {
                 auto PartReader = Inspection::Reader{MSBFReader};
-                auto PartType = Inspection::g_TypeRepository.GetType({"MPEG", "1", "Stream"});
+                auto PartType = Inspection::TypeRepository::GetInstance().GetType({"MPEG", "1", "Stream"});
                 auto PartResult = PartType->Get(PartReader, {});
                 
                 if(PartResult->GetSuccess() == true)
@@ -286,7 +286,7 @@ namespace Inspection
                     else
                     {
                         auto PartReader = Inspection::Reader{MSBFReader};
-                        auto PartType = Inspection::g_TypeRepository.GetType({"APE", "Tag"});
+                        auto PartType = Inspection::TypeRepository::GetInstance().GetType({"APE", "Tag"});
                         auto PartResult = PartType->Get(PartReader, {});
                         
                         if(PartResult->GetSuccess() == true)
@@ -300,7 +300,7 @@ namespace Inspection
                             else
                             {
                                 auto PartReader = Inspection::Reader{MSBFReader};
-                                auto PartType = Inspection::g_TypeRepository.GetType({"ID3", "v1", "Tag"});
+                                auto PartType = Inspection::TypeRepository::GetInstance().GetType({"ID3", "v1", "Tag"});
                                 auto PartResult = PartType->Get(PartReader, {});
                                 
                                 if(PartResult->GetSuccess() == true)
@@ -325,7 +325,7 @@ namespace Inspection
                         else
                         {
                             auto PartReader = Inspection::Reader{MSBFReader};
-                            auto PartType = Inspection::g_TypeRepository.GetType({"ID3", "v1", "Tag"});
+                            auto PartType = Inspection::TypeRepository::GetInstance().GetType({"ID3", "v1", "Tag"});
                             auto PartResult = PartType->Get(PartReader, {});
                             
                             if(PartResult->GetSuccess() == true)
@@ -351,7 +351,7 @@ namespace Inspection
                 else
                 {
                     auto PartReader = Inspection::Reader{MSBFReader};
-                    auto PartType = Inspection::g_TypeRepository.GetType({"APE", "Tag"});
+                    auto PartType = Inspection::TypeRepository::GetInstance().GetType({"APE", "Tag"});
                     auto PartResult = PartType->Get(PartReader, {});
                     
                     if(PartResult->GetSuccess() == true)
@@ -365,7 +365,7 @@ namespace Inspection
                         else
                         {
                             auto PartReader = Inspection::Reader{MSBFReader};
-                            auto PartType = Inspection::g_TypeRepository.GetType({"ID3", "v1", "Tag"});
+                            auto PartType = Inspection::TypeRepository::GetInstance().GetType({"ID3", "v1", "Tag"});
                             auto PartResult = PartType->Get(PartReader, {});
                             
                             if(PartResult->GetSuccess() == true)
@@ -390,7 +390,7 @@ namespace Inspection
                     else
                     {
                         auto PartReader = Inspection::Reader{MSBFReader};
-                        auto PartType = Inspection::g_TypeRepository.GetType({"ID3", "v1", "Tag"});
+                        auto PartType = Inspection::TypeRepository::GetInstance().GetType({"ID3", "v1", "Tag"});
                         auto PartResult = PartType->Get(PartReader, {});
                         
                         if(PartResult->GetSuccess() == true)
@@ -409,7 +409,7 @@ namespace Inspection
                         else
                         {
                             auto PartReader = Inspection::Reader{MSBFReader};
-                            auto PartType = Inspection::g_TypeRepository.GetType({"FLAC", "Stream"});
+                            auto PartType = Inspection::TypeRepository::GetInstance().GetType({"FLAC", "Stream"});
                             auto PartResult = PartType->Get(PartReader, {});
                             
                             if(PartResult->GetSuccess() == true)
@@ -428,7 +428,7 @@ namespace Inspection
                             else
                             {
                                 auto PartReader = Inspection::Reader{MSBFReader};
-                                auto PartType = Inspection::g_TypeRepository.GetType({"ASF", "File"});
+                                auto PartType = Inspection::TypeRepository::GetInstance().GetType({"ASF", "File"});
                                 auto PartResult = PartType->Get(PartReader, {});
                                 
                                 if(PartResult->GetSuccess() == true)
@@ -447,7 +447,7 @@ namespace Inspection
                                 else
                                 {
                                     auto PartReader = Inspection::Reader{MSBFReader};
-                                    auto PartType = Inspection::g_TypeRepository.GetType({"Apple", "AppleDouble_File"});
+                                    auto PartType = Inspection::TypeRepository::GetInstance().GetType({"Apple", "AppleDouble_File"});
                                     auto PartResult = PartType->Get(PartReader, {});
                                     
                                     if(PartResult->GetSuccess() == true)
@@ -470,7 +470,7 @@ namespace Inspection
                                         LSBFReader.SetBitstreamType(Inspection::Reader::BitstreamType::LeastSignificantBitFirst);
                                         
                                         auto PartReader = Inspection::Reader{LSBFReader};
-                                        auto PartType = Inspection::g_TypeRepository.GetType({"Ogg", "Stream"});
+                                        auto PartType = Inspection::TypeRepository::GetInstance().GetType({"Ogg", "Stream"});
                                         auto PartResult = PartType->Get(PartReader, {});
                                         
                                         if(PartResult->GetSuccess() == true)
@@ -489,7 +489,7 @@ namespace Inspection
                                         else
                                         {
                                             auto PartReader = Inspection::Reader{MSBFReader};
-                                            auto PartType = Inspection::g_TypeRepository.GetType({"WavPack", "Blocks"});
+                                            auto PartType = Inspection::TypeRepository::GetInstance().GetType({"WavPack", "Blocks"});
                                             auto PartResult = PartType->Get(PartReader, {});
                                             
                                             if(PartResult->GetSuccess() == true)
@@ -503,7 +503,7 @@ namespace Inspection
                                                 else
                                                 {
                                                     auto PartReader = Inspection::Reader{MSBFReader};
-                                                    auto PartType = Inspection::g_TypeRepository.GetType({"APE", "Tag"});
+                                                    auto PartType = Inspection::TypeRepository::GetInstance().GetType({"APE", "Tag"});
                                                     auto PartResult = PartType->Get(PartReader, {});
                                                     
                                                     if(PartResult->GetSuccess() == true)
@@ -528,7 +528,7 @@ namespace Inspection
                                             else
                                             {
                                                 auto PartReader = Inspection::Reader{MSBFReader};
-                                                auto PartType = Inspection::g_TypeRepository.GetType({"RIFF", "Chunk"});
+                                                auto PartType = Inspection::TypeRepository::GetInstance().GetType({"RIFF", "Chunk"});
                                                 auto PartResult = PartType->Get(PartReader, {});
                                                 
                                                 if(PartResult->GetSuccess() == true)
@@ -547,7 +547,7 @@ namespace Inspection
                                                 else
                                                 {
                                                     auto PartReader = Inspection::Reader{MSBFReader};
-                                                    auto PartType = Inspection::g_TypeRepository.GetType({"PWGRaster", "File"});
+                                                    auto PartType = Inspection::TypeRepository::GetInstance().GetType({"PWGRaster", "File"});
                                                     auto PartResult = PartType->Get(PartReader, {});
                                                     
                                                     if(PartResult->GetSuccess() == true)
@@ -566,7 +566,7 @@ namespace Inspection
                                                     else
                                                     {
                                                         auto PartReader = Inspection::Reader{MSBFReader};
-                                                        auto PartType = Inspection::g_TypeRepository.GetType({"URFRaster", "File"});
+                                                        auto PartType = Inspection::TypeRepository::GetInstance().GetType({"URFRaster", "File"});
                                                         auto PartResult = PartType->Get(PartReader, {});
                                                         
                                                         if(PartResult->GetSuccess() == true)
@@ -614,7 +614,7 @@ namespace Inspection
             {
                 auto & TypeParts = _TypeSequence[Index];
                 auto PartReader = Inspection::Reader{Reader};
-                auto PartResult = Inspection::g_TypeRepository.Get(TypeParts, PartReader, {});
+                auto PartResult = Inspection::TypeRepository::GetInstance().Get(TypeParts, PartReader, {});
                 
                 Continue = PartResult->GetSuccess();
                 Result->GetValue()->AppendField(Inspection::JoinWithSeparator(TypeParts, "."), PartResult->ExtractValue());

@@ -23,7 +23,7 @@ namespace Inspection
 			if(Continue == true)
 			{
 				auto PartReader = Inspection::Reader{Reader};
-				auto PartResult = Inspection::g_TypeRepository.Get({"ASF", "File"}, PartReader, {});
+				auto PartResult = Inspection::TypeRepository::GetInstance().Get({"ASF", "File"}, PartReader, {});
 				
 				Continue = PartResult->GetSuccess();
 				Result->GetValue()->AppendField("ASFFile", PartResult->ExtractValue());

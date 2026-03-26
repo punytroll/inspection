@@ -38,7 +38,7 @@ namespace Inspection
 				if(Start != Buffer.GetLength())
 				{
 					auto PartReader = Inspection::Reader{Reader, Start, Buffer.GetLength() - Start};
-					auto PartResult = Inspection::g_TypeRepository.Get({"APE", "Tag"}, PartReader, {});
+					auto PartResult = Inspection::TypeRepository::GetInstance().Get({"APE", "Tag"}, PartReader, {});
 					
 					Found = true;
 					Continue = PartResult->GetSuccess();

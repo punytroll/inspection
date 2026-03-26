@@ -70,7 +70,7 @@ auto Inspection::TypeDefinition::Array::Get(Inspection::ExecutionContext & Execu
                 
                 auto ElementResult = std::make_unique<Inspection::Result>();
                 auto ElementReader = Inspection::Reader{ExecutionContext.GetCurrentReader()};
-                auto ElementExecutionContext = Inspection::ExecutionContext{Inspection::g_TypeRepository};
+                auto ElementExecutionContext = Inspection::ExecutionContext{ExecutionContext.GetTypeRepository()};
                 
                 ElementExecutionContext.Push(*ElementResult, ElementReader, ElementParameters);
                 ElementType->Get(ElementExecutionContext);
@@ -161,7 +161,7 @@ auto Inspection::TypeDefinition::Array::Get(Inspection::ExecutionContext & Execu
                 
                 auto ElementResult = std::make_unique<Inspection::Result>();
                 auto ElementReader = Inspection::Reader{ExecutionContext.GetCurrentReader(), Properties.second};
-                auto ElementExecutionContext = Inspection::ExecutionContext{Inspection::g_TypeRepository};
+                auto ElementExecutionContext = Inspection::ExecutionContext{ExecutionContext.GetTypeRepository()};
                 
                 ElementExecutionContext.Push(*ElementResult, ElementReader, ElementParameters);
                 ElementType->Get(ElementExecutionContext);
@@ -233,7 +233,7 @@ auto Inspection::TypeDefinition::Array::Get(Inspection::ExecutionContext & Execu
                     
                     auto ElementResult = std::make_unique<Inspection::Result>();
                     auto ElementReader = Inspection::Reader{ExecutionContext.GetCurrentReader()};
-                    auto ElementExecutionContext = Inspection::ExecutionContext{Inspection::g_TypeRepository};
+                    auto ElementExecutionContext = Inspection::ExecutionContext{ExecutionContext.GetTypeRepository()};
                     
                     ElementExecutionContext.Push(*ElementResult, ElementReader, ElementParameters);
                     ElementType->Get(ElementExecutionContext);
@@ -295,7 +295,7 @@ auto Inspection::TypeDefinition::Array::Get(Inspection::ExecutionContext & Execu
                 
                 auto ElementResult = std::make_unique<Inspection::Result>();
                 auto ElementReader = Inspection::Reader{ExecutionContext.GetCurrentReader()};
-                auto ElementExecutionContext = Inspection::ExecutionContext{Inspection::g_TypeRepository};
+                auto ElementExecutionContext = Inspection::ExecutionContext{ExecutionContext.GetTypeRepository()};
                 
                 ElementExecutionContext.Push(*ElementResult, ElementReader, ElementParameters);
                 ElementType->Get(ElementExecutionContext);
@@ -361,7 +361,7 @@ auto Inspection::TypeDefinition::Array::Get(Inspection::ExecutionContext & Execu
                 
                 auto ElementResult = std::make_unique<Inspection::Result>();
                 auto ElementReader = Inspection::Reader{ExecutionContext.GetCurrentReader()};
-                auto ElementExecutionContext = Inspection::ExecutionContext{Inspection::g_TypeRepository};
+                auto ElementExecutionContext = Inspection::ExecutionContext{ExecutionContext.GetTypeRepository()};
                 
                 ElementExecutionContext.Push(*ElementResult, ElementReader, ElementParameters);
                 ElementType->Get(ElementExecutionContext);
