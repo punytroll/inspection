@@ -20,14 +20,14 @@ namespace Inspection
         class Module
         {
         public:
-            Module(std::string const & Path) :
-                Path{Path}
+            Module(std::filesystem::path Path) :
+                Path{std::move(Path)}
             {
             }
             
             std::map<std::string, std::unique_ptr<Inspection::TypeDefinition::Type>> Types;
             std::map<std::string, std::unique_ptr<Inspection::TypeDefinition::Module>> Modules;
-            std::string Path;
+            std::filesystem::path Path;
         };
     }
 }
@@ -35,7 +35,7 @@ namespace Inspection
 std::unique_ptr<Inspection::TypeRepository> Inspection::TypeRepository::m_Instance;
 
 Inspection::TypeRepository::TypeRepository(void) :
-    m_RootModule{std::make_unique<Inspection::TypeDefinition::Module>(g_TypeLibraryPath)}
+    m_RootModule{std::make_unique<Inspection::TypeDefinition::Module>(Inspection::g_TypeLibraryPath)}
 {
 }
 
@@ -78,7 +78,7 @@ auto Inspection::TypeRepository::m_GetOrLoadType(std::vector<std::string> const 
         }
         else
         {
-            auto TypePath = Module->Path + '/' + PathParts.back() + ".type";
+            auto TypePath = Module->Path / (PathParts.back() + ".type");
             
             if((std::filesystem::exists(TypePath) == true) && (std::filesystem::is_regular_file(TypePath) == true))
             {
@@ -98,12 +98,12 @@ auto Inspection::TypeRepository::m_GetOrLoadType(std::vector<std::string> const 
                 }
                 catch(std::domain_error & Exception)
                 {
-                    std::throw_with_nested(std::runtime_error("Type path: " + TypePath));
+                    std::throw_with_nested(std::runtime_error("Type path: " + TypePath.native()));
                 }
             }
             else
             {
-                throw std::runtime_error("Could not find the type file \"" + TypePath + "\".");
+                throw std::runtime_error("Could not find the type file \"" + TypePath.native() + "\".");
             }
         }
     }
@@ -121,7 +121,7 @@ auto Inspection::TypeRepository::m_GetOrLoadModule(std::vector<std::string> cons
     
     for(auto ModulePathPart : ModulePathParts)
     {
-        auto ModulePath = Result->Path + '/' + ModulePathPart;
+        auto ModulePath = Result->Path / ModulePathPart;
         auto ModuleIterator = Result->Modules.find(ModulePathPart);
         
         if(ModuleIterator != Result->Modules.end())
@@ -140,7 +140,7 @@ auto Inspection::TypeRepository::m_GetOrLoadModule(std::vector<std::string> cons
             }
             else
             {
-                throw std::runtime_error("Could not find the module directory \"" + ModulePath + "\".");
+                throw std::runtime_error("Could not find the module directory \"" + ModulePath.native() + "\".");
             }
         }
     }

@@ -1,68 +1,11 @@
-type_library_path_h = custom_target(
-  'type_library_path.h',
-  output: 'type_library_path.h',
-  input: update_type_library_path_program,
-  command: [
-    python_program,
-    '@INPUT@',
-    type_library_path,
-    '@OUTPUT@'
-  ]
-)
+subdir('source')
 
 common_library = static_library(
   'common',
-  sources: [
-    'source/execution_context.cpp',
-    'source/getters/ebml.cpp',
-    'source/getters/helpers.cpp',
-    'source/getters.cpp',
-    'source/guid.cpp',
-    'source/helper.cpp',
-    'source/id3_de_unsynchronization_eager_filter.cpp',
-    'source/inspector.cpp',
-    'source/output_operators.cpp',
-    'source/query.cpp',
-    'source/reader.cpp',
-    'source/type_definition/add.cpp',
-    'source/type_definition/add_tag.cpp',
-    'source/type_definition/alternative.cpp',
-    'source/type_definition/and.cpp',
-    'source/type_definition/apply_cast.cpp',
-    'source/type_definition/apply_enumeration.cpp',
-    'source/type_definition/array.cpp',
-    'source/type_definition/bits_interpretation.cpp',
-    'source/type_definition/cast.cpp',
-    'source/type_definition/data_reference.cpp',
-    'source/type_definition/divide.cpp',
-    'source/type_definition/enumeration.cpp',
-    'source/type_definition/equals.cpp',
-    'source/type_definition/expression.cpp',
-    'source/type_definition/field.cpp',
-    'source/type_definition/field_reference.cpp',
-    'source/type_definition/forward.cpp',
-    'source/type_definition/function_call.cpp',
-    'source/type_definition/helper.cpp',
-    'source/type_definition/length.cpp',
-    'source/type_definition/less_than.cpp',
-    'source/type_definition/modulus.cpp',
-    'source/type_definition/multiply.cpp',
-    'source/type_definition/part.cpp',
-    'source/type_definition/parameter_reference.cpp',
-    'source/type_definition/parameters.cpp',
-    'source/type_definition/select.cpp',
-    'source/type_definition/sequence.cpp',
-    'source/type_definition/subtract.cpp',
-    'source/type_definition/tag.cpp',
-    'source/type_definition/type.cpp',
-    'source/type_definition/type_reference.cpp',
-    'source/type_definition/value.cpp',
-    'source/type_definition/verification.cpp',
-    'source/type_repository.cpp',
-    type_library_path_h
-  ],
+  sources: common_library_sources,
   include_directories: [
-    include_directories('include')
+    'include',
+    'source'
   ],
   dependencies: [
     xml_puny_dom_dependency
