@@ -34,20 +34,18 @@ namespace Inspection
 
 std::unique_ptr<Inspection::TypeRepository> Inspection::TypeRepository::m_Instance;
 
-Inspection::TypeRepository::TypeRepository(void) :
-    m_RootModule{std::make_unique<Inspection::TypeDefinition::Module>(Inspection::g_TypeLibraryPath)}
+Inspection::TypeRepository::TypeRepository(std::filesystem::path TypeLibraryPath) :
+    m_RootModule{std::make_unique<Inspection::TypeDefinition::Module>(std::move(TypeLibraryPath))}
 {
 }
 
-Inspection::TypeRepository::~TypeRepository(void)
-{
-}
+Inspection::TypeRepository::~TypeRepository() = default;
 
 auto Inspection::TypeRepository::GetInstance() -> Inspection::TypeRepository &
 {
     if(m_Instance == nullptr)
     {
-        m_Instance = std::make_unique<Inspection::TypeRepository>();
+        m_Instance = std::unique_ptr<Inspection::TypeRepository>{new Inspection::TypeRepository{Inspection::g_TypeLibraryPath}};
     }
     
     return *m_Instance;
